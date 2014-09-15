@@ -9,7 +9,7 @@ exports.stringify = function (obj) {
     var nobj = _(obj).clone();
     nobj = objToStringJS(nobj);
     var str = JSON.stringify(nobj);
-    str = str.replace(/"__js:([^"]*)"/g, '$1');
+    str = str.replace(/"__js:([^"]*)"/g, '$1').replace(/\\n/g, '\n');
     return str;
 };
 
@@ -122,7 +122,12 @@ function objToJS__construct(constructor, args) {
 function objToStringJS(obj) {
 
     if (obj.__constructor) {
-        return '__js:'+objToJS__construct(global[obj.__constructor], obj.__arguments||[]).toString();
+
+        var func = objToJS__construct(global[obj.__constructor], obj.__arguments||[]);
+        if (obj.__call) {
+            return '__js:' + func.call(obj.__call); //.toString();
+        }
+        return '__js:' + func.toString();
     }
 
     for (var key in obj) {
@@ -161,18 +166,4 @@ function objToJS(obj, map) {
 // WARNING: use _().clone() before calling this against a config object
 exports.toJS = function (obj, map) {
     return objToJS(obj, map);
-};
-
-// has sessionUser permission over a certain collection?
-exports.hasPermission = function (sessionUser, collectionName, crudActions) {
-    var _ = require('underscore');
-    // crudActions must be a string: eg. "r", "c", or "cr"
-    return sessionUser && sessionUser.roles && _(sessionUser.roles).any(function (roleName, i) {
-        return _(global.config.roles).find(function (role) {
-            return role.name === roleName 
-                && _(crudActions.split()).all(function (crudAction) {
-                        return !!~(role.permissions[collectionName]||'').indexOf(crudAction);
-                    });
-        });
-    });
 };

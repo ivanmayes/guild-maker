@@ -5,43 +5,15 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId,
-    _ = require('underscore');
+    _ = require('underscore'),
+    MongorillaCollection = require('../../models/helpers/collection').MongorillaCollection;
 
-
-function getCollection(req, res) {
-    var collectionName = req.route.params.collectionName;
-
-    var collection = _(global.config.collections).find(function (col) {
-        return col.name === collectionName;
-    });
-
-    if (!collection) {
-        res.status(400);
-        res.send({ error: 'bad request' });
-        return;
-    }
-
-    return collection;
-};
-
-function checkAcl(req, res) {
-    var collectionName = req.route.params.collectionName;
-
-    var ops = { GET: 'r', POST: 'c', PUT: 'u', DELETE: 'd' };
-    if (!global.helpers.hasPermission(req.session.user, collectionName, ops[req.method])) {
-        res.status(403);
-        res.send({ error: req.session.user.name + ' has no enough permissions for perform this operation' });
-        return false;
-    }
-
-    return true;
-};
 
 exports.get = function (req, res) {
     var objectId = req.route.params.objectId,
-        collection = getCollection(req, res);
+        collection = MongorillaCollection.getByRouterParams(req, res);
 
-    if (!collection) {
+    if (!collection || !collection.isSessionUserAllowedToRoute(req, res)) {
         return;
     }
 
@@ -63,12 +35,12 @@ exports.get = function (req, res) {
 
 exports.post = function (req, res) {
     var objectId = req.route.params.objectId,
-        collection = getCollection(req, res),
+        collection = MongorillaCollection.getByRouterParams(req, res),
         url = require('url'),
         url_parts = url.parse(req.url, true),
         description = url_parts.query.description || '';
 
-    if (!collection) {
+    if (!collection || !collection.isSessionUserAllowedToRoute(req, res)) {
         return;
     }
 
@@ -120,12 +92,12 @@ exports.post = function (req, res) {
 
 exports.put = function (req, res) {
     var objectId = req.route.params.objectId,
-        collection = getCollection(req, res),
+        collection = MongorillaCollection.getByRouterParams(req, res),
         url = require('url'),
         url_parts = url.parse(req.url, true),
         description = url_parts.query.description || '';
 
-    if (!collection) {
+    if (!collection || !collection.isSessionUserAllowedToRoute(req, res)) {
         return;
     }
 
@@ -151,22 +123,29 @@ exports.put = function (req, res) {
     delete attributes['_id'];
 
     // TODO skip all attributes not specified in schema
-    var attributesToSet = global.helpers.toFlat(attributes);
+    //var attributesToSet = global.helpers.toFlat(attributes);
+    var attributesToSet = global.helpers.deepClone(attributes);
     attributesToSet[collection.updatedField.key] = new global[collection.createdField.type||'Date']().toISOString();
 
 
+    // @see https://github.com/LearnBoost/mongoose/issues/964
     getModel(collection.name)
-        .findByIdAndUpdate(objectId, { $set: attributesToSet }, function (err, model) {
+        .findById(objectId, function (err, model) {
             if (err) {
                 res.send(err);
             } else {
-                if (collection.revisionable) {
-                    require('../../models/revision').saveRevisionSnapshot(collection, objectId, description, req.session.user, false, function (err, revision) {
+                _.extend(model, attributesToSet);
+                model.save(function (err) {
+                    if (err) {
+                        res.send(err);
+                    } else if (collection.revisionable) {
+                        require('../../models/revision').saveRevisionSnapshot(collection, objectId, description, req.session.user, false, function (err, revision) {
+                            res.send(responseData);
+                        });
+                    } else {
                         res.send(responseData);
-                    });
-                } else {
-                    res.send(responseData);
-                }
+                    }
+                });
             }
         });
 
@@ -176,7 +155,7 @@ exports.del = function (req, res) {
     var objectId = req.route.params.objectId,
         collection = getCollection(req, res);
 
-    if (!collection) {
+    if (!collection || !collection.isSessionUserAllowedToRoute(req, res)) {
         return;
     }
 
@@ -195,9 +174,9 @@ exports.getSearch = function (req, res) {
     var url = require('url'),
         url_parts = url.parse(req.url, true),
         q = (url_parts.query.q||'').sanitize().makeSafeForRegex(),
-        collection = getCollection(req, res);
+        collection = MongorillaCollection.getByRouterParams(req, res);
 
-    if (!collection) {
+    if (!collection || !collection.isSessionUserAllowedToRoute(req, res)) {
         return;
     }
 
@@ -230,9 +209,9 @@ exports.getSearch = function (req, res) {
 
 exports.getList = function (req, res) {
     var pager = require('../../helpers/pager'),
-        collection = getCollection(req, res);
+        collection = MongorillaCollection.getByRouterParams(req, res);
 
-    if (!collection) {
+    if (!collection || !collection.isSessionUserAllowedToRoute(req, res)) {
         return;
     }
 

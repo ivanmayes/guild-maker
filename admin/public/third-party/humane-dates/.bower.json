@@ -1,11 +1,11 @@
 {
   "name": "humane-dates",
   "homepage": "https://github.com/zachleat/Humane-Dates",
-  "_release": "818ce3abc2",
+  "_release": "8d3e28a919",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "818ce3abc2e7db7c8d73c78a82e212cf3b37a420"
+    "commit": "8d3e28a919a02916f01a3db8b519a082f5ae8b82"
   },
   "_source": "git://github.com/zachleat/Humane-Dates.git",
   "_target": "*",

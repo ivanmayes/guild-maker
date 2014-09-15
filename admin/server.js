@@ -35,13 +35,18 @@ app.use(express.bodyParser());
 app.use(express.methodOverride());
 app.use(express.cookieParser('your secret here'));
 app.use(express.session());
-app.use(app.router);
+// static files have higher priority over server routers
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(app.router);
 app.use(express.limit('30mb'));
 
 // development only
 if ('development' == app.get('env')) {
     app.use(express.errorHandler());
+} else {
+    process.on('uncaughtException', function () {
+        console.log('Fatal:', arguments);
+    });
 }
 
 global.config = require('./helpers/config').loadConfig();
@@ -79,12 +84,22 @@ config.collections.forEach(function (collection) {
     getModel(collection.name);
 });
 
+// yet experimental
+var MongorillaCollection = require('./models/helpers/collection').MongorillaCollection;
+MongorillaCollection.getAllFromMongo(function (collections) {
+    _(collections).each(function (collection) {
+        global.config.collections.push(collection);
+        getModel(collection.name);
+    });
+});
+
 // frontend
 app.get('/', authRoute.bootstrap, appMainRoute.getIndex);
 app.get('/auth/login', authRoute.bootstrap, authRoute.getLogin);
 app.post('/auth/login', authRoute.postLogin);
 app.post('/auth/logout', authRoute.postLogout);
 app.get('/dashboard', authRoute.bootstrap, appMainRoute.getDashboard);
+app.get('/user/:username', authRoute.bootstrap, appMainRoute.getUserProfile);
 app.get('/add/:collectionName', authRoute.bootstrap, appGenericRoute.getAdd);
 app.get('/search/:collectionName', authRoute.bootstrap, appGenericRoute.getSearch);
 app.get('/edit/:collectionName/:objectId', authRoute.bootstrap, appGenericRoute.getEdit);
@@ -93,6 +108,7 @@ app.get('/preview/:collectionName/:objectId', authRoute.bootstrap, appGenericRou
 // dynamic javascript assets
 app.get('/models/:collectionName.js', authRoute.bootstrap, appJsRoute.getModel);
 app.get('/collections/:collectionName.js', authRoute.bootstrap, appJsRoute.getCollection);
+app.get('/forms/:collectionName.base.js', authRoute.bootstrap, appJsRoute.getForm);
 app.get('/forms/:collectionName.js', authRoute.bootstrap, appJsRoute.getForm);
 app.get('/config/:collectionName.json', authRoute.bootstrap, appJsRoute.getConfig);
 

@@ -57,6 +57,7 @@ exports.getModel = function (collectionName) {
                 case 'DateTime': schema[key] = Date; break;
                 case 'File':     schema[key] = 'File'; break;
                 case 'Image':    schema[key] = 'File'; break;
+                case 'Checkboxes':    schema[key] = [String]; break;
                 // TODO review this
             }
         });
@@ -79,6 +80,14 @@ exports.getModel = function (collectionName) {
             versionKey: '_mongorillaVersion'
         };
         var ModelSchema = new Schema(schema, options);
+
+        try {
+            var schemaExtension = require('./plugins/' + collectionName);
+            ModelSchema.plugin(schemaExtension);
+            console.log('Plugin found for this generic model: ' + collectionName);
+        } catch (e) {
+            console.log('No plugin found for this generic model, no problem')
+        }
 
         ModelSchema.methods = {
         };

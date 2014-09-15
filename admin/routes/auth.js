@@ -5,7 +5,8 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId,
-    _ = require('underscore');
+    _ = require('underscore'),
+    MongorillaUser = require('../models/helpers/user').MongorillaUser;
 
 exports.bootstrap = function(req, res, next){
     var url = require('url'),
@@ -19,7 +20,7 @@ exports.bootstrap = function(req, res, next){
         return;
     }
 
-    res.locals.sessionUser = req.session.user;
+    res.locals.sessionUser = req.session.user ? new MongorillaUser(req.session.user) : null;
     res.locals.host = req.headers.host;
     next();
 };
@@ -36,26 +37,30 @@ exports.getLogin = function(req, res){
 
 exports.postLogin = function(req, res){
     var url = require('url'),
-        url_parts = url.parse(req.url, true);
+        url_parts = url.parse(req.url, true),
+        MongorillaUser = require('../models/helpers/user').MongorillaUser;
 
-    req.session.user = _(global.config.users).find(function (u) {
-        return u.username === req.body.user && u.password === req.body.pass;
-    });
-    if (req.session.user) {
-        if (req.xhr) {
-            res.send({
-                user: {
-                    fullname: req.session.user.fullname, 
-                    username: req.session.user.username 
-                },
-                ok: true
-            });
+    var callback = function (mongorillaUser) {
+        if (mongorillaUser) {
+            req.session.user = mongorillaUser;
+            if (req.xhr) {
+                res.send({
+                    user: mongorillaUser,
+                    ok: true
+                });
+            } else {
+                res.redirect('/dashboard');
+            }
         } else {
-            res.redirect('/dashboard');
+            res.status(403);
+            res.send({ ok: false });
         }
+    };
+
+    if (!(mongorillaUser = MongorillaUser.getFromConfigByAuth(req.body.user, req.body.pass))) {
+        MongorillaUser.getFromMongoByAuth(req.body.user, req.body.pass, callback);
     } else {
-        res.status(403);
-        res.send({ ok: false });
+        callback.call(null, mongorillaUser);
     }
 };
 

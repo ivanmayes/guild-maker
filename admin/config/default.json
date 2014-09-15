@@ -5,10 +5,14 @@
     "project_name": "Mongorilla CMS",
     "roles": [
         {
-            "name": "root",
+            "name": "admin",
             "permissions": {
                 "developer": "crud",
-                "company": "crud"
+                "company": "crud",
+                "mongorillaRole": "crud",
+                "mongorillaUser": "crud",
+                "mongorillaCollection": "crud",
+                "fruit": "crud"
             }
         },
         {
@@ -21,8 +25,8 @@
     ],
     "users": [
         { "username": "test", "password": "123", "fullname": "Test User", "roles": ["editor"] },
-        { "username": "admin", "password": "123", "fullname": "Administrator", "roles": ["root", "editor"] },
-        { "username": "guest", "password": "", "fullname": "Guest User", "roles": ["root", "editor"] }
+        { "username": "admin", "password": "123", "fullname": "Administrator", "roles": ["admin", "editor"] },
+        { "username": "guest", "password": "", "fullname": "Guest User", "roles": ["admin", "editor"] }
     ],
     "collections": [
         {
