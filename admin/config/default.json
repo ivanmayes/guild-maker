@@ -5,118 +5,95 @@
     "project_name": "Mongorilla CMS",
     "roles": [
         {
-            "name": "admin",
+            "name": "sadmin",
             "permissions": {
-                "developer": "crud",
-                "company": "crud",
                 "mongorillaRole": "crud",
                 "mongorillaUser": "crud",
                 "mongorillaCollection": "crud",
-                "fruit": "crud"
+                "school": "crud",
+                "team": "crud",
+                "player": "crud",
+                "event": "crud",
+                "message": "crud"
             }
         },
         {
-            "name": "editor",
+            "name": "admin",
             "permissions": {
-                "developer": "cru",
-                "company": "cru"
+                "school": "cru",
+                "team": "cru"
+            }
+        },
+        {
+            "name": "director",
+            "permissions": {
+                "developer": "crud",
+                "company": "crud"
+            }
+        },
+        {
+            "name": "coach",
+            "permissions": {
+                "developer": "crud",
+                "company": "crud"
             }
         }
     ],
     "users": [
-        { "username": "test", "password": "123", "fullname": "Test User", "roles": ["editor"] },
-        { "username": "admin", "password": "123", "fullname": "Administrator", "roles": ["admin", "editor"] },
-        { "username": "guest", "password": "", "fullname": "Guest User", "roles": ["admin", "editor"] }
+        { "username": "sadmin", "password": "123", "fullname": "Super Admin", "roles": ["sadmin"] },
+        { "username": "admin", "password": "123", "fullname": "Admin", "roles": ["admin"] },
+        { "username": "director", "password": "123", "fullname": "Director", "roles": ["director"] },
+        { "username": "coach", "password": "123", "fullname": "Coach", "roles": ["coach"] }
     ],
     "collections": [
         {
-            "name": "developer",
-            "humanName": "Developer",
+            "name": "school",
+            "humanName": "School",
             "previewUrl": "http://example.com/${uri}.html",
             "backboneForms": {
                 "schema": {
-                    "firstname": { "type": "Text", "title": "First Name", "validators": ["required"] },
-                    "lastname": { "type": "Text", "title": "Last Name", "validators": ["required"] },
-                    "twitter.username": { "type": "Text", "title": "Twitter Username", "editorAttrs": { "placeholder": "@YourTwitterAccount" } },
-                    "github.username": { "type": "Text", "title": "GitHub Username", "help": "e.g. pepe" },
-                    "dob": { "type": "Datepicker", "title": "Day of Birth", "editorAttrs": { "placeholder": "dd/mm/yyyy", "format": "dd/mm/yyyy" } },
-                    "death_year": { "type": "Number", "title": "Death Year" },
-                    "bio": { "type": "CKEditor", "title": "Bio" },
-                    "website_url": { "type": "Text", "validators": ["url"], "title": "Website URL", "help": "please, include http:// prefix", "editorAttrs": { "placeholder": "http://" } },
-                    "photo": { "type": "Image", "title": "Photo", "pushToS3": true },
-                    "other_photos": { "type": "List", "itemType": "Image", "title": "Other Photos", "pushToS3": true },
-                    "cv": { "type": "File", "title": "Curriculum Vitae", "pushToS3": true },
-                    "position": { "type": "Text", "title": "Current Position", "validators": ["required"] },
-                    "company": { "type": "ObjectId", "title": "Actual Company", "validators": [] },
-                    "previous_companies": { "type": "List", "itemType": "ObjectId", "title": "Previous Companies" },
-                    "uri": {
-                        "validators": [
-                            "required",
-                            {
-                                "type": "regexp",
-                                "regexp": { "__constructor": "RegExp", "__arguments": ["^[0-9a-z-]{2,}[0-9a-z]$"] }
-                            }
-                        ],
-                        "title": "URI",
-                        "editorAttrs": { "placeholder": "developer-name" }, 
-                        "help": "URI is a slug token that helps to construct URLs:  example: /developers/developer-name.html" 
-                    }
-                },
+                    "name": { "type": "Text", "title": "School Name", "validators": ["required"] },
+                    "address.city": { "type": "Text", "title": "City", "validators": ["required"] },
+                    "address.state": { "type": "Text", "title": "State", "validators": ["required"] },
+                    "address.zip": { "type": "Text", "title": "Zip", "validators": ["required"] },
+                    "division": { "type": "Select", "title": "Division", "options": ["1A", "2A", "3A", "4A", "5A", "6A", "7A", "Division I", "Division II", "Division III", "Division IV", "Division V", "Division VI", "Division VII"] },
+                    "mascot": { "type": "Text", "title": "Mascot Name", "validators": ["required"] },
+                    "logo": { "type": "Image", "title": "Logo", "pushToS3": true },
+                    "color-dark": { "type": "Text", "title": "Team Color - Dark", "validators": ["required"] },
+                    "color-light": { "type": "Text", "title": "Team Color - Light" },
+                    "ecom-link": { "type": "Text", "title": "Link to Ecommerce" }
+            },
                 "fieldsets": [
                     {
                         "legend": "Basic Information",
-                        "fields": ["firstname", "lastname", "dob", "photo", "other_photos"]
+                        "fields": ["name", "address.city", "address.state", "address.zip"]
                     },
                     {
                         "legend": "About",
-                        "fields": ["github.username", "twitter.username", "bio", "website_url"]
-                    },
-                    {
-                        "legend": "Work",
-                        "fields": ["cv", "position", "company", "previous_companies"]
-                    },
-                    {
-                        "legend": "System Data",
-                        "fields": ["uri"]
+                        "fields": ["division", "mascot", "logo", "color-dark", "color-light", "ecom-link"]
                     }
                 ],
                 "defaults": {
                 }
             },
-            "toStringField": "lastname",
+            "toStringField": "name",
             "updatedField": { "key": "updated", "type": "Date" },
             "createdField": { "key": "created", "type": "Date" },
             "fastSearch": {
                 "find": {
                     "$or": [
-                        { "firstname": { "__constructor": "RegExp", "__arguments": ["(^|\\W*)${q}", "ig"] } },
-                        { "lastname": { "__constructor": "RegExp", "__arguments": ["(^|\\W*)${q}", "ig"] } }
+                        { "name": { "__constructor": "RegExp", "__arguments": ["(^|\\W*)${q}", "ig"] } },
+                        { "mascot": { "__constructor": "RegExp", "__arguments": ["(^|\\W*)${q}", "ig"] } }
                     ]
                 },
                 "sort": { "updated": -1 },
                 "limit": 10,
-                "columns": ["lastname", "firstname", "uri", "created", "updated"]
+                "columns": ["name", "mascot", "address.state", "created", "updated"]
             },
-            "relations": { 
-                "photo": {
+            "relations": {
+                "logo": {
                     "type": "HasOne",
                     "relatedCollection": "fs.files"
-                },
-                "other_photos": {
-                    "type": "HasMany",
-                    "relatedCollection": "fs.files"
-                },
-                "cv": {
-                    "type": "HasOne",
-                    "relatedCollection": "fs.files"
-                },
-                "company": {
-                    "type": "HasOne",
-                    "relatedCollection": "company"
-                },
-                "previous_companies": {
-                    "type": "HasMany",
-                    "relatedCollection": "company"
                 }
             },
             "mongoose": {
@@ -126,33 +103,223 @@
             "revisionable": true
         },
         {
-            "name": "company",
-            "humanName": "Company",
+            "name": "team",
+            "humanName": "Team",
+            "previewUrl": "http://example.com/${uri}.html",
             "backboneForms": {
                 "schema": {
-                    "name": { "type": "Text", "title": "Name", "validators": ["required"] },
-                    "description": { "type": "CKEditor", "title": "Description" },
-                    "uri": {
-                        "validators": [
-                            "required",
-                            {
-                                "type": "regexp",
-                                "regexp": { "__constructor": "RegExp", "__arguments": ["^[0-9a-z-]{2,}[0-9a-z]$"] }
-                            }
-                        ] 
+                    "school": { "type": "ObjectId", "title": "School", "validators": [] },
+                    "sport": { "type": "Select", "title": "Sport", "options": ["Football", "Basketball", "Baseball", "Volleyball", "Track"] },
+                    "gender": { "type": "Select", "title": "Gender", "options": ["Male", "Female"] },
+                    "division": { "type": "Select", "title": "Division", "options": ["1A", "2A", "3A", "4A", "5A", "6A", "7A", "Division I", "Division II", "Division III", "Division IV", "Division V", "Division VI", "Division VII"] },
+                    "mascot": { "type": "Text", "title": "Mascot Name", "validators": ["required"] },
+                    "venue.name": { "type": "Text", "title": "Venue Name", "validators": ["required"] },
+                    "venue.address": { "type": "Text", "title": "Venue Address", "validators": ["required"] },
+                    "logo": { "type": "Image", "title": "Logo", "pushToS3": true },
+                    "color-dark": { "type": "Text", "title": "Team Color - Dark", "validators": ["required"] },
+                    "color-light": { "type": "Text", "title": "Team Color - Light" }
+            },
+                "fieldsets": [
+                    {
+                        "legend": "Basic Information",
+                        "fields": ["school", "mascot", "sport", "gender", "division"]
+                    },
+                    {
+                        "legend": "Venue",
+                        "fields": ["venue.name", "venue.address"]
+                    },
+                    {
+                        "legend": "About",
+                        "fields": ["logo", "color-dark", "color-light"]
                     }
+                ],
+                "defaults": {
                 }
             },
-            "relations": { 
+            "toStringField": "mascot",
+            "updatedField": { "key": "updated", "type": "Date" },
+            "createdField": { "key": "created", "type": "Date" },
+            "fastSearch": {
+                "find": {
+                    "$or": [
+                        { "name": { "__constructor": "RegExp", "__arguments": ["(^|\\W*)${q}", "ig"] } },
+                        { "mascot": { "__constructor": "RegExp", "__arguments": ["(^|\\W*)${q}", "ig"] } }
+                    ]
+                },
+                "sort": { "updated": -1 },
+                "limit": 10,
+                "columns": ["mascot", "created", "updated"]
+            },
+            "relations": {
+                "logo": {
+                    "type": "HasOne",
+                    "relatedCollection": "fs.files"
+                },
+                "school": {
+                    "type": "HasOne",
+                    "relatedCollection": "school"
+                }
+            },
+            "mongoose": {
+                "schema": null
+            },
+            "readonly": false,
+            "revisionable": true
+        },
+        {
+            "name": "player",
+            "humanName": "Player",
+            "previewUrl": "http://example.com/${uri}.html",
+            "backboneForms": {
+                "schema": {
+                    "team": { "type": "ObjectId", "title": "Team", "validators": [] },
+                    "name": { "type": "Text", "title": "Name", "validators": ["required"] },
+                    "number": { "type": "Text", "title": "Number" },
+                    "position": { "type": "Text", "title": "Position" },
+                    "email": { "type": "Text", "title": "Email" }
+            },
+                "fieldsets": [
+                    {
+                        "legend": "Basic Information",
+                        "fields": ["team", "name", "number", "position", "email"]
+                    }
+                ],
+                "defaults": {
+                }
             },
             "toStringField": "name",
             "updatedField": { "key": "updated", "type": "Date" },
             "createdField": { "key": "created", "type": "Date" },
             "fastSearch": {
-                "find": { "name": { "__constructor": "RegExp", "__arguments": ["(^|\\W*)${q}", "ig"] } },
+                "find": {
+                    "$or": [
+                        { "name": { "__constructor": "RegExp", "__arguments": ["(^|\\W*)${q}", "ig"] } }
+                    ]
+                },
                 "sort": { "updated": -1 },
                 "limit": 10,
-                "columns": ["name", "uri"]
+                "columns": ["name", "number", "team", "position", "created", "updated"]
+            },
+            "relations": {
+                "team": {
+                    "type": "HasOne",
+                    "relatedCollection": "team"
+                }
+            },
+            "mongoose": {
+                "schema": null
+            },
+            "readonly": false,
+            "revisionable": true
+        },
+        {
+            "name": "event",
+            "humanName": "Event",
+            "previewUrl": "http://example.com/${uri}.html",
+            "backboneForms": {
+                "schema": {
+                    "team": { "type": "ObjectId", "title": "Team", "validators": ["required"] },
+                    "name": { "type": "Text", "title": "Name", "validators": ["required"] },
+                    "description": { "type": "Text", "title": "Description" },
+                    "type": { "type": "Select", "title": "Type", "options": ["Game", "Practice", "Other"] },
+                    "datetime.start": { "type": "DateTime", "title": "Event Start" },
+                    "datetime.end": { "type": "DateTime", "title": "Event End" },
+                    "rescheduled": { "type": "Checkboxes", "options": ["Yes" ] },
+                    "opponent": { "type": "ObjectId", "title": "Opposing Team" },
+                    "score.team" : { "type": "Text", "title": "Score (Us)" },
+                    "score.opponent" : { "type": "Text", "title": "Score (Opponent)" }
+            },
+                "fieldsets": [
+                    {
+                        "legend": "Basic Information",
+                        "fields": [
+                            "team",
+                            "name",
+                            "description",
+                            "type",
+                            "datetime.start",
+                            "datetime.end",
+                            "rescheduled",
+                            "opponent",
+                            "score.team",
+                            "score.opponent"
+                        ]
+                    }
+                ],
+                "defaults": {
+                }
+            },
+            "toStringField": "name",
+            "updatedField": { "key": "updated", "type": "Date" },
+            "createdField": { "key": "created", "type": "Date" },
+            "fastSearch": {
+                "find": {
+                    "$or": [
+                        { "name": { "__constructor": "RegExp", "__arguments": ["(^|\\W*)${q}", "ig"] } }
+                    ]
+                },
+                "sort": { "updated": -1 },
+                "limit": 10,
+                "columns": ["name", "created", "updated"]
+            },
+            "relations": {
+                "team": {
+                    "type": "HasOne",
+                    "relatedCollection": "team"
+                },
+                "opponent": {
+                    "type": "HasOne",
+                    "relatedCollection": "team"
+                }
+            },
+            "mongoose": {
+                "schema": null
+            },
+            "readonly": false,
+            "revisionable": true
+        },
+        {
+            "name": "message",
+            "humanName": "Message",
+            "previewUrl": "http://example.com/${uri}.html",
+            "backboneForms": {
+                "schema": {
+                    "to": { "type": "Select", "title": "Type", "options": ["All", "Parents", "Students"] },
+                    "team": { "type": "ObjectId", "title": "Team Reference (Hidden)" },
+                    "event": { "type": "ObjectId", "title": "Event Reference" },
+                    "content": { "type": "TextArea", "title": "Content" }
+                },
+                "fieldsets": [
+                    {
+                        "legend": "Basic Information",
+                        "fields": ["to", "team", "event", "content"]
+                    }
+                ],
+                "defaults": {
+                }
+            },
+            "toStringField": "name",
+            "updatedField": { "key": "updated", "type": "Date" },
+            "createdField": { "key": "created", "type": "Date" },
+            "fastSearch": {
+                "find": {
+                    "$or": [
+                        { "name": { "__constructor": "RegExp", "__arguments": ["(^|\\W*)${q}", "ig"] } }
+                    ]
+                },
+                "sort": { "updated": -1 },
+                "limit": 10,
+                "columns": ["to", "recipients", "content", "created", "updated"]
+            },
+            "relations": {
+                "team": {
+                    "type": "HasOne",
+                    "relatedCollection": "team"
+                },
+                "event": {
+                    "type": "HasOne",
+                    "relatedCollection": "event"
+                }
             },
             "mongoose": {
                 "schema": null

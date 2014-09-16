@@ -6,7 +6,7 @@
             "previewUrl": "/role/${name}",
             "backboneForms": {
                 "schema": {
-                    "name": { "type": "Text", "title": "Name", "validators": ["required"], "editorAttrs": { "placeholder": "Content Editor" } }, 
+                    "name": { "type": "Text", "title": "Name", "validators": ["required"], "editorAttrs": { "placeholder": "Content Editor" } },
                     "description": { "type": "TextArea", "title": "Description" }
                 },
                 "defaults": {
@@ -26,7 +26,7 @@
                 "limit": 10,
                 "columns": ["name", "description", "created", "updated"]
             },
-            "relations": { 
+            "relations": {
             },
             "mongoose": {
                 "schema": null
@@ -36,13 +36,13 @@
         },
         {
             "name": "mongorillaUser",
-            "humanName": "Mongorilla User",
+            "humanName": "Users",
             "previewUrl": "/user/${username}",
             "backboneForms": {
                 "schema": {
-                    "fullname": { "type": "Text", "title": "Full Name", "validators": ["required"], "editorAttrs": { "placeholder": "John Doe" } }, 
-                    "email": { "type": "Text", "title": "Email", "validators": ["required", "email"], "editorAttrs": { "placeholder": "john-doe@example.com" } }, 
-                    "password": { "type": "Password", "title": "Password", "validators": ["required"], "editorAttrs": { "placeholder": "password" } }, 
+                    "fullname": { "type": "Text", "title": "Full Name", "validators": ["required"], "editorAttrs": { "placeholder": "John Doe" } },
+                    "email": { "type": "Text", "title": "Email", "validators": ["required", "email"], "editorAttrs": { "placeholder": "john-doe@example.com" } },
+                    "password": { "type": "Password", "title": "Password", "validators": ["required"], "editorAttrs": { "placeholder": "password" } },
                     "username": {
                         "validators": [
                             "required",
@@ -52,8 +52,8 @@
                             }
                         ],
                         "title": "Username",
-                        "editorAttrs": { "placeholder": "john-doe" }, 
-                        "help": "Users can login using either <strong>email</strong> or <strong>username</strong>." 
+                        "editorAttrs": { "placeholder": "john-doe" },
+                        "help": "Users can login using either <strong>email</strong> or <strong>username</strong>."
                     },
                     "roles": {
                         "type": "Checkboxes", "title": "Roles",
@@ -64,11 +64,7 @@
                             ],
                             "__call": []
                         }
-                    },
-                    "bio": { "type": "CKEditor", "title": "Bio" },
-                    "photo": { "type": "Image", "title": "Photo", "pushToS3": true },
-                    "position": { "type": "Text", "title": "Position", "validators": [] },
-                    "company": { "type": "Text", "title": "Company", "validators": [] }
+                    }
                 },
                 "defaults": {
                 }
@@ -88,12 +84,6 @@
                 "limit": 10,
                 "columns": ["fullname", "email", "username", "created", "updated"]
             },
-            "relations": { 
-                "photo": {
-                    "type": "HasOne",
-                    "relatedCollection": "fs.files"
-                }
-            },
             "mongoose": {
                 "schema": null
             },
@@ -106,7 +96,7 @@
             "previewUrl": "/search/${name}",
             "backboneForms": {
                 "schema": {
-                    "humanName": { "type": "Text", "title": "Human Name", "validators": ["required"], "editorAttrs": { "placeholder": "Super Monkey" } }, 
+                    "humanName": { "type": "Text", "title": "Human Name", "validators": ["required"], "editorAttrs": { "placeholder": "Super Monkey" } },
                     "name": {
                         "validators": [
                             "required",
@@ -116,10 +106,10 @@
                             }
                         ],
                         "title": "Collection Name",
-                        "editorAttrs": { "placeholder": "super_monkey" }, 
-                        "help": "<i>This is the MongoDB collection name</i> - example: mongo&gt; db.<strong>super_monkey</strong>.find()" 
+                        "editorAttrs": { "placeholder": "super_monkey" },
+                        "help": "<i>This is the MongoDB collection name</i> - example: mongo&gt; db.<strong>super_monkey</strong>.find()"
                     },
-                    "previewUrl": { "type": "Text", "title": "Preview URL", "validators": ["url"], "editorAttrs": { "placeholder": "http://example.com/${uri}.html" } }, 
+                    "previewUrl": { "type": "Text", "title": "Preview URL", "validators": ["url"], "editorAttrs": { "placeholder": "http://example.com/${uri}.html" } },
                     "backboneForms.schema": {
                         "title": "Document Schema Attributes",
                         "type": "List",
@@ -175,7 +165,7 @@
                             "default_value": { "type": "Text", "title": "Default Value" },
                             "placeholder": { "type": "Text", "title": "Placeholder" },
                             "objectid_settings.relations.related_collection": {
-                                "type": "Select", "title": "Related Collection", 
+                                "type": "Select", "title": "Related Collection",
                                 "options": {
                                     "__constructor": "Function",
                                     "__arguments": [
@@ -213,7 +203,7 @@
                 "limit": 10,
                 "columns": ["humanName", "name", "previewUrl", "created", "updated"]
             },
-            "relations": { 
+            "relations": {
                 "photo": {
                     "type": "HasOne",
                     "relatedCollection": "fs.files"
