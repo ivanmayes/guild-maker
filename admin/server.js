@@ -52,7 +52,7 @@ if ('development' == app.get('env')) {
 global.config = require('./helpers/config').loadConfig();
 
 // mongo
-var dbConnString = process.env.MONGORILLA_MONGO_URL || process.env.MONGOLAB_URI || process.env.MONGOHQ_URL;
+var dbConnString = process.env.MONGORILLA_MONGO_URL || process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/nlmg';
 try {
     console.log('Connecting to ' + dbConnString.replace(/^.*@/, '') + ' ...');
     app.set('db', mongoose.connect(dbConnString, { db: { safe: true }}));
