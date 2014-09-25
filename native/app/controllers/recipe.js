@@ -19,9 +19,6 @@ recipeApp.controller('IndexCtrl', function ($scope, RecipeRestangular) {
   // -- Native navigation
   steroids.view.navigationBar.show("Recipes");
 
-});
-
-
 // Show: http://localhost/views/recipe/show.html?id=<id>
 
 recipeApp.controller('ShowCtrl', function ($scope, $filter, RecipeRestangular) {
