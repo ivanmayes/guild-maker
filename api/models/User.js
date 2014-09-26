@@ -10,7 +10,7 @@ var userSchema = new mongoose.Schema({
 	email: String
 });
 
-exports.def =  
+exports.def =
 	{
 		"User":{
 			"id":"User",
@@ -38,7 +38,7 @@ exports.def =
 
 // Don't create model if model is exists
 if(!mongoose.modelSchemas.users) {
-	exports.model = mongoose.model('users', userSchema);
+	exports.model = mongoose.model('events', userSchema);
 } else {
 	exports.model = '';
 }
