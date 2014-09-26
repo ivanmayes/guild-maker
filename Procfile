@@ -1,3 +1,3 @@
 admin: node admin/server.js
-app: node app.js
-gulp: gulp watch
+app: node web/app.js
+api: node api/server.js
