@@ -1,32 +1,32 @@
 var sw = require("../Common/node/swagger.js"),
     param = require("../Common/node/paramTypes.js"),
     swe = sw.errors,
-    User = require('../models/user.js');
+    Player = require('../models/player.js');
 
 /**
 * List methods
 */
-exports.getAllUsers = {
+exports.getAllPlayers = {
     'spec': {
-        description: "List all users",
-        path: "/user/list",
+        description: "List all players",
+        path: "/player/list",
         method: "GET",
-        summary: "List all users",
-        notes: "Returns a list of all users",
-        type: "User",
-        nickname: "getAllUsers",
+        summary: "List all players",
+        notes: "Returns a list of all players",
+        type: "Player",
+        nickname: "getAllPlayers",
         produces: ["application/json"],
         parameters: [],
-        responseMessages: [swe.invalid('users'), swe.notFound('users')]
+        responseMessages: [swe.invalid('players'), swe.notFound('players')]
     },
     'action': function(req, res) {
-        User.model.find(function(err, users) {
-            if (err) return next(swe.invalid('users'))
+        Player.model.find(function(err, players) {
+            if (err) return next(swe.invalid('players'))
 
-            if (users) {
-                res.send(users);
+            if (players) {
+                res.send(players);
             } else {
-                res.send(404, swe.notFound('users'));
+                res.send(404, swe.notFound('players'));
             }
             ;
         });
@@ -37,31 +37,31 @@ exports.getAllUsers = {
 /**
 * Get record by ID methods
 */
-exports.getUserById = {
+exports.getPlayerById = {
     'spec': {
-        description: "Operations about users",
-        path: "/user/{userId}",
+        description: "Operations about players",
+        path: "/player/{playerId}",
         method: "GET",
-        summary: "Find user by ID",
-        notes: "Returns a user based on ID",
-        type: "User",
-        nickname: "getUserById",
+        summary: "Find player by ID",
+        notes: "Returns a player based on ID",
+        type: "Player",
+        nickname: "getPlayerById",
         produces: ["application/json"],
-        parameters: [param.path("userId", "ID of the user to return", "string")],
-        responseMessages: [swe.invalid('id'), swe.notFound('user')]
+        parameters: [param.path("playerId", "ID of the player to return", "string")],
+        responseMessages: [swe.invalid('id'), swe.notFound('player')]
     },
     'action': function(req, res) {
-        User.model.findOne({
-            _id: req.params.userId
-        }, function(err, user) {
+        Player.model.findOne({
+            _id: req.params.playerId
+        }, function(err, player) {
                 if (err) return res.send(404, {
                         error: 'invalid id'
                     });
 
-                if (user) {
-                    res.send(user);
+                if (player) {
+                    res.send(player);
                 } else {
-                    res.send(404, new Error('user not found'));
+                    res.send(404, new Error('player not found'));
                 }
             });
     }
@@ -72,23 +72,23 @@ exports.getUserById = {
 /**
 * Add/create methods
 */
-exports.addUser = {
+exports.addPlayer = {
     'spec': {
-        path: "/user",
-        notes: "Adds a new user",
-        summary: "Add a new user",
+        path: "/player",
+        notes: "Adds a new player",
+        summary: "Add a new player",
         method: "POST",
-        parameters: [param.body("User name", "JSON object representing the user to add", "User")],
+        parameters: [param.body("Player name", "JSON object representing the player to add", "Player")],
         responseMessages: [swe.invalid('input')],
-        nickname: "addUser"
+        nickname: "addPlayer"
     },
     'action': function(req, res, next) {
         var body = req.body;
         if (!body || !body.name) {
-            throw swe.invalid('user name');
+            throw swe.invalid('player name');
         } else {
             // Create the new document (database will be updated automatically)
-            User.model.create({
+            Player.model.create({
                 name: body.name
             }, function(err, name) {
                     if (err) return res.send(500, {
@@ -99,7 +99,7 @@ exports.addUser = {
                         res.send(name);
                     } else {
                         res.send(500, {
-                            error: 'user not added'
+                            error: 'player not added'
                         });
                     }
                     ;
@@ -112,30 +112,30 @@ exports.addUser = {
 /**
 * Update methods
 */
-exports.updateUser = {
+exports.updatePlayer = {
     'spec': {
-        path: "/user",
-        notes: "Update an existing user",
-        summary: "Update an existing user",
+        path: "/player",
+        notes: "Update an existing player",
+        summary: "Update an existing player",
         method: "PUT",
-        //parameters : [param.body("User ID", "User ID to update", "User"), param.body("User name", "New user name", "User")],
+        //parameters : [param.body("Player ID", "Player ID to update", "Player"), param.body("Player name", "New player name", "Player")],
         parameters: [
-            param.query("id", "User ID to update", "string", true),
-            param.query("name", "New user name to use", "string", true)
+            param.query("id", "Player ID to update", "string", true),
+            param.query("name", "New player name to use", "string", true)
         ],
         responseMessages: [swe.invalid('input')],
-        type: "User",
-        nickname: "updateUser"
+        type: "Player",
+        nickname: "updatePlayer"
     },
     'action': function(req, res, next) {
         var query = req.query;
         if (!query || !query.id) {
-            throw swe.invalid('user id');
+            throw swe.invalid('player id');
         } else if (!query || !query.name) {
-            throw swe.invalid('user name');
+            throw swe.invalid('player name');
         } else {
             // Update an existing document (database will be updated automatically)
-            User.model.update({
+            Player.model.update({
                 _id: query.id
             }, {
                     name: query.name
@@ -148,7 +148,7 @@ exports.updateUser = {
                         res.send(raw);
                     } else {
                         res.send(500, {
-                            error: 'user not updated'
+                            error: 'player not updated'
                         });
                     }
                     ;
@@ -161,26 +161,26 @@ exports.updateUser = {
 /**
 * Delete methods
 */
-exports.deleteUser = {
+exports.deletePlayer = {
     'spec': {
-        path: "/user",
-        notes: "Delete an existing user",
-        summary: "Delete an existing user",
+        path: "/player",
+        notes: "Delete an existing player",
+        summary: "Delete an existing player",
         method: "DELETE",
         parameters: [
-            param.query("id", "User ID to delete", "string", true)
+            param.query("id", "Player ID to delete", "string", true)
         ],
         responseMessages: [swe.invalid('input')],
-        type: "User",
-        nickname: "updateUser"
+        type: "Player",
+        nickname: "updatePlayer"
     },
     'action': function(req, res, next) {
         var query = req.query;
         if (!query || !query.id) {
-            throw swe.invalid('user id');
+            throw swe.invalid('player id');
         } else {
             // Delete an existing document (database will be updated automatically)
-            User.model.remove({
+            Player.model.remove({
                 _id: query.id
             }, function(err) {
                     if (err) return res.send(500, {

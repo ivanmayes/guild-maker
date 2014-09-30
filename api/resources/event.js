@@ -1,32 +1,32 @@
 var sw = require("../Common/node/swagger.js"),
     param = require("../Common/node/paramTypes.js"),
     swe = sw.errors,
-    User = require('../models/user.js');
+    Event = require('../models/event.js');
 
 /**
 * List methods
 */
-exports.getAllUsers = {
+exports.getAllEvents = {
     'spec': {
-        description: "List all users",
-        path: "/user/list",
+        description: "List all events",
+        path: "/event/list",
         method: "GET",
-        summary: "List all users",
-        notes: "Returns a list of all users",
-        type: "User",
-        nickname: "getAllUsers",
+        summary: "List all events",
+        notes: "Returns a list of all events",
+        type: "Event",
+        nickname: "getAllEvents",
         produces: ["application/json"],
         parameters: [],
-        responseMessages: [swe.invalid('users'), swe.notFound('users')]
+        responseMessages: [swe.invalid('events'), swe.notFound('events')]
     },
     'action': function(req, res) {
-        User.model.find(function(err, users) {
-            if (err) return next(swe.invalid('users'))
+        Event.model.find(function(err, events) {
+            if (err) return next(swe.invalid('events'))
 
-            if (users) {
-                res.send(users);
+            if (events) {
+                res.send(events);
             } else {
-                res.send(404, swe.notFound('users'));
+                res.send(404, swe.notFound('events'));
             }
             ;
         });
@@ -37,31 +37,31 @@ exports.getAllUsers = {
 /**
 * Get record by ID methods
 */
-exports.getUserById = {
+exports.getEventById = {
     'spec': {
-        description: "Operations about users",
-        path: "/user/{userId}",
+        description: "Operations about events",
+        path: "/event/{eventId}",
         method: "GET",
-        summary: "Find user by ID",
-        notes: "Returns a user based on ID",
-        type: "User",
-        nickname: "getUserById",
+        summary: "Find event by ID",
+        notes: "Returns a event based on ID",
+        type: "Event",
+        nickname: "getEventById",
         produces: ["application/json"],
-        parameters: [param.path("userId", "ID of the user to return", "string")],
-        responseMessages: [swe.invalid('id'), swe.notFound('user')]
+        parameters: [param.path("eventId", "ID of the event to return", "string")],
+        responseMessages: [swe.invalid('id'), swe.notFound('event')]
     },
     'action': function(req, res) {
-        User.model.findOne({
-            _id: req.params.userId
-        }, function(err, user) {
+        Event.model.findOne({
+            _id: req.params.eventId
+        }, function(err, event) {
                 if (err) return res.send(404, {
                         error: 'invalid id'
                     });
 
-                if (user) {
-                    res.send(user);
+                if (event) {
+                    res.send(event);
                 } else {
-                    res.send(404, new Error('user not found'));
+                    res.send(404, new Error('event not found'));
                 }
             });
     }
@@ -72,23 +72,23 @@ exports.getUserById = {
 /**
 * Add/create methods
 */
-exports.addUser = {
+exports.addEvent = {
     'spec': {
-        path: "/user",
-        notes: "Adds a new user",
-        summary: "Add a new user",
+        path: "/event",
+        notes: "Adds a new event",
+        summary: "Add a new event",
         method: "POST",
-        parameters: [param.body("User name", "JSON object representing the user to add", "User")],
+        parameters: [param.body("Event name", "JSON object representing the event to add", "Event")],
         responseMessages: [swe.invalid('input')],
-        nickname: "addUser"
+        nickname: "addEvent"
     },
     'action': function(req, res, next) {
         var body = req.body;
         if (!body || !body.name) {
-            throw swe.invalid('user name');
+            throw swe.invalid('event name');
         } else {
             // Create the new document (database will be updated automatically)
-            User.model.create({
+            Event.model.create({
                 name: body.name
             }, function(err, name) {
                     if (err) return res.send(500, {
@@ -99,7 +99,7 @@ exports.addUser = {
                         res.send(name);
                     } else {
                         res.send(500, {
-                            error: 'user not added'
+                            error: 'event not added'
                         });
                     }
                     ;
@@ -112,30 +112,30 @@ exports.addUser = {
 /**
 * Update methods
 */
-exports.updateUser = {
+exports.updateEvent = {
     'spec': {
-        path: "/user",
-        notes: "Update an existing user",
-        summary: "Update an existing user",
+        path: "/event",
+        notes: "Update an existing event",
+        summary: "Update an existing event",
         method: "PUT",
-        //parameters : [param.body("User ID", "User ID to update", "User"), param.body("User name", "New user name", "User")],
+        //parameters : [param.body("Event ID", "Event ID to update", "Event"), param.body("Event name", "New event name", "Event")],
         parameters: [
-            param.query("id", "User ID to update", "string", true),
-            param.query("name", "New user name to use", "string", true)
+            param.query("id", "Event ID to update", "string", true),
+            param.query("name", "New event name to use", "string", true)
         ],
         responseMessages: [swe.invalid('input')],
-        type: "User",
-        nickname: "updateUser"
+        type: "Event",
+        nickname: "updateEvent"
     },
     'action': function(req, res, next) {
         var query = req.query;
         if (!query || !query.id) {
-            throw swe.invalid('user id');
+            throw swe.invalid('event id');
         } else if (!query || !query.name) {
-            throw swe.invalid('user name');
+            throw swe.invalid('event name');
         } else {
             // Update an existing document (database will be updated automatically)
-            User.model.update({
+            Event.model.update({
                 _id: query.id
             }, {
                     name: query.name
@@ -148,7 +148,7 @@ exports.updateUser = {
                         res.send(raw);
                     } else {
                         res.send(500, {
-                            error: 'user not updated'
+                            error: 'event not updated'
                         });
                     }
                     ;
@@ -161,26 +161,26 @@ exports.updateUser = {
 /**
 * Delete methods
 */
-exports.deleteUser = {
+exports.deleteEvent = {
     'spec': {
-        path: "/user",
-        notes: "Delete an existing user",
-        summary: "Delete an existing user",
+        path: "/event",
+        notes: "Delete an existing event",
+        summary: "Delete an existing event",
         method: "DELETE",
         parameters: [
-            param.query("id", "User ID to delete", "string", true)
+            param.query("id", "Event ID to delete", "string", true)
         ],
         responseMessages: [swe.invalid('input')],
-        type: "User",
-        nickname: "updateUser"
+        type: "Event",
+        nickname: "updateEvent"
     },
     'action': function(req, res, next) {
         var query = req.query;
         if (!query || !query.id) {
-            throw swe.invalid('user id');
+            throw swe.invalid('event id');
         } else {
             // Delete an existing document (database will be updated automatically)
-            User.model.remove({
+            Event.model.remove({
                 _id: query.id
             }, function(err) {
                     if (err) return res.send(500, {
