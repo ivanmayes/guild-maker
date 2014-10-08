@@ -59,9 +59,9 @@
                     "division": { "type": "Select", "title": "Division", "options": ["1A", "2A", "3A", "4A", "5A", "6A", "7A", "Division I", "Division II", "Division III", "Division IV", "Division V", "Division VI", "Division VII"] },
                     "mascot": { "type": "Text", "title": "Mascot Name", "validators": ["required"] },
                     "logo": { "type": "Image", "title": "Logo", "pushToS3": true },
-                    "color-dark": { "type": "Text", "title": "Team Color - Dark", "validators": ["required"] },
-                    "color-light": { "type": "Text", "title": "Team Color - Light" },
-                    "ecom-link": { "type": "Text", "title": "Link to Ecommerce" }
+                    "color_dark": { "type": "Text", "title": "Team Color - Dark", "validators": ["required"] },
+                    "color_light": { "type": "Text", "title": "Team Color - Light" },
+                    "ecom_link": { "type": "Text", "title": "Link to Ecommerce" }
             },
                 "fieldsets": [
                     {
@@ -116,8 +116,8 @@
                     "venue.name": { "type": "Text", "title": "Venue Name", "validators": ["required"] },
                     "venue.address": { "type": "Text", "title": "Venue Address", "validators": ["required"] },
                     "logo": { "type": "Image", "title": "Logo", "pushToS3": true },
-                    "color-dark": { "type": "Text", "title": "Team Color - Dark", "validators": ["required"] },
-                    "color-light": { "type": "Text", "title": "Team Color - Light" }
+                    "color_dark": { "type": "Text", "title": "Team Color - Dark", "validators": ["required"] },
+                    "color_light": { "type": "Text", "title": "Team Color - Light" }
             },
                 "fieldsets": [
                     {

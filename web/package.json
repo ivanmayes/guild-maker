@@ -6,7 +6,7 @@
     "url": "https://github.com/sahat/hackathon-starter.git"
   },
   "scripts": {
-    "start": "nf start --port 8080",
+    "start": "node app.js",
     "test": "./node_modules/karma/bin/karma start test/unit/karma.conf.js",
     "unit": "./node_modules/karma/bin/karma start test/unit/karma.conf.js",
     "integration": "node test/integration"
