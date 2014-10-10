@@ -1,12 +1,29 @@
+var appModule = angular.module('app', []);
+
+appModule.controller('HomeCtrl', function($scope) {
+    $scope.message = 'Well, hello there!';
+});
+
+appModule.controller('AuthCtrl', function($scope) {
+    $scope.message = 'Please sign in';
+});
+
+
+
+/*
+
 var recipeApp = angular.module('recipeApp', ['RecipeModel']);
 
 
 // Index: http://localhost/views/recipe/index.html
 
 recipeApp.controller('IndexCtrl', function($scope, RecipeRestangular) {
-    steroids.tabBar.update({
-        position: 'top'
-    });
+    var showLogin = function showLogin() {
+        // var authScreen = new steroids.views.WebView("sign_in.html");
+        // steroids.modal.show(authScreen);
+    };
+
+    // showLogin();
 
     // Helper function for opening new webviews
     $scope.open = function(id) {
@@ -41,3 +58,4 @@ recipeApp.controller('ShowCtrl', function($scope, $filter, RecipeRestangular) {
     steroids.view.navigationBar.show("Recipe " + steroids.view.params.id);
 
 });
+*/

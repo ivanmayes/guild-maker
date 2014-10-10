@@ -1,10 +1,12 @@
 * {
   -webkit-user-select: none;  /* Disable selection/copy of elements when tapping for a long time */
   -webkit-touch-callout: none; /* Disable touch callouts */
+  background-color: white;
 }
 
-input, textarea {
-  -webkit-user-select: text;  /* Allow selection for input elements */
+html, body {
+  margin: 0;
+  padding: 0;
 }
 
 html {
@@ -16,6 +18,10 @@ body {
   position: relative;
   height: auto;
   overflow-y: scroll;
+}
+
+input, textarea {
+  -webkit-user-select: text;  /* Allow selection for input elements */
 }
 
 .content-padded {
