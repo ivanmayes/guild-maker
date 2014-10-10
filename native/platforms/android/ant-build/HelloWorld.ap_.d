@@ -38,12 +38,16 @@
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/index.html \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/js \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/phonegap.js \
+/Users/mmay/Projects/nlmg/native/platforms/android/assets/www/plugins \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/res \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/spec \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/spec.html \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/css/index.css \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/img/logo.png \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/js/index.js \
+/Users/mmay/Projects/nlmg/native/platforms/android/assets/www/plugins/com.phonegap.plugins.PushPlugin \
+/Users/mmay/Projects/nlmg/native/platforms/android/assets/www/plugins/com.phonegap.plugins.PushPlugin/www \
+/Users/mmay/Projects/nlmg/native/platforms/android/assets/www/plugins/com.phonegap.plugins.PushPlugin/www/PushNotification.js \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/res/icon \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/res/screen \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/res/icon/android \
