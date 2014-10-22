@@ -7,10 +7,25 @@ define(['app'], function (app) {
             function ($stateProvider, $urlRouterProvider) {
 
             $stateProvider
+                .state('prelogin', {
+                    url: "/prelogin",
+                    templateUrl: "templates/prelogin.html",
+                    controller: 'LoginCtrl'
+                })
                 .state('login', {
                     url: "/login",
                     templateUrl: "templates/login.html",
                     controller: 'LoginCtrl'
+                })
+                .state('signup', {
+                    url: "/signup",
+                    templateUrl: "templates/signup.html",
+                    controller: 'LoginCtrl'
+                })
+                .state('roleSelect', {
+                	url: "/roleselect",
+                	templateUrl: "templates/roleselect.html",
+                	controller: 'LoginCtrl'
                 })
                 .state('tab', {
                     url: "/tab",
@@ -53,7 +68,7 @@ define(['app'], function (app) {
                 });
 
 
-            $urlRouterProvider.otherwise("/login");
+            $urlRouterProvider.otherwise("/prelogin");
 
         }]);
 
