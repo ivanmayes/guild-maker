@@ -1,4 +1,4 @@
-/Users/mmay/Projects/nlmg/native/platforms/android/ant-gen/com/phonegap/helloworld/R.java \
+/Users/mmay/Projects/nlmg/native/platforms/android/ant-gen/hu/dpal/starter/R.java \
  : /Users/mmay/Projects/nlmg/native/platforms/android/res/drawable/icon.png \
 /Users/mmay/Projects/nlmg/native/platforms/android/res/drawable-hdpi/icon.png \
 /Users/mmay/Projects/nlmg/native/platforms/android/res/drawable-land-hdpi/screen.png \
