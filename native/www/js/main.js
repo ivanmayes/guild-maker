@@ -1,16 +1,16 @@
 'use strict';
 
 require.config({
-	paths : {
-		angular : '../bower_components/angular/angular'
-	},
-	shim : {
-		angular : {
-			exports : 'angular'
-		}
-	}
+    paths: {
+        ionic: '../bower_components/ionic/release/js/ionic.bundle.min'
+    },
+    shim: {
+        ionic: {
+            exports: 'ionic'
+        }
+    }
 });
 
-require(['angular', 'app', 'controllers/main'], function(angular) {
-	angular.bootstrap(document, ['nlmg']);
+require(['ionic', 'app', 'controllers/main', 'config/routes'], function(ionic) {
+    angular.bootstrap(document, ['nlmg']);
 });

@@ -1,5 +1,5 @@
 'use strict';
 
-define(['angular'], function(angular) {
-	return angular.module('nlmg', []);
+define(['ionic'], function(ionic) {
+    return angular.module('nlmg', []);
 })
