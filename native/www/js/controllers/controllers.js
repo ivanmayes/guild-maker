@@ -9,6 +9,7 @@ define(function(require) {
         config = require('config'),
         controllers = angular.module('app.controllers', ['app.services', 'app.config']);
 
+    controllers.controller('AppCtrl', require('controllers/AppCtrl'));
     controllers.controller('LoginCtrl', require('controllers/LoginCtrl'));
     controllers.controller('HomeCtrl', require('controllers/HomeCtrl'));
     controllers.controller('FavoriteTeamsCtrl', require('controllers/FavoriteTeamsCtrl'));

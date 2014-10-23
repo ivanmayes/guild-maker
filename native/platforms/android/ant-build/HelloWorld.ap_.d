@@ -49,6 +49,7 @@
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/img/logo.png \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/js/app.js \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/js/bootstrap.js \
+/Users/mmay/Projects/nlmg/native/platforms/android/assets/www/js/config \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/js/config.js \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/js/controllers \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/js/directives \
@@ -56,6 +57,7 @@
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/js/main.js \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/js/routes.js \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/js/services \
+/Users/mmay/Projects/nlmg/native/platforms/android/assets/www/js/config/routes.js \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/js/controllers/controllers.js \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/js/controllers/LoginCtrl.js \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/js/controllers/PetDetailCtrl.js \
@@ -172,5 +174,8 @@
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/templates/login.html \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/templates/pet-detail.html \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/templates/pet-index.html \
+/Users/mmay/Projects/nlmg/native/platforms/android/assets/www/templates/prelogin.html \
+/Users/mmay/Projects/nlmg/native/platforms/android/assets/www/templates/roleselect.html \
+/Users/mmay/Projects/nlmg/native/platforms/android/assets/www/templates/signup.html \
 /Users/mmay/Projects/nlmg/native/platforms/android/assets/www/templates/tabs.html \
 /Users/mmay/Projects/nlmg/native/platforms/android/ant-build/AndroidManifest.xml \

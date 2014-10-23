@@ -6,6 +6,11 @@ define(['app'], function(app) {
     app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
 
             $stateProvider
+                .state('prelogin', {
+                    url: "/prelogin",
+                    templateUrl: "templates/prelogin.html",
+                    controller: 'LoginCtrl'
+                })
                 .state('login', {
                     url: "/login",
                     templateUrl: "templates/login.html",
@@ -15,6 +20,16 @@ define(['app'], function(app) {
                     url: '/home',
                     templateUrl: 'templates/home.html',
                     controller: 'HomeCtrl'
+                })
+                .state('signup', {
+                    url: "/signup",
+                    templateUrl: "templates/signup.html",
+                    controller: 'LoginCtrl'
+                })
+                .state('roleSelect', {
+                    url: "/roleselect",
+                    templateUrl: "templates/roleselect.html",
+                    controller: 'LoginCtrl'
                 })
                 .state('fav', {
                     url: '/fav',
@@ -39,8 +54,7 @@ define(['app'], function(app) {
                 }
             })*/
 
-
-            $urlRouterProvider.otherwise("/home");
+            $urlRouterProvider.otherwise("/prelogin");
 
     }]);
 
