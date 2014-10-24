@@ -29,3 +29,5 @@ build/Release
 node_modules
 data
 bower_components
+native/platforms/android/www
+native/platforms/ios/www
