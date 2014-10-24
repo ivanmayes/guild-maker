@@ -31,6 +31,11 @@ define(['app'], function(app) {
                     templateUrl: "templates/roleselect.html",
                     controller: 'LoginCtrl'
                 })
+                .state('search', {
+                	url: "/search",
+                	templateUrl: "templates/search.html",
+                	controller: 'SearchCtrl'
+                })
                 .state('fav', {
                     url: '/fav',
                     templateUrl: 'templates/favorite-teams.html',

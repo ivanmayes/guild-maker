@@ -1,0 +1,20 @@
+<ion-view title="">
+	<ion-content>
+		<input type="text" placeholder="Search" ng-model="query" ng-change="search(query)">
+		<div ng-hide="userQueried" class="ng-hide">
+			<p>
+				Search for your school
+			</p>
+			<h2>
+				Schools nearby
+			</h2>
+		</div>
+		<div>
+			<div ng-repeat="school in searchResults | filter:query">
+				<div ng-click="selectSchool(school.id)">
+					{{ school.name }} >
+				</div>
+			</div>
+		</div>
+	</ion-content>
+</ion-view>

@@ -1,4 +1,4 @@
-<ion-view title="Login">
+<ion-view title="Sign In">
     <ion-content>
 
         <div class="list">
@@ -12,15 +12,19 @@
             </label>
         </div>
 
-        <div class="padding">
+		<div>
+			<button class="button button-block button-positive" ng-click="login()">
+				Submit
+			</button>
+		</div>
 
-            <div>
-                <button class="button button-block button-positive" ng-click="login()">
-                    Login
-                </button>
-            </div>
+		<span>or</span>
 
-        </div>
+		<div>
+			<button class="button button-block button-positive" ng-click="facebookLogin()">
+				Login with Facebook
+			</button>
+		</div>
 
     </ion-content>
 </ion-view>

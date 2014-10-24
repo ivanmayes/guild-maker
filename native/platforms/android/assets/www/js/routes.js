@@ -1,10 +1,9 @@
 /*global define, require */
 
-define(['app'], function (app) {
+define(['app'], function(app) {
     'use strict';
 
-    app.config(['$stateProvider', '$urlRouterProvider',
-            function ($stateProvider, $urlRouterProvider) {
+    app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
 
             $stateProvider
                 .state('prelogin', {
@@ -17,60 +16,52 @@ define(['app'], function (app) {
                     templateUrl: "templates/login.html",
                     controller: 'LoginCtrl'
                 })
+                .state('home', {
+                    url: '/home',
+                    templateUrl: 'templates/home.html',
+                    controller: 'HomeCtrl'
+                })
                 .state('signup', {
                     url: "/signup",
                     templateUrl: "templates/signup.html",
                     controller: 'LoginCtrl'
                 })
                 .state('roleSelect', {
-                	url: "/roleselect",
-                	templateUrl: "templates/roleselect.html",
-                	controller: 'LoginCtrl'
+                    url: "/roleselect",
+                    templateUrl: "templates/roleselect.html",
+                    controller: 'LoginCtrl'
                 })
-                .state('tab', {
-                    url: "/tab",
-                    abstract: true,
-                    templateUrl: "templates/tabs.html"
+                .state('search', {
+                	url: "/search",
+                	templateUrl: "templates/search.html",
+                	controller: 'SearchCtrl'
                 })
-                .state('tab.pet-index', {
-                    url: '/pets',
-                    views: {
-                        'pets-tab': {
-                            templateUrl: 'templates/pet-index.html',
-                            controller: 'PetIndexCtrl'
-                        }
+                .state('fav', {
+                    url: '/fav',
+                    templateUrl: 'templates/favorite-teams.html',
+                    controller: 'FavoriteTeamsCtrl'
+                })
+                .state('team', {
+                    url: '/team',
+                    templateUrl: "templates/team.html"
+                })
+                .state('scores', {
+                    url: '/scores',
+                    templateUrl: 'templates/scores.html'
+                })
+            /*.state('tab.pet-detail', {
+                url: '/pet/:petId',
+                views: {
+                    'fav-tab': {
+                        templateUrl: 'templates/pet-detail.html',
+                        controller: 'PetDetailCtrl'
                     }
-                })
-                .state('tab.pet-detail', {
-                    url: '/pet/:petId',
-                    views: {
-                        'pets-tab': {
-                            templateUrl: 'templates/pet-detail.html',
-                            controller: 'PetDetailCtrl'
-                        }
-                    }
-                })
-                .state('tab.adopt', {
-                    url: '/adopt',
-                    views: {
-                        'adopt-tab': {
-                            templateUrl: 'templates/adopt.html'
-                        }
-                    }
-                })
-                .state('tab.about', {
-                    url: '/about',
-                    views: {
-                        'about-tab': {
-                            templateUrl: 'templates/about.html'
-                        }
-                    }
-                });
-
+                }
+            })*/
 
             $urlRouterProvider.otherwise("/prelogin");
 
-        }]);
+    }]);
 
 
 });
