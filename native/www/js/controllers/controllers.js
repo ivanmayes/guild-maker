@@ -16,9 +16,9 @@ define(function(require) {
     controllers.controller('FavoriteTeamsCtrl', require('controllers/FavoriteTeamsCtrl'));
     controllers.controller('ScoresCtrl', require('controllers/ScoresCtrl'));
 
-    controllers.run(['$rootScope', function($rootScope) {
+    /*controllers.run(['$rootScope', function($rootScope) {
             $rootScope.sampleParam = "value";
-    }]);
+    }]);*/
 
     return controllers;
 
