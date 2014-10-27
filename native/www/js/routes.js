@@ -42,7 +42,7 @@ define(['app'], function(app) {
                 })
                 .state('scores', {
                     url: '/scores',
-                    templateUrl: 'templates/scores.html'
+                    templateUrl: 'templates/scores/scores.html'
                 })
             /*.state('tab.pet-detail', {
                 url: '/pet/:petId',
