@@ -1,7 +1,7 @@
 
 var EventEmitter = require( 'events' ).EventEmitter,
     hat          = require( 'hat' ),
-    AccessTokens = require( './models/AccessTokens' ),
+    AccessTokens = require( './models/AccessToken' ),
     oauth2orize  = require( 'oauth2orize' );
 
 module.exports = exports = new Auth();
@@ -26,11 +26,11 @@ Auth.prototype._configureServer = function _configureServer( server ) {
     server.grant(oauth2orize.grant.token(function(client, user, ares, done) {
         var token = hat(512, 16);
 
-        AccessTokens.save( {
+        AccessToken.create( {
             token: token, // @todo need to check for collisions
             userId: user._id,
             clientId: '12345'
-        }, function(err) {
+        }, function( err ) {
             if (err) {
                 return done( err );
             }

@@ -1,10 +1,10 @@
 
 var express  = require( 'express' ),
-    config   = require( 'config' ),
     mongoose = require( 'mongoose' ),
+    config   = require( './config' ),
     auth     = require( './lib/auth.js' );
 
-mongoose.connect( config.db.uri, { db: { safe: true } } );
+mongoose.connect( config.db.uri, config.db.options );
 
 auth.server();
 
