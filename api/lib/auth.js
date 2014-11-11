@@ -43,9 +43,9 @@ Auth.prototype.server = function server( ) {
 };
 
 Auth.prototype.configureServer = function configureServer( server ) {
-    server.grant( oauth2orize.grant.token( this.createToken ) );
+    server.grant( oauth2orize.grant.token( this.createToken.bind( this ) ) );
     // https://github.com/jaredhanson/oauth2orize/issues/28#issuecomment-15856324
-    server.exchange( oauth2orize.exchange.password( this.exchangePassword ) );
+    server.exchange( oauth2orize.exchange.password( this.exchangePassword.bind( this ) ) );
 };
 
 Auth.prototype.generateToken = function generateToken( ) {
@@ -53,7 +53,7 @@ Auth.prototype.generateToken = function generateToken( ) {
 };
 
 Auth.prototype.createToken = function createToken( client, user, scope, done ) {
-    var AccessToken;
+    var AccessToken, auth = this;
 
     // we don't really care about clients right now,
     // if we did, we would probably want to verify the client is registered
@@ -70,12 +70,15 @@ Auth.prototype.createToken = function createToken( client, user, scope, done ) {
     //       We would pass in a method to generate a token so the model doesn't implement that.
     //       ex.
     //       AccessToken.createToken( client, user, scope, this.generateToken, done );
+    var token = this.generateToken();
     AccessToken.find( {
         token: token
     } ).then( function( results ) {
         if ( results.length ) { // @todo <-- total guess that results.length checks to see if any were found
                                 //           need to look at mongoose docs
-            Auth.createToken( user, done );
+
+            // if moved to AccessToken model, this would call AccessToken.createToken instead
+            auth.createToken( client, user, scope, done );
             return;
         }
         AccessToken.create( {
