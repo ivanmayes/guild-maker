@@ -1,10 +1,11 @@
 
 var mongoose = require( 'mongoose' );
 
-module.exports = exports = mongoose.model( 'User', {
+var schema = new mongoose.Schema( {
     name: String,
     firstName: String,
     lastName: String,
     email: String
-} );
+}, { autoIndex: false } );
 
+module.exports = exports = mongoose.model( 'User', schema );
