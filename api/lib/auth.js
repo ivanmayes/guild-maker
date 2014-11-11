@@ -9,16 +9,16 @@
  *
  * We'll use the user email address as the username.
  *
- * @todo we'll make the models be passed in via the constructor options
  */
 
+'use strict';
 
 var EventEmitter = require( 'events' ).EventEmitter,
     hat          = require( 'hat' ),
     oauth2orize  = require( 'oauth2orize' ),
     hat          = require( 'hat' ),
     bcrypt       = require( 'bcrypt' ),
-    _            = require( 'lodash' ); // @todo should this be underscore?
+    _            = require( 'lodash' );
 
 var Auth = function Auth( options ) {
     this._server = null;
@@ -30,7 +30,7 @@ Auth.prototype.__proto__ = EventEmitter.prototype;
 Auth.prototype.options = function options( options ) {
     this._options = _.extend( {
         userModel: null,
-        accessTokenModel: null
+        accessToken: null
     }, options );
 };
 
@@ -48,51 +48,34 @@ Auth.prototype.configureServer = function configureServer( server ) {
     server.exchange( oauth2orize.exchange.password( this.exchangePassword.bind( this ) ) );
 };
 
-Auth.prototype.generateToken = function generateToken( ) {
-    return hat(512, 16);
-};
-
 Auth.prototype.createToken = function createToken( client, user, scope, done ) {
-    var AccessToken, auth = this;
+    var auth  = this,
+        AccessToken;
 
+        console.log( user , '!!' );
     // we don't really care about clients right now,
     // if we did, we would probably want to verify the client is registered
     if ( !client ) {
         client = { id: '12345' };
     }
 
-    if ( !this._options.accessTokenModel ) {
-        throw "AccessToken model must be provided to the auth module.";
+    if ( !this._options.accessToken ) {
+        throw 'AccessToken must be provided to the auth module.';
     }
-    AccessToken = this._options.accessTokenModel;
 
-    // @todo This could become a required static method of the model to decouple this module from the models
-    //       We would pass in a method to generate a token so the model doesn't implement that.
-    //       ex.
-    //       AccessToken.createToken( client, user, scope, this.generateToken, done );
-    var token = this.generateToken();
-    AccessToken.find( {
-        token: token
-    } ).then( function( results ) {
-        if ( results.length ) { // @todo <-- total guess that results.length checks to see if any were found
-                                //           need to look at mongoose docs
+    AccessToken = this._options.accessToken;
 
-            // if moved to AccessToken model, this would call AccessToken.createToken instead
-            auth.createToken( client, user, scope, done );
-            return;
+    AccessToken.createToken({
+        'client': client,
+        'user':   user,
+        'scope':  scope
+    },
+    function( err , token ) {
+        if ( err ) {
+            return done( err );
         }
-        AccessToken.create( {
-            token: token,
-            userId: user._id, // @todo with mongoose, can this just be user.id?
-            clientId: client.id,
-            valid: true
-        }, function( err ) {
-            if ( err ) {
-                return done( err );
-            }
-            done( null, token );
-        } );
-    } );
+        done( null, token );
+    });
 };
 
 // SRP would be nice... but requires multiple steps,
@@ -106,10 +89,10 @@ Auth.prototype.createToken = function createToken( client, user, scope, done ) {
 Auth.prototype.exchangePassword = function exchangePassword( client, username, password, scope, done ) {
     var AccessToken;
 
-    if ( !this._options.accessTokenModel ) {
-        throw "AccessToken model must be provided to the auth module.";
+    if ( !this._options.accessToken ) {
+        throw 'AccessToken must be provided to the auth module.';
     }
-    AccessToken = this._options.accessTokenModel;
+    AccessToken = this._options.accessToken;
 
     // @todo
     // find user by username

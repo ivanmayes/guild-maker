@@ -29,7 +29,12 @@ suite( 'User()', function () {
     });
 
     teardown( function ( done ) {
-        User.remove({ email: usr.email } , done );
+        User.remove(
+            {
+                email: usr.email
+            },
+            done
+        );
     });
 
     suiteTeardown( function ( done ) {
