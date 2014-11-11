@@ -8,12 +8,20 @@ var mongoose   = require( 'mongoose' ),
 
 AccessToken = function AccessToken () {
 
-    this._generateToken = function _generateToken() {
-        return hat( 512 , 16 );
-    };
+    this.errCount = 0;
+    this.model    = tokenModel;
 
-    this._tokenCheck = function _tokenCheck( token , done ) {
-        this.model
+    return this;
+};
+
+AccessToken.prototype.ERROR_MAX = 3;
+
+AccessToken.prototype.generateToken = function generateToken() {
+    return hat( 512 , 16 );
+};
+
+AccessToken.prototype.tokenCheck = function tokenCheck ( token , done ) {
+    this.model
             .findOne({
                 token: token
             },
@@ -30,29 +38,33 @@ AccessToken = function AccessToken () {
                     done( null , true );
                 }
             });
-    };
-
-    this.model = tokenModel;
 
     return this;
 };
 
 AccessToken.prototype.createToken = function createToken( options , done ) {
     var opts   = options || {},
-        token  = this._generateToken(),
+        token  = this.generateToken(),
         client = opts.client,
         user   = opts.user,
         scope  = opts.scope,
-        model  = this.model;
+        model  = this.model,
+        self   = this;
 
-    this._tokenCheck( token , function ( err , res ) {
+    this.tokenCheck( token , function ( err , res ) {
         if( err ) {
             console.log( 'error' , err );
             return;
         }
         if( !res ) {
             console.log( 'Token Exists!' );
-            this.createToken( options , done );
+            self.errCount++
+            if( self.errCount <= self.ERROR_MAX ) {
+                self.createToken( options , done );
+            }
+            else {
+                done( new Error( 'Exceeded maximum token create attempts' ) , null );
+            }
         }
         else {
             model.create({
@@ -78,6 +90,8 @@ AccessToken.prototype.remove = function remove( token , done ) {
 
     this.model
         .remove( opts , done );
+
+    return this;
 };
 
 module.exports = exports = AccessToken;

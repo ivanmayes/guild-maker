@@ -111,7 +111,7 @@ Auth.prototype.exchangePassword = function exchangePassword( client, username, p
 };
 
 Auth.prototype.hashPassword = function hashPassword( password, done ) {
-    bcrypt.hash( 'bacon', 8, done );
+    bcrypt.hash( password, 8, done );
 };
 
 Auth.prototype.checkPassword = function checkPassword( password, hash, done ) {
