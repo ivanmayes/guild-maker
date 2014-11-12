@@ -51,15 +51,16 @@ AccessToken.prototype.createToken = function createToken( options , done ) {
         model  = this.model,
         self   = this;
 
+    // console.log( token , '?!?' );
     this.tokenCheck( token , function ( err , res ) {
         if( err ) {
             console.log( 'error' , err );
             return;
         }
         if( !res ) {
-            console.log( 'Token Exists!' );
-            self.errCount++
-            if( self.errCount <= self.ERROR_MAX ) {
+            // console.log( 'Token Exists!' );
+            self.errCount++;
+            if( self.errCount < self.ERROR_MAX ) {
                 self.createToken( options , done );
             }
             else {
@@ -77,6 +78,7 @@ AccessToken.prototype.createToken = function createToken( options , done ) {
                 if ( err ) {
                     return done( err );
                 }
+                self.errCount = 0;
                 done( null, token );
             });
         }

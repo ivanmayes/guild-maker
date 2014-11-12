@@ -1,3 +1,4 @@
+/* global assert, sinon */
 
 'use strict';
 

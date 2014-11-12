@@ -27,11 +27,11 @@ var Auth = function Auth( options ) {
 
 Auth.prototype.__proto__ = EventEmitter.prototype;
 
-Auth.prototype.options = function options( options ) {
+Auth.prototype.options = function options( opts ) {
     this._options = _.extend( {
         userModel: null,
         accessToken: null
-    }, options );
+    }, opts );
 };
 
 Auth.prototype.server = function server( ) {

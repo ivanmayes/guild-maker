@@ -6,6 +6,7 @@
     // Custom globals.
     "predef": [
         "assert",
+        "sinon"
         "suite",
         "test",
         "suiteSetup",
