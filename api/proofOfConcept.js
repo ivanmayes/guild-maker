@@ -1,7 +1,8 @@
 
 'use strict';
 
-var express        = require( 'express' ),
+var childProcess   = require( 'child_process' ),
+    express        = require( 'express' ),
     passport       = require( 'passport' ),
     BearerStrategy = require( 'passport-http-bearer' ).Strategy,
     mongoose       = require( 'mongoose' ),
@@ -17,6 +18,17 @@ var express        = require( 'express' ),
         'email':     'test@example.com'
     },
     httpServer;
+
+var pbcopy = function pbcopy( data ) {
+    var proc = childProcess.spawn( 'pbcopy' );
+
+    proc.stdin.write( data );
+
+    proc.on( 'close' , function ( code ) {
+        console.log( '::: copied to Clipboard (OS X):\n%s\n:::\n' , data );
+    });
+    proc.stdin.end();
+};
 
 var handleError = function handleError ( err ) {
     console.log( 'error' , err );
@@ -53,6 +65,10 @@ var configureExpressServer = function configureExpressServer () {
                         return done( err );
                     }
 
+                    if( !token ){
+                        return done( null , false );
+                    }
+
                     userId = token.userId;
 
                     User.findOne({
@@ -77,8 +93,14 @@ var configureExpressServer = function configureExpressServer () {
     app.get(
         '/foo',
         // Authenticate using HTTP Bearer credentials, with session support disabled.
-        passport.authenticate( 'bearer' , { session: false }),
-        function( req , res ){
+        passport.authenticate(
+            'bearer',
+            {
+                session:         false,
+                failureRedirect: '/login'
+            }
+        ),
+        function( req , res , next ){
             res.json({
                 firstName: req.user.firstName,
                 lastName:  req.user.lastName,
@@ -87,7 +109,7 @@ var configureExpressServer = function configureExpressServer () {
         }
     );
 
-    httpServer = app.listen(3000);
+    httpServer = app.listen( 3000 );
 };
 
 var cleanup = function cleanup ( options , done ) {
@@ -113,6 +135,8 @@ var createUser = function createUser ( user ) {
 };
 
 var createToken = function createToken ( user ) {
+    var testString;
+
     Auth.createToken(
         {
             id: '0987654'
@@ -126,7 +150,9 @@ var createToken = function createToken ( user ) {
                 return;
             }
 
-            console.log( ':::\ncurl -v http://localhost:3000/foo?access_token=%s\n:::\n' , token );
+            testString = 'curl -v http://127.0.0.1:3000/foo?access_token=' + token;
+
+            pbcopy( testString );
 
             // configure express server
             configureExpressServer();
