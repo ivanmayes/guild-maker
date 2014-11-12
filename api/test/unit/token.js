@@ -3,7 +3,7 @@
 'use strict';
 
 var mongoose    = require( 'mongoose' ),
-    AccessToken = require( '../lib/AccessToken' ),
+    AccessToken = require( '../../lib/AccessToken' ),
     accessToken = new AccessToken(),
     tmpId       = mongoose.Types.ObjectId(),
     usr         = {

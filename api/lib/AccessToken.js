@@ -51,7 +51,6 @@ AccessToken.prototype.createToken = function createToken( options , done ) {
         model  = this.model,
         self   = this;
 
-    // console.log( token , '?!?' );
     this.tokenCheck( token , function ( err , res ) {
         if( err ) {
             console.log( 'error' , err );

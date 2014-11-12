@@ -32,6 +32,8 @@ Auth.prototype.options = function options( opts ) {
         userModel: null,
         accessToken: null
     }, opts );
+
+    return this;
 };
 
 Auth.prototype.server = function server( ) {
@@ -52,7 +54,6 @@ Auth.prototype.createToken = function createToken( client, user, scope, done ) {
     var auth  = this,
         AccessToken;
 
-        console.log( user , '!!' );
     // we don't really care about clients right now,
     // if we did, we would probably want to verify the client is registered
     if ( !client ) {

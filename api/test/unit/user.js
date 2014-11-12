@@ -3,7 +3,7 @@
 'use strict';
 
 var mongoose = require( 'mongoose' ),
-    User     = require( '../lib/models/User' ),
+    User     = require( '../../lib/models/User' ),
     usr      = {
         'firstName': 'Test',
         'lastName':  'User',
@@ -62,8 +62,8 @@ suite( 'User()', function () {
                     return;
                 }
                 assert.equal( user.firstName , usr.firstName , 'First Name matches' );
-                assert.equal( user.lastName , usr.lastName , 'First Name matches' );
-                assert.equal( user.email , usr.email , 'First Name matches' );
+                assert.equal( user.lastName , usr.lastName , 'Last Name matches' );
+                assert.equal( user.email , usr.email , 'Email Name matches' );
 
                 done();
             });
