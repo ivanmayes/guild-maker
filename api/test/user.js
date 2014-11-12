@@ -52,21 +52,30 @@ suite( 'User()', function () {
 
 
     test( 'insert user into db' , function( done ) {
-        User.findOne({
+        var findUsers = function () {
+            User.findOne({
+                'email': usr.email
+            },
+            '_id firstName lastName email',
+            function ( err , user ) {
+                if( err ){
+                    return;
+                }
+                assert.equal( user.firstName , usr.firstName , 'First Name matches' );
+                assert.equal( user.lastName , usr.lastName , 'First Name matches' );
+                assert.equal( user.email , usr.email , 'First Name matches' );
+
+                done();
+            });
+        };
+
+        User.count({
             'email': usr.email
         },
-        '_id firstName lastName email',
-        function ( err , user ) {
-            if( err ){
-                return;
-            }
-            // console.log( user );
-            assert.notEqual( user.count , 0 , 'Model count is not 0' );
-            assert.equal( user.firstName , usr.firstName , 'First Name matches' );
-            assert.equal( user.lastName , usr.lastName , 'First Name matches' );
-            assert.equal( user.email , usr.email , 'First Name matches' );
-
-            done();
+        function ( err , count ) {
+            assert.notEqual( count , 0 , 'Model count is not 0' );
+            assert.equal( count , 1 , 'Model count is 1' );
+            findUsers();
         });
     });
 });
