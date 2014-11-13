@@ -54,6 +54,10 @@ Auth.prototype.createToken = function createToken( client, user, scope, done ) {
     var auth  = this,
         AccessToken;
 
+    if ( !this._options ) {
+        this._options = {};
+    }
+
     // we don't really care about clients right now,
     // if we did, we would probably want to verify the client is registered
     if ( !client ) {
