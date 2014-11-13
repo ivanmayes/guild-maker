@@ -14,7 +14,7 @@
     "bcrypt": "^0.8.0",
     "bluebird": "^2.3.11",
     "body-parser": "^1.9.2",
-    "cons": "0.0.2",
+    "bunyan": "^1.2.1",
     "consolidate": "^0.10.0",
     "cors": "^2.5.2",
     "express": "^4.10.2",

@@ -13,19 +13,22 @@
 
 'use strict';
 
-var EventEmitter = require( 'events' ).EventEmitter,
-    hat          = require( 'hat' ),
-    oauth2orize  = require( 'oauth2orize' ),
-    hat          = require( 'hat' ),
-    bcrypt       = require( 'bcrypt' ),
-    _            = require( 'lodash' );
+var EventEmitter   = require( 'events' ).EventEmitter,
+    util           = require( 'util' ),
+    hat            = require( 'hat' ),
+    oauth2orize    = require( 'oauth2orize' ),
+    passport       = require( 'passport' ),
+    BearerStrategy = require( 'passport-http-bearer' ).Strategy,
+    hat            = require( 'hat' ),
+    bcrypt         = require( 'bcrypt' ),
+    _              = require( 'lodash' );
 
 var Auth = function Auth( options ) {
     this._server = null;
     this.options( options );
 };
 
-Auth.prototype.__proto__ = EventEmitter.prototype;
+util.inherits( Auth, EventEmitter );
 
 Auth.prototype.options = function options( opts ) {
     this._options = _.extend( {
@@ -50,9 +53,14 @@ Auth.prototype.configureServer = function configureServer( server ) {
     server.exchange( oauth2orize.exchange.password( this.exchangePassword.bind( this ) ) );
 };
 
+Auth.prototype.configureExpress = function configureExpress( app ) {
+    app.use( passport.initialize() );
+    passport.use( this.bearerStrategy );
+};
+
 Auth.prototype.createToken = function createToken( client, user, scope, done ) {
     var auth  = this,
-        AccessToken;
+        accessToken;
 
     if ( !this._options ) {
         this._options = {};
@@ -65,12 +73,12 @@ Auth.prototype.createToken = function createToken( client, user, scope, done ) {
     }
 
     if ( !this._options.accessToken ) {
-        throw 'AccessToken must be provided to the auth module.';
+        throw new Error('AccessToken must be provided to the auth module.');
     }
 
-    AccessToken = this._options.accessToken;
+    accessToken = this._options.accessToken;
 
-    AccessToken.createToken({
+    accessToken.createToken({
         'client': client,
         'user':   user,
         'scope':  scope
@@ -92,12 +100,12 @@ Auth.prototype.createToken = function createToken( client, user, scope, done ) {
 // token example in here is not very secure since it doesn't check the client secret )
 // http://rwlive.wordpress.com/2014/06/24/oauth2-resource-owner-password-flow-using-oauth2orize-express-4-and-mongojs/
 Auth.prototype.exchangePassword = function exchangePassword( client, username, password, scope, done ) {
-    var AccessToken;
+    var accessToken;
 
     if ( !this._options.accessToken ) {
-        throw 'AccessToken must be provided to the auth module.';
+        throw new Error('accessToken must be provided to the auth module.');
     }
-    AccessToken = this._options.accessToken;
+    accessToken = this._options.accessToken;
 
     // @todo
     // find user by username
@@ -112,7 +120,7 @@ Auth.prototype.exchangePassword = function exchangePassword( client, username, p
     // If not, call `this.createToken( client, user, scope, done );`
 
    // you'll need to implement the code to save access tokens
-   AccessToken.create(client, username, password, scope, done);
+   accessToken.create(client, username, password, scope, done);
 };
 
 Auth.prototype.hashPassword = function hashPassword( password, done ) {
@@ -121,6 +129,87 @@ Auth.prototype.hashPassword = function hashPassword( password, done ) {
 
 Auth.prototype.checkPassword = function checkPassword( password, hash, done ) {
     bcrypt.compare( password, hash, done );
+};
+
+Auth.prototype.bearerStrategy = function bearerStrategy() {
+    var accessToken, User;
+
+    if ( !this._options.accessToken ) {
+        throw new Error('AccessToken must be provided to the auth module.');
+    }
+    accessToken = this._options.accessToken;
+
+    if ( !this._options.userModel ) {
+        throw new Error('A User model must be provided to the auth module.');
+    }
+    User = this._options.userModel;
+
+    return new BearerStrategy(
+        function( token , done ) {
+            accessToken.model
+                .findOne({
+                    'token': token
+                },
+                function ( err , token ) {
+                    var userId, user;
+
+                    if ( err ) {
+                        return done( err );
+                    }
+
+                    if( !token ){
+                        return done( null , false );
+                    }
+
+                    userId = token.userId;
+
+                    User.findOne({
+                        '_id': userId
+                    },
+                    function ( err , usr ) {
+                        user = usr;
+                        if ( err ) {
+                            return done( err );
+                        }
+                        if ( !user ) {
+                            return done( null , false );
+                        }
+                        return done( null , user , { scope: 'all' } );
+                    });
+                }
+            );
+        }
+    );
+};
+
+/**
+ * Connect middleware to require a valid user access token.
+ */
+Auth.prototype.requireUser = function requireUser( req, res, next ) {
+    passport.authenticate( 'bearer', function(err, user, info) {
+        if ( err ) {
+            return next( err );
+        }
+        if ( !user ) {
+            if ( info && info.error ) {
+                return res.json( {
+                    meta: {
+                        code: 401,
+                        errorType: 'invalid_auth',
+                        errorDetail: "The access_token provided was not valid."
+                    }
+                } );
+            }
+            return res.json( {
+                meta: {
+                    code: 400,
+                    errorType: 'param_error',
+                    errorDetail: "The access_token parameter must be passed to access this resource."
+                }
+            } );
+        }
+        return next();
+    } )( req, res, next );
 };
 
 // @todo Is this a good idea to create this module as a instantiatable function?
