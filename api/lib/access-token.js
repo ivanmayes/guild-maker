@@ -10,6 +10,7 @@ AccessToken = function AccessToken () {
 
     this.errCount = 0;
     this.model    = tokenModel;
+    this.token    = undefined;
 
     return this;
 };

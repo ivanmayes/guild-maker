@@ -2,8 +2,8 @@
 'use strict';
 var mongoose    = require( 'mongoose' ),
     Auth        = require( '../../lib/auth.js' ),
-    User        = require( '../../lib/models/User' ),
-    AccessToken = require( '../../lib/AccessToken' ),
+    User        = require( '../../lib/models/user' ),
+    AccessToken = require( '../../lib/access-token' ),
     accessToken = new AccessToken(),
     sampleUserData, sampleClientData, testUser;
 

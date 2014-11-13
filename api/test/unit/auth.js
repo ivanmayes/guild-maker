@@ -5,8 +5,8 @@
 var EventEmitter = require( 'events' ).EventEmitter,
     mongoose     = require( 'mongoose' ),
     auth         = require( '../../lib/auth.js' ),
-    User         = require( '../../lib/models/User' ),
-    AccessToken  = require( '../../lib/AccessToken' ),
+    User         = require( '../../lib/models/user' ),
+    AccessToken  = require( '../../lib/access-token' ),
     accessToken  = new AccessToken(),
     tmpId        = mongoose.Types.ObjectId(),
     usr          = {
@@ -76,7 +76,7 @@ suite( 'auth()', function () {
     test( 'throws error if no AccessToken supplied', function ( done ) {
 
         configureServer();
-        assert.throws( auth.createToken.bind( this ) , 'AccessToken must be provided to the auth module.' );
+        assert.throws( auth.createToken.bind( this ) , Error , 'AccessToken must be provided to the auth module.' );
         done();
     });
 

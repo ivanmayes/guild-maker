@@ -2,7 +2,7 @@
 'use strict';
 
 var mongoose = require( 'mongoose' ),
-    User     = require( '../../lib/models/User' ),
+    User     = require( '../../lib/models/user' ),
     usr      = {
         'firstName': 'Test',
         'lastName':  'User',

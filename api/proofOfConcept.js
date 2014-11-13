@@ -6,14 +6,17 @@ var childProcess   = require( 'child_process' ),
     express        = require( 'express' ),
     passport       = require( 'passport' ),
     BearerStrategy = require( 'passport-http-bearer' ).Strategy,
-    cons           = require( 'consolidate' ),
+    bunyan         = require( 'bunyan' ),
+    // Only going to return json
+    // cons           = require( 'consolidate' ),
     mongoose       = require( 'mongoose' ),
     config         = require( './config' ),
-    auth           = require( './lib/auth.js' ),
-    AccessToken    = require( './lib/access-token.js' ),
-    User           = require( './lib/models/user.js' ),
+    auth           = require( './lib/auth' ),
+    AccessToken    = require( './lib/access-token' ),
+    User           = require( './lib/models/user' ),
     accessToken    = new AccessToken(),
     app            = express(),
+    apiRouter      = express.Router(),
     testUser       = {
         'firstName': 'Test',
         'lastName':  'User',
@@ -21,19 +24,32 @@ var childProcess   = require( 'child_process' ),
     },
     httpServer;
 
+var log = bunyan.createLogger( {
+    name : 'apiLog' ,
+    streams : [
+        {
+            path : config.logPath
+            // `type: 'file'` is implied
+        },
+        {
+            stream: process.stdout
+        }
+    ]
+} );
+
 var pbcopy = function pbcopy( data ) {
     var proc = childProcess.spawn( 'pbcopy' );
 
     proc.stdin.write( data );
 
     proc.on( 'close' , function ( code ) {
-        console.log( '::: copied to Clipboard (OS X):\n%s\n:::\n' , data );
+        log.info( '::: copied to Clipboard (OS X):\n%s\n:::\n' , data );
     });
     proc.stdin.end();
 };
 
 var handleError = function handleError ( err ) {
-    console.log( 'error' , err );
+    log.info( 'error' , err );
     mongoose.connection.close();
 };
 
@@ -51,96 +67,32 @@ var configureAuthServer = function configureAuthServer () {
 };
 
 var configureExpressServer = function configureExpressServer () {
-
-    app.engine( 'hbs' , cons.handlebars );
-
-    app.set( 'view engine' , 'hbs' );
-    app.set( 'views', path.resolve( './views' ) );
-
-    app.use( passport.initialize() );
-
-    passport.use( new BearerStrategy(
-        function( token , done ) {
-            accessToken.model
-                .findOne({
-                    'token': token
-                },
-                function ( err , token ) {
-                    var userId, user;
-
-                    if ( err ) {
-                        return done( err );
-                    }
-
-                    if( !token ){
-                        return done( null , false );
-                    }
-
-                    userId = token.userId;
-
-                    User.findOne({
-                        '_id': userId
-                    },
-                    function ( err , usr ) {
-                        user = usr;
-                        if ( err ) {
-                            return done( err );
-                        }
-                        if ( !user ) {
-                            return done( null , false );
-                        }
-                        return done( null , user , { scope: 'all' } );
-                    });
-                }
-            );
-        }
-    ));
+    log.info("hi");
+    auth.configureExpress( app );
 
     // curl -v http://localhost:3000/foo?access_token=[token]
-    app.get(
-        '/foo',
-        // Authenticate using HTTP Bearer credentials, with session support disabled.
-        passport.authenticate(
-            'bearer',
-            {
-                session:         false,
-                failureRedirect: '/login'
-            }
-        ),
-        function( req , res , next ){
-            res.json({
+    apiRouter.get( '/me', auth.requireUser, function( req , res , next ) {
+        res.json( {
+            meta: { code: 200 },
+            response: {
                 firstName: req.user.firstName,
                 lastName:  req.user.lastName,
                 email:     req.user.email
-            });
-        }
-    );
+            }
+        } );
+    });
 
-    app.get(
-        '/login' ,
-        function ( req , res ) {
-            // res.send( '<h1>TODO: create login page</h1>' );
-            res.render( 'login' , {
-                title:  'Testing!',
-                url:    'login'
-            });
-        }
-    );
+    apiRouter.post( '/signup', function( req , res ) {
+        // @todo create something that creates a new user and returns an access token
+    } );
 
-    app.post(
-        '/login',
-        // passport.authenticate( 'local', {
-        //     // successRedirect: startPage,
-        //     failureFlash:       true,
-        //     failureRedirect: '/' + config.prefix.url + '/login'
-        // }),
-        function( req , res ) {
-            // res.redirect( startPage );
-            res.send( '<h1>TODO: create login route handler</h1>' );
-        }
-    );
+    apiRouter.post( '/login', function( req , res ) {
+        // @todo create something that calls auth.exchangePassword
+    } );
 
-    httpServer = app.listen( 3000 );
+    app.use( config.versionPrefix, apiRouter );
+
+    httpServer = app.listen( config.port );
 };
 
 var cleanup = function cleanup ( options , done ) {
@@ -182,7 +134,7 @@ var createToken = function createToken ( user ) {
             }
 
             // testString = 'curl -v http://127.0.0.1:3000/foo?access_token=' + token;
-            testString = 'http://127.0.0.1:3000/foo?access_token=' + token;
+            testString = 'http://127.0.0.1:3000/v1/me?access_token=' + token;
 
             pbcopy( testString );
 
@@ -225,3 +177,5 @@ exports = module.exports = ( function () {
     );
 
 }());
+
+
