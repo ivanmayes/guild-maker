@@ -2,9 +2,11 @@
 'use strict';
 
 var childProcess   = require( 'child_process' ),
+    path           = require( 'path' ),
     express        = require( 'express' ),
     passport       = require( 'passport' ),
     BearerStrategy = require( 'passport-http-bearer' ).Strategy,
+    cons           = require( 'consolidate' ),
     mongoose       = require( 'mongoose' ),
     config         = require( './config' ),
     Auth           = require( './lib/auth.js' ),
@@ -49,6 +51,11 @@ var configureAuthServer = function configureAuthServer () {
 };
 
 var configureExpressServer = function configureExpressServer () {
+
+    app.engine( 'hbs' , cons.handlebars );
+
+    app.set( 'view engine' , 'hbs' );
+    app.set( 'views', path.resolve( './views' ) );
 
     app.use( passport.initialize() );
 
@@ -109,6 +116,30 @@ var configureExpressServer = function configureExpressServer () {
         }
     );
 
+    app.get(
+        '/login' ,
+        function ( req , res ) {
+            // res.send( '<h1>TODO: create login page</h1>' );
+            res.render( 'login' , {
+                title:  'Testing!',
+                url:    'login'
+            });
+        }
+    );
+
+    app.post(
+        '/login',
+        // passport.authenticate( 'local', {
+        //     // successRedirect: startPage,
+        //     failureFlash:       true,
+        //     failureRedirect: '/' + config.prefix.url + '/login'
+        // }),
+        function( req , res ) {
+            // res.redirect( startPage );
+            res.send( '<h1>TODO: create login route handler</h1>' );
+        }
+    );
+
     httpServer = app.listen( 3000 );
 };
 
@@ -150,7 +181,8 @@ var createToken = function createToken ( user ) {
                 return;
             }
 
-            testString = 'curl -v http://127.0.0.1:3000/foo?access_token=' + token;
+            // testString = 'curl -v http://127.0.0.1:3000/foo?access_token=' + token;
+            testString = 'http://127.0.0.1:3000/foo?access_token=' + token;
 
             pbcopy( testString );
 
