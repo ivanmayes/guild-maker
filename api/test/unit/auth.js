@@ -1,10 +1,10 @@
-/* global assert, sinon */
+
 
 'use strict';
 
 var EventEmitter = require( 'events' ).EventEmitter,
     mongoose     = require( 'mongoose' ),
-    Auth         = require( '../../lib/auth.js' ),
+    auth         = require( '../../lib/auth.js' ),
     User         = require( '../../lib/models/User' ),
     AccessToken  = require( '../../lib/AccessToken' ),
     accessToken  = new AccessToken(),
@@ -21,11 +21,11 @@ var EventEmitter = require( 'events' ).EventEmitter,
 configureServer = function configureServer( options ) {
     var opts = options || {};
 
-    Auth.options( opts )
+    auth.options( opts )
         .server();
 };
 
-suite( 'Auth()', function () {
+suite( 'auth()', function () {
 
     suiteSetup( function ( done ) {
         return mongoose
@@ -49,13 +49,13 @@ suite( 'Auth()', function () {
     });
 
     test( 'inherits from event emitter', function ( done ) {
-        assert.instanceOf( Auth, EventEmitter, 'Auth module is instance of EventEmitter' );
+        assert.instanceOf( auth, EventEmitter, 'auth module is instance of EventEmitter' );
         done();
     });
 
     test( 'does not configure server more than once', function ( done ) {
 
-        var spy  = sinon.spy( Auth , 'configureServer' ),
+        var spy  = sinon.spy( auth , 'configureServer' ),
             opts = {
                 userModel: User,
                 accessToken: accessToken
@@ -69,14 +69,14 @@ suite( 'Auth()', function () {
 
         assert.equal( spy.callCount , 1 , 'Configure method called only once' );
 
-        Auth.configureServer.restore();
+        auth.configureServer.restore();
         done();
     });
 
     test( 'throws error if no AccessToken supplied', function ( done ) {
 
         configureServer();
-        assert.throws( Auth.createToken.bind( this ) , 'AccessToken must be provided to the auth module.' );
+        assert.throws( auth.createToken.bind( this ) , 'AccessToken must be provided to the auth module.' );
         done();
     });
 
@@ -91,7 +91,7 @@ suite( 'Auth()', function () {
 
         configureServer( opts );
 
-        Auth.createToken(
+        auth.createToken(
             client,
             usr,
             null,

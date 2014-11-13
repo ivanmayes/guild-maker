@@ -9,9 +9,9 @@ var childProcess   = require( 'child_process' ),
     cons           = require( 'consolidate' ),
     mongoose       = require( 'mongoose' ),
     config         = require( './config' ),
-    Auth           = require( './lib/auth.js' ),
-    AccessToken    = require( './lib/AccessToken.js' ),
-    User           = require( './lib/models/User.js' ),
+    auth           = require( './lib/auth.js' ),
+    AccessToken    = require( './lib/access-token.js' ),
+    User           = require( './lib/models/user.js' ),
     accessToken    = new AccessToken(),
     app            = express(),
     testUser       = {
@@ -43,7 +43,7 @@ var connectDB = function connectDB () {
 
 var configureAuthServer = function configureAuthServer () {
 
-    Auth.options({
+    auth.options({
         userModel: User,
         accessToken: accessToken
     })
@@ -168,7 +168,7 @@ var createUser = function createUser ( user ) {
 var createToken = function createToken ( user ) {
     var testString;
 
-    Auth.createToken(
+    auth.createToken(
         {
             id: '0987654'
         },

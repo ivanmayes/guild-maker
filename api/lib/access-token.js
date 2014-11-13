@@ -3,7 +3,7 @@
 
 var mongoose   = require( 'mongoose' ),
     hat        = require( 'hat' ),
-    tokenModel = require( './models/Token' ),
+    tokenModel = require( './models/token' ),
     AccessToken;
 
 AccessToken = function AccessToken () {
