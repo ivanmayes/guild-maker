@@ -1,12 +1,25 @@
 
 'use strict';
 
+var bunyan = require( 'bunyan' ),
+    log    = global.log = bunyan.createLogger( {
+    name : 'apiLog' ,
+    streams : [
+        /*{
+            path : config.logPath
+            // `type: 'file'` is implied
+        },*/
+        {
+            stream: process.stdout
+        }
+    ]
+} );
+
 var childProcess   = require( 'child_process' ),
     path           = require( 'path' ),
     express        = require( 'express' ),
     passport       = require( 'passport' ),
     BearerStrategy = require( 'passport-http-bearer' ).Strategy,
-    bunyan         = require( 'bunyan' ),
     // Only going to return json
     // cons           = require( 'consolidate' ),
     mongoose       = require( 'mongoose' ),
@@ -17,25 +30,7 @@ var childProcess   = require( 'child_process' ),
     accessToken    = new AccessToken(),
     app            = express(),
     apiRouter      = express.Router(),
-    testUser       = {
-        'firstName': 'Test',
-        'lastName':  'User',
-        'email':     'test@example.com'
-    },
-    httpServer;
-
-var log = bunyan.createLogger( {
-    name : 'apiLog' ,
-    streams : [
-        {
-            path : config.logPath
-            // `type: 'file'` is implied
-        },
-        {
-            stream: process.stdout
-        }
-    ]
-} );
+    testUser, httpServer;
 
 var pbcopy = function pbcopy( data ) {
     var proc = childProcess.spawn( 'pbcopy' );
@@ -67,7 +62,7 @@ var configureAuthServer = function configureAuthServer () {
 };
 
 var configureExpressServer = function configureExpressServer () {
-    log.info("hi");
+
     auth.configureExpress( app );
 
     // curl -v http://localhost:3000/foo?access_token=[token]
@@ -83,12 +78,99 @@ var configureExpressServer = function configureExpressServer () {
     });
 
     apiRouter.post( '/signup', function( req , res ) {
-        // @todo create something that creates a new user and returns an access token
+        // curl -d "name=Test&firstName=Test&lastName=User&email=test%40example.com&password=password" http://127.0.0.1:3000/v1/signup
+
+        auth.hashPassword( req.body.password , function ( err , hash ) {
+            if( err ){
+                handleError( err );
+                return;
+            }
+
+            User.create(
+                {
+                    'name':      req.body.name,
+                    'firstName': req.body.firstName,
+                    'lastName':  req.body.lastName,
+                    'email':     req.body.email,
+                    'password':  hash
+                },
+                function ( err , user ) {
+                    accessToken.createToken({
+                        'client': { id: 'Shoptology.wut.wut' },
+                        'user':   user,
+                        'scope':  null
+                    },
+                    function( err , token ) {
+                        if ( err ) {
+                            res.json( {
+                                meta: {
+                                    code: 400,
+                                    errorType: 'server_error',
+                                    errorDetail: "The server returned an error creating a token for userId: " + user._id.toString() + "."
+                                }
+                            } );
+                        }
+                        res.json( {
+                            meta: { code: 200 },
+                            response: {
+                                firstName: user.firstName,
+                                lastName:  user.lastName,
+                                name:      user.name,
+                                email:     user.email,
+                                token:     token
+                            }
+                        } );
+                    });
+                });
+        });
+
     } );
 
     apiRouter.post( '/login', function( req , res ) {
-        // @todo create something that calls auth.exchangePassword
-    } );
+        // curl -d "name=test%40example.com&password=password" http://127.0.0.1:3000/v1/login
+        var testString;
+
+        // client, username, password, scope, done
+        auth.exchangePassword(
+            { id: 'Shoptology.wut.wut' },
+            req.body.name,
+            req.body.password,
+            null,
+            function ( err , token ) {
+
+                if ( err ) {
+                    res.json( {
+                        meta: {
+                            code: 400,
+                            errorType: 'server_error',
+                            errorDetail: "The server returned an error exchanging a password for a token."
+                        }
+                    } );
+                    return;
+                }
+
+                if ( !token ) {
+                    res.json( {
+                        meta: {
+                            code: 401,
+                            errorType: 'invalid_auth',
+                            errorDetail: "OAuth token was not provided or was invalid."
+                        }
+                    } );
+                    return;
+                }
+
+                res.json( {
+                    meta: { code: 200 },
+                    response: {
+                        token:     token
+                    }
+                } );
+            }
+        );
+
+        // @ todo create something that calls auth.exchangePassword
+    });
 
     app.use( config.versionPrefix, apiRouter );
 
@@ -156,9 +238,9 @@ var initialize = function initialize ( err ) {
     }
 
     configureAuthServer();
-
-    createUser( testUser )
-        .then( createToken , handleError );
+    configureExpressServer();
+    // createUser( testUser )
+    //     .then( createToken , handleError );
         // .then( stop );
 };
 
@@ -167,14 +249,38 @@ exports = module.exports = ( function () {
     // connect to db
     connectDB();
 
-    // clean up previous tests
-    cleanup(
-        {
-            token: null,
-            email: testUser.email
-        },
-        initialize
-    );
+    auth.hashPassword( 'password' , function ( err , hash ) {
+        if( err ){
+            handleError( err );
+            return;
+        }
+
+        testUser = {
+            'name':      'Test',
+            'firstName': 'Test',
+            'lastName':  'User',
+            'email':     'test@example.com',
+            'password':  hash
+        };
+
+        // console.log( testUser );
+
+
+        initialize();
+    });
+
+
+
+    // // connect to db
+    // connectDB();
+    // // clean up previous tests
+    // cleanup(
+    //     {
+    //         token: null,
+    //         email: testUser.email
+    //     },
+    //     initialize
+    // );
 
 }());
 

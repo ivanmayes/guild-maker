@@ -19,9 +19,12 @@ var EventEmitter   = require( 'events' ).EventEmitter,
     oauth2orize    = require( 'oauth2orize' ),
     passport       = require( 'passport' ),
     BearerStrategy = require( 'passport-http-bearer' ).Strategy,
+    bodyParser     = require( 'body-parser' ),
     hat            = require( 'hat' ),
     bcrypt         = require( 'bcrypt' ),
     _              = require( 'lodash' );
+
+var log = global.log;
 
 var Auth = function Auth( options ) {
     this._server = null;
@@ -54,8 +57,9 @@ Auth.prototype.configureServer = function configureServer( server ) {
 };
 
 Auth.prototype.configureExpress = function configureExpress( app ) {
+    app.use(bodyParser());
     app.use( passport.initialize() );
-    passport.use( this.bearerStrategy );
+    passport.use( this.bearerStrategy() );
 };
 
 Auth.prototype.createToken = function createToken( client, user, scope, done ) {
@@ -100,27 +104,92 @@ Auth.prototype.createToken = function createToken( client, user, scope, done ) {
 // token example in here is not very secure since it doesn't check the client secret )
 // http://rwlive.wordpress.com/2014/06/24/oauth2-resource-owner-password-flow-using-oauth2orize-express-4-and-mongojs/
 Auth.prototype.exchangePassword = function exchangePassword( client, username, password, scope, done ) {
-    var accessToken;
+    var self = this,
+        User, accessToken;
+
+    // we don't really care about clients right now,
+    // if we did, we would probably want to verify the client is registered
+    if ( !client ) {
+        client = { id: '12345' };
+    }
+
+    if ( !this._options.userModel ) {
+        throw new Error('A User model must be provided to the auth module.');
+    }
+
+    User = this._options.userModel;
 
     if ( !this._options.accessToken ) {
-        throw new Error('accessToken must be provided to the auth module.');
+        throw new Error( 'AccessToken must be provided to the auth module.' );
     }
+
     accessToken = this._options.accessToken;
 
-    // @todo
-    // find user by username
-    // i.e. User.findByUsername( username ).then( ... set user );
-    // if not found, error
-    // if hash of password doesn't match, error
-    // i.e. this.checkPassword( password, user.password );
+    User.findOne({
+        'email': username
+    },
+    function ( err , user ) {
+        if ( err ) {
+            return done( err , null );
+        }
 
-    // Once we have an authenticated user, look for an existing
-    // valid access token for this user, client, and scope.
-    // If found, return it.
-    // If not, call `this.createToken( client, user, scope, done );`
+        if ( !user ) {
+            return done( null , false );
+        }
 
-   // you'll need to implement the code to save access tokens
-   accessToken.create(client, username, password, scope, done);
+        self.checkPassword(
+            password,
+            user.password,
+            function ( err , match ) {
+                if ( err ) {
+                    // Somebody set us up the bomb!!!
+                    // What happen?
+                    done( err , null );
+                    return;
+                }
+
+                if ( !match ) {
+                    // passwords be funky
+                    done( null , false );
+                    return;
+                }
+
+                // the passwords match what is in db
+                // i.e. valid user, see if they have a token.
+                accessToken.model
+                    .findOne({
+                        'userId': user._id.toString()
+                    },
+                    function ( err , token ) {
+                        if( err ){
+                            done( err , null );
+                            return;
+                        }
+
+                        if( token ) {
+                            done( null, token );
+                            return;
+                        }
+
+                        // user doesn't have a token... create one
+                        self.createToken(
+                            client,
+                            user,
+                            scope,
+                            function ( err , token ) {
+                                if( err ){
+                                    done( err , null );
+                                    return;
+                                }
+
+                                done( null, token );
+                            }
+                        );
+                    }
+                );
+            }
+        );
+    });
 };
 
 Auth.prototype.hashPassword = function hashPassword( password, done ) {
@@ -190,8 +259,9 @@ Auth.prototype.requireUser = function requireUser( req, res, next ) {
         if ( err ) {
             return next( err );
         }
+
         if ( !user ) {
-            if ( info && info.error ) {
+            if ( info && info.indexOf( 'invalid_token' ) !== -1 ) {
                 return res.json( {
                     meta: {
                         code: 401,
@@ -208,6 +278,7 @@ Auth.prototype.requireUser = function requireUser( req, res, next ) {
                 }
             } );
         }
+        req.user = user;
         return next();
     } )( req, res, next );
 };

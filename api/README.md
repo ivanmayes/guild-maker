@@ -6,8 +6,8 @@ Would like to write tests that:
 
 √ - save a user in the db
 √ - save an access token for that user 
-- use passport-http-bearer to get a user from an access token
-- protect an endpoint to attach a user to the request
+√- use passport-http-bearer to get a user from an access token
+√- protect an endpoint to attach a user to the request
 - oauth2orize to exchange user/pass for token
 
 

@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node proofOfConcept.js",
-    "test": "mocha ./test/unit/",
-    "integration-test": "mocha ./test/integration/"
+    "start": "node proofOfConcept.js | ./node_modules/.bin/bunyan -o short",
+    "test": "./node_modules/.bin/mocha ./test/unit/",
+    "integration-test": "./node_modules/.bin/mocha ./test/integration/"
   },
   "author": "",
   "license": "ISC",
