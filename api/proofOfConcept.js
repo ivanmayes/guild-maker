@@ -217,7 +217,7 @@ var createToken = function createToken ( user ) {
             }
 
             // testString = 'curl -v http://127.0.0.1:3000/foo?access_token=' + token;
-            testString = 'http://127.0.0.1:3000/v1/me?access_token=' + token;
+            testString = 'http://127.0.0.1:' + config.port + '/v1/me?access_token=' + token;
 
             pbcopy( testString );
 
