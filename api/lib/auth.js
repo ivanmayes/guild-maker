@@ -19,7 +19,6 @@ var EventEmitter   = require( 'events' ).EventEmitter,
     oauth2orize    = require( 'oauth2orize' ),
     passport       = require( 'passport' ),
     BearerStrategy = require( 'passport-http-bearer' ).Strategy,
-    bodyParser     = require( 'body-parser' ),
     hat            = require( 'hat' ),
     bcrypt         = require( 'bcrypt' ),
     _              = require( 'lodash' );
@@ -57,7 +56,6 @@ Auth.prototype.configureServer = function configureServer( server ) {
 };
 
 Auth.prototype.configureExpress = function configureExpress( app ) {
-    app.use(bodyParser());
     app.use( passport.initialize() );
     passport.use( this.bearerStrategy() );
 };

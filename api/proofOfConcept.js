@@ -18,12 +18,14 @@ var bunyan = require( 'bunyan' ),
 var childProcess   = require( 'child_process' ),
     path           = require( 'path' ),
     express        = require( 'express' ),
+    cors           = require( 'cors' ),
     passport       = require( 'passport' ),
     BearerStrategy = require( 'passport-http-bearer' ).Strategy,
     // Only going to return json
     // cons           = require( 'consolidate' ),
     mongoose       = require( 'mongoose' ),
     config         = require( './config' ),
+    expressUtils   = require( './lib/express-utils' ),
     auth           = require( './lib/auth' ),
     AccessToken    = require( './lib/access-token' ),
     User           = require( './lib/models/user' ),
@@ -62,6 +64,8 @@ var configureAuthServer = function configureAuthServer () {
 };
 
 var configureExpressServer = function configureExpressServer () {
+
+    expressUtils.init( app );
 
     auth.configureExpress( app );
 
