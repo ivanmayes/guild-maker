@@ -78,7 +78,7 @@ var configureExpressServer = function configureExpressServer () {
     });
 
     apiRouter.post( '/signup', function( req , res ) {
-        // curl -d "name=Test&firstName=Test&lastName=User&email=test%40example.com&password=password" http://127.0.0.1:3000/v1/signup
+        // curl -d "userName=Test&firstName=Test&lastName=User&email=test%40example.com&password=password" http://127.0.0.1:3000/v1/signup
 
         auth.hashPassword( req.body.password , function ( err , hash ) {
             if( err ){
@@ -88,7 +88,7 @@ var configureExpressServer = function configureExpressServer () {
 
             User.create(
                 {
-                    'name':      req.body.name,
+                    'userName':  req.body.userName,
                     'firstName': req.body.firstName,
                     'lastName':  req.body.lastName,
                     'email':     req.body.email,
@@ -127,13 +127,13 @@ var configureExpressServer = function configureExpressServer () {
     } );
 
     apiRouter.post( '/login', function( req , res ) {
-        // curl -d "name=test%40example.com&password=password" http://127.0.0.1:3000/v1/login
+        // curl -d "email=test%40example.com&password=password" http://127.0.0.1:3000/v1/login
         var testString;
 
         // client, username, password, scope, done
         auth.exchangePassword(
             { id: 'Shoptology.wut.wut' },
-            req.body.name,
+            req.body.email,
             req.body.password,
             null,
             function ( err , token ) {
