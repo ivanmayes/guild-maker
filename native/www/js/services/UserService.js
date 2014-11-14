@@ -26,10 +26,18 @@ define(['angular'], function(angular) {
         function login(email, password) {
             var deferred = $q.defer();
 
-            $http.post("http://localhost:8280/v" + API_VERSION + "/login", {
-                email: email,
-                password: password
-            }).then(function(result) {
+            $http.post(
+                "http://localhost:8280/v" + API_VERSION + "/login",
+                {
+                    email: email,
+                    password: password
+                }/*,
+                {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                }*/
+            ).then(function(result) {
                 if (result.data.access_token) {
                     userInfo = {
                         accessToken: result.data.access_token,

@@ -134,6 +134,8 @@ var configureExpressServer = function configureExpressServer () {
         // curl -d "email=test%40example.com&password=password" http://127.0.0.1:3000/v1/login
         var testString;
 
+        log.info( '?!!?:' , req.body , req.password );
+
         // client, username, password, scope, done
         auth.exchangePassword(
             { id: 'Shoptology.wut.wut' },
@@ -141,6 +143,8 @@ var configureExpressServer = function configureExpressServer () {
             req.body.password,
             null,
             function ( err , token ) {
+
+                log.info( '?!!?:' , err , token );
 
                 if ( err ) {
                     res.json( {
