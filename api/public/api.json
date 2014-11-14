@@ -1,0 +1,1415 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "0.0.1",
+        "title": "NLMG API",
+        "description": "New Lion HighSchool Sports App API."
+    },
+    "host": "localhost:8280",
+    "basePath": "/v1",
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "securityDefinitions": {
+        "seasonLinkInternal": {
+            "type": "oauth2",
+            "description": "Exchanges an email/password for an access_token. Only to be used by the SeasonLink app.\n",
+            "name": "access_token",
+            "in": "header",
+            "flow": "password",
+            "tokenUrl": "http://localhost:8280/v1/login",
+            "scopes": {}
+        }
+    },
+    "paths": {
+        "/me": {
+            "get": {
+                "summary": "Returns the current logged in user.",
+                "operationId": "me",
+                "security": [
+                    {
+                        "seasonLinkInternal": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User summary",
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "meta",
+                                "response"
+                            ],
+                            "properties": {
+                                "meta": {
+                                    "$ref": "Meta"
+                                },
+                                "response": {
+                                    "$ref": "User"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "summary": "Exchange a username (i.e. email) and password for an access token.",
+                "description": "Logging in will return just the access_token in the response when successful. Follow up with a call to `/me` if you want to get the user details.\n",
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "formData",
+                        "desciption": "The user's email. SeasonLink does not have usernames, but the OAuth2 spec requires this to be the param name.\n",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "password",
+                        "in": "formData",
+                        "desciption": "The user's password.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_id",
+                        "in": "formData",
+                        "desciption": "The client_id requesting to exchange the username and password for an access token.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "grant_type",
+                        "in": "formData",
+                        "desciption": "This is part of the OAuth2 spec and should be set to \"password\"",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the access_token",
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "meta",
+                                "response"
+                            ],
+                            "properties": {
+                                "meta": {
+                                    "$ref": "Meta"
+                                },
+                                "response": {
+                                    "required": [
+                                        "access_token"
+                                    ],
+                                    "properties": {
+                                        "access_token": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/signup": {
+            "post": {
+                "summary": "Creates a new user account.",
+                "description": "Creating a new user will return just the access_token in the response when successful. Follow up with a call to `/me` if you want to get the user details.\n",
+                "parameters": [
+                    {
+                        "name": "firstName",
+                        "in": "formData",
+                        "desciption": "First name of the user.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "lastName",
+                        "in": "formData",
+                        "desciption": "Last name of the user.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "password",
+                        "in": "formData",
+                        "desciption": "The user's password.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "email",
+                        "in": "formData",
+                        "desciption": "The user's email address.",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the access_token for the new user.",
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "meta",
+                                "response"
+                            ],
+                            "properties": {
+                                "meta": {
+                                    "$ref": "Meta"
+                                },
+                                "response": {
+                                    "required": [
+                                        "access_token"
+                                    ],
+                                    "properties": {
+                                        "access_token": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "description": "Returns array of Users.",
+                "summary": "Retrieve Users.",
+                "operationId": "getUsersList",
+                "responses": {
+                    "200": {
+                        "description": "List all users.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "User"
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "body",
+                        "description": "JSON object of UserModel",
+                        "required": true,
+                        "schema": {
+                            "$ref": "User"
+                        }
+                    }
+                ],
+                "description": "Creates a new User.",
+                "summary": "Create User.",
+                "operationId": "createUser",
+                "responses": {
+                    "200": {
+                        "description": "Creates a User"
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userId}": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "description": "the Id of the User",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "description": "Returns a User based on supplied Id.",
+                "summary": "Retrieve a User Object.",
+                "operationId": "getUserById",
+                "responses": {
+                    "200": {
+                        "description": "Return a User.",
+                        "schema": {
+                            "$ref": "User"
+                        }
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "body",
+                        "description": "JSON object of UserModel",
+                        "required": true,
+                        "schema": {
+                            "$ref": "User"
+                        }
+                    }
+                ],
+                "description": "Updates an existing User.",
+                "summary": "Update Existing User.",
+                "operationId": "updateUser",
+                "responses": {
+                    "200": {
+                        "description": "Updates the User"
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "description": "the Id of the User",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "description": "Deletes a User based on supplied Id.",
+                "summary": "Deletes a User Object.",
+                "operationId": "deleteUserById",
+                "responses": {
+                    "200": {
+                        "description": "Deletes the User"
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/players": {
+            "get": {
+                "description": "Returns array of Players.",
+                "summary": "Retrieve Players.",
+                "operationId": "getPlayersList",
+                "responses": {
+                    "200": {
+                        "description": "List all Players.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "Player"
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "body",
+                        "description": "JSON object of PlayerModel",
+                        "required": true,
+                        "schema": {
+                            "$ref": "Player"
+                        }
+                    }
+                ],
+                "description": "Creates a new Player.",
+                "summary": "Create Player.",
+                "operationId": "createPlayer",
+                "responses": {
+                    "200": {
+                        "description": "Creates a Player"
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "body",
+                        "description": "JSON object of PlayerModel",
+                        "required": true,
+                        "schema": {
+                            "$ref": "Player"
+                        }
+                    }
+                ],
+                "description": "Updates an existing Player.",
+                "summary": "Update Existing Player.",
+                "operationId": "updatePlayer",
+                "responses": {
+                    "200": {
+                        "description": "Updates the Player"
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/players/{playerId}": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "playerId",
+                        "in": "path",
+                        "description": "the Id of the Player",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "description": "Returns a Player based on supplied Id.",
+                "summary": "Retrieve a Player Object.",
+                "operationId": "getPlayerById",
+                "responses": {
+                    "200": {
+                        "description": "Return a Player.",
+                        "schema": {
+                            "$ref": "Player"
+                        }
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "parameters": [
+                    {
+                        "name": "playerId",
+                        "in": "path",
+                        "description": "the Id of the Player",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "description": "Deletes a Player based on supplied Id.",
+                "summary": "Deletes a Player Object.",
+                "operationId": "deletePlayerById",
+                "responses": {
+                    "200": {
+                        "description": "Deletes the Player"
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/teams": {
+            "get": {
+                "description": "Returns array of Teams.",
+                "summary": "Retrieve Teams.",
+                "operationId": "getTeamsList",
+                "responses": {
+                    "200": {
+                        "description": "List all Teams.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "Team"
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "body",
+                        "description": "JSON object of TeamModel",
+                        "required": true,
+                        "schema": {
+                            "$ref": "Team"
+                        }
+                    }
+                ],
+                "description": "Creates a new Team.",
+                "summary": "Create Team.",
+                "operationId": "createTeam",
+                "responses": {
+                    "200": {
+                        "description": "Creates a Team"
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "body",
+                        "description": "JSON object of TeamModel",
+                        "required": true,
+                        "schema": {
+                            "$ref": "Team"
+                        }
+                    }
+                ],
+                "description": "Updates an existing Team.",
+                "summary": "Update Existing Team.",
+                "operationId": "updateTeam",
+                "responses": {
+                    "200": {
+                        "description": "Updates the Team"
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/teams/{teamId}": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "teamId",
+                        "in": "path",
+                        "description": "the Id of the Team",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "description": "Returns a Team based on supplied Id.",
+                "summary": "Retrieve a Team Object.",
+                "operationId": "getTeamById",
+                "responses": {
+                    "200": {
+                        "description": "Return a Team.",
+                        "schema": {
+                            "$ref": "Team"
+                        }
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "parameters": [
+                    {
+                        "name": "teamId",
+                        "in": "path",
+                        "description": "the Id of the Team",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "description": "Deletes a Team based on supplied Id.",
+                "summary": "Deletes a Team Object.",
+                "operationId": "deleteTeamById",
+                "responses": {
+                    "200": {
+                        "description": "Deletes the Team"
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/schools": {
+            "get": {
+                "description": "Returns array of Schools.",
+                "summary": "Retrieve Schools.",
+                "operationId": "getSchoolsList",
+                "responses": {
+                    "200": {
+                        "description": "List all Schools.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "School"
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "body",
+                        "description": "JSON object of SchoolModel",
+                        "required": true,
+                        "schema": {
+                            "$ref": "School"
+                        }
+                    }
+                ],
+                "description": "Creates a new School.",
+                "summary": "Create School.",
+                "operationId": "createSchool",
+                "responses": {
+                    "200": {
+                        "description": "Creates a School"
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "body",
+                        "description": "JSON object of SchoolModel",
+                        "required": true,
+                        "schema": {
+                            "$ref": "School"
+                        }
+                    }
+                ],
+                "description": "Updates an existing School.",
+                "summary": "Update Existing School.",
+                "operationId": "updateSchool",
+                "responses": {
+                    "200": {
+                        "description": "Updates the School"
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/schools/{schoolId}": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "schoolId",
+                        "in": "path",
+                        "description": "the Id of the School",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "description": "Returns a School based on supplied Id.",
+                "summary": "Retrieve a School Object.",
+                "operationId": "getSchoolById",
+                "responses": {
+                    "200": {
+                        "description": "Return a School.",
+                        "schema": {
+                            "$ref": "School"
+                        }
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "parameters": [
+                    {
+                        "name": "schoolId",
+                        "in": "path",
+                        "description": "the Id of the School",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "description": "Deletes a School based on supplied Id.",
+                "summary": "Deletes a School Object.",
+                "operationId": "deleteSchoolById",
+                "responses": {
+                    "200": {
+                        "description": "Deletes the School"
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/events": {
+            "get": {
+                "description": "Returns array of Events.",
+                "summary": "Retrieve Events.",
+                "operationId": "getEventsList",
+                "responses": {
+                    "200": {
+                        "description": "List all Events.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "Event"
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "body",
+                        "description": "JSON object of EventModel",
+                        "required": true,
+                        "schema": {
+                            "$ref": "Event"
+                        }
+                    }
+                ],
+                "description": "Creates a new Event.",
+                "summary": "Create Event.",
+                "operationId": "createEvent",
+                "responses": {
+                    "200": {
+                        "description": "Creates a Event"
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "body",
+                        "description": "JSON object of EventModel",
+                        "required": true,
+                        "schema": {
+                            "$ref": "Event"
+                        }
+                    }
+                ],
+                "description": "Updates an existing Event.",
+                "summary": "Update Existing Event.",
+                "operationId": "updateEvent",
+                "responses": {
+                    "200": {
+                        "description": "Updates the Event"
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/events/{eventId}": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "eventId",
+                        "in": "path",
+                        "description": "the Id of the Event",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "description": "Returns a Event based on supplied Id.",
+                "summary": "Retrieve a Event Object.",
+                "operationId": "getEventById",
+                "responses": {
+                    "200": {
+                        "description": "Return an Event.",
+                        "schema": {
+                            "$ref": "Event"
+                        }
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "parameters": [
+                    {
+                        "name": "eventId",
+                        "in": "path",
+                        "description": "the Id of the Event",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "description": "Deletes a Event based on supplied Id.",
+                "summary": "Deletes a Event Object.",
+                "operationId": "deleteEventById",
+                "responses": {
+                    "200": {
+                        "description": "Deletes the Event"
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "Error"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "Envelope": {
+            "description": "API envelope object",
+            "required": [
+                "meta"
+            ],
+            "properties": {
+                "meta": {
+                    "$ref": "Meta"
+                },
+                "response": {
+                    "anyOf": [
+                        {
+                            "type": "object"
+                        },
+                        {
+                            "type": "array"
+                        }
+                    ]
+                }
+            }
+        },
+        "Meta": {
+            "description": "meta portion of the API envelope",
+            "type": "object",
+            "required": [
+                "code"
+            ],
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "errorType": {
+                    "description": "Machine-readable error type",
+                    "type": "string"
+                },
+                "errorDetail": {
+                    "description": "Additional information about what went wrong, intended for the developer.",
+                    "type": "string"
+                },
+                "errorMessage": {
+                    "description": "A localized string intended for the client to display back to the user directly.",
+                    "type": "string"
+                }
+            }
+        },
+        "Error": {
+            "description": "Error response will only have meta with the code, errorType and optionally errorDetail and errorMessage.",
+            "required": [
+                "meta"
+            ],
+            "properties": {
+                "meta": {
+                    "$ref": "Meta"
+                }
+            }
+        },
+        "SuccessEnvelope": {
+            "description": "Responses that only need to show the request succeeded",
+            "required": [
+                "meta",
+                "response"
+            ],
+            "properties": {
+                "meta": {
+                    "$ref": "Meta"
+                },
+                "response": {
+                    "required": [
+                        "success"
+                    ],
+                    "properties": {
+                        "success": {
+                            "description": "This will be set to `true`.",
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
+        "Event": {
+            "description": "Event Object",
+            "required": [
+                "id",
+                "name",
+                "eventDescription",
+                "dates"
+            ],
+            "properties": {
+                "id": {
+                    "description": "Event Id",
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "team": {
+                    "description": "Team associated with Event",
+                    "$ref": "Team"
+                },
+                "name": {
+                    "description": "Event Name/Title",
+                    "type": "string"
+                },
+                "eventDescription": {
+                    "description": "Event body",
+                    "type": "string"
+                },
+                "eventType": {
+                    "description": "Event type ()",
+                    "type": "string"
+                },
+                "dates": {
+                    "description": "EventTime (start/end) of Event",
+                    "$ref": "EventTime"
+                },
+                "rescheduled": {
+                    "description": "Rescheduled flag",
+                    "type": "boolean",
+                    "defaultValue": false
+                },
+                "opponent": {
+                    "description": "Team playing against in Event",
+                    "$ref": "Team"
+                },
+                "score": {
+                    "description": "Scoring object of Event",
+                    "$ref": "ScoringObj"
+                }
+            }
+        },
+        "Notification": {
+            "description": "Notification Object",
+            "required": [
+                "name",
+                "message"
+            ],
+            "properties": {
+                "id": {
+                    "description": "Id of Notification",
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "name": {
+                    "description": "Name/Title of Notification",
+                    "type": "string"
+                },
+                "message": {
+                    "description": "Body of Notification",
+                    "type": "string"
+                },
+                "msgType": {
+                    "description": "Type of Notification (games/schedule/score/etc.)",
+                    "type": "string"
+                },
+                "msgCategory": {
+                    "description": "Category of Notification (fan/parent)",
+                    "type": "string"
+                }
+            }
+        },
+        "Player": {
+            "description": "Player Object",
+            "required": [
+                "id",
+                "team",
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "description": "Player Id",
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "team": {
+                    "description": "Team of Player",
+                    "$ref": "Team"
+                },
+                "school": {
+                    "description": "School of Player",
+                    "$ref": "School"
+                },
+                "name": {
+                    "description": "Player Name",
+                    "type": "string"
+                },
+                "number": {
+                    "description": "Player Number",
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "position": {
+                    "description": "Position of Player",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "Email of Player",
+                    "type": "string"
+                },
+                "images": {
+                    "description": "List of Images associated with Player",
+                    "type": "array",
+                    "items": {
+                        "$ref": "Image"
+                    }
+                },
+                "stats": {
+                    "description": "Stats associated with Player",
+                    "type": "object"
+                }
+            }
+        },
+        "School": {
+            "description": "School Object",
+            "required": [
+                "id",
+                "name",
+                "mascot"
+            ],
+            "properties": {
+                "id": {
+                    "description": "Id of School",
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "name": {
+                    "description": "Name of School",
+                    "type": "string"
+                },
+                "address": {
+                    "description": "Address of School",
+                    "$ref": "Address"
+                },
+                "division": {
+                    "description": "School division",
+                    "type": "string"
+                },
+                "mascot": {
+                    "description": "School Mascot",
+                    "type": "string"
+                },
+                "logo": {
+                    "description": "School Logo",
+                    "type": "string"
+                },
+                "colors": {
+                    "description": "School Colors",
+                    "$ref": "TeamColors"
+                },
+                "eCommerce": {
+                    "description": "Link to School's eCommerce",
+                    "type": "string"
+                }
+            }
+        },
+        "Team": {
+            "description": "Team Object",
+            "required": [
+                "id",
+                "school",
+                "sport",
+                "gender",
+                "mascot"
+            ],
+            "properties": {
+                "id": {
+                    "description": "Id of Team",
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "school": {
+                    "description": "School of Team",
+                    "type": "string"
+                },
+                "sport": {
+                    "description": "Sport of Team",
+                    "type": "string"
+                },
+                "gender": {
+                    "description": "Guys/Girls Team",
+                    "type": "string",
+                    "enum": [
+                        "Guys",
+                        "Girls"
+                    ]
+                },
+                "division": {
+                    "description": "Division of Team (Varsity/JV/Frosh/etc.)",
+                    "type": "string"
+                },
+                "mascot": {
+                    "description": "Mascot of Team",
+                    "type": "string"
+                },
+                "venue": {
+                    "description": "Venue of Team",
+                    "$ref": "Venue"
+                },
+                "logo": {
+                    "description": "Team Logo",
+                    "type": "string"
+                },
+                "colors": {
+                    "description": "Team Colors",
+                    "$ref": "TeamColors"
+                },
+                "location": {
+                    "description": "Team Location - url for map",
+                    "type": "string"
+                },
+                "notifications": {
+                    "description": "Team Notification Settings",
+                    "$ref": "NotificationSettings"
+                }
+            }
+        },
+        "User": {
+            "description": "User Object",
+            "required": [
+                "firstName",
+                "lastName",
+                "email"
+            ],
+            "properties": {
+                "firstName": {
+                    "description": "First name of User",
+                    "type": "string"
+                },
+                "lastName": {
+                    "description": "Last name of User",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "Email address of User",
+                    "type": "string"
+                },
+                "settings": {
+                    "description": "Global Notification Settings",
+                    "$ref": "Settings"
+                },
+                "notifications": {
+                    "description": "Notification history (@todo this probably won't be in the user, remove this)",
+                    "type": "array",
+                    "items": {
+                        "description": "Notification object",
+                        "$ref": "Notification"
+                    }
+                }
+            }
+        },
+        "Venue": {
+            "description": "Venue Object",
+            "properties": {
+                "id": {
+                    "description": "Id of Venue",
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "name": {
+                    "description": "Name of Venue",
+                    "type": "string"
+                },
+                "address": {
+                    "description": "Address of Venue",
+                    "type": "string"
+                },
+                "location": {
+                    "description": "location of Venue - url for map",
+                    "type": "string"
+                }
+            }
+        },
+        "Address": {
+            "description": "Address of location",
+            "required": [
+                "addr1",
+                "city",
+                "state",
+                "zip"
+            ],
+            "properties": {
+                "addr1": {
+                    "description": "Location address line 1",
+                    "type": "string"
+                },
+                "addr2": {
+                    "description": "Location address line 2",
+                    "type": "string"
+                },
+                "city": {
+                    "description": "Location City",
+                    "type": "string"
+                },
+                "state": {
+                    "description": "Location state",
+                    "type": "string"
+                },
+                "zip": {
+                    "description": "Location zip/postal code",
+                    "type": "string"
+                },
+                "location": {
+                    "description": "Location url for map",
+                    "type": "string"
+                }
+            }
+        },
+        "Settings": {
+            "description": "Settings Object",
+            "properties": {
+                "notifications": {
+                    "description": "Notification Settings",
+                    "$ref": "NotificationSettings"
+                },
+                "teams": {
+                    "description": "List of favorited teams",
+                    "type": "array",
+                    "items": {
+                        "$ref": "Team"
+                    }
+                }
+            }
+        },
+        "NotificationSettings": {
+            "description": "NotificationSettings Object",
+            "properties": {
+                "notifications": {
+                    "description": "Accept/Deny notifications flag",
+                    "type": "boolean",
+                    "defaultValue": false
+                },
+                "upcomingGames": {
+                    "description": "Accept/Deny upcoming games notifications",
+                    "type": "boolean",
+                    "defaultValue": false
+                },
+                "scheduleChanges": {
+                    "description": "Accept/Deny schedule change notifications",
+                    "type": "boolean",
+                    "defaultValue": false
+                },
+                "scoreUpdates": {
+                    "description": "Accpet/Deny score update notifications",
+                    "type": "boolean",
+                    "defaultValue": false
+                },
+                "finalScores": {
+                    "description": "Accept/Deny final score notifications",
+                    "type": "boolean",
+                    "defaultValue": false
+                },
+                "accountType": {
+                    "description": "Type of account associated with this notification (fan/parent/etc.)",
+                    "type": "string"
+                }
+            }
+        },
+        "TeamColors": {
+            "description": "Colors associated with team/school",
+            "properties": {
+                "light": {
+                    "description": "Light Color",
+                    "type": "string"
+                },
+                "dark": {
+                    "description": "Dark Color",
+                    "type": "string"
+                },
+                "alt_0": {
+                    "description": "Alternate Color - 0",
+                    "type": "string"
+                },
+                "alt_1": {
+                    "description": "Alternate Color - 1",
+                    "type": "string"
+                },
+                "alt_2": {
+                    "description": "Alternate Color - 2",
+                    "type": "string"
+                }
+            }
+        },
+        "EventTime": {
+            "description": "Start and End dates/times for Events",
+            "properties": {
+                "start": {
+                    "description": "Event start datetime",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "end": {
+                    "description": "Event end datetime",
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+        },
+        "ScoringObj": {
+            "description": "Team and Opponent Team score",
+            "properties": {
+                "teamScore": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "opponentScore": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "Image": {
+            "description": "Image Object",
+            "required": [
+                "path"
+            ],
+            "properties": {
+                "id": {
+                    "description": "Id attribute of image tag",
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "name": {
+                    "description": "Name attribute of image tag",
+                    "type": "string"
+                },
+                "alt": {
+                    "description": "Alt attribute of image tag",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "Source path of image",
+                    "type": "string"
+                },
+                "width": {
+                    "description": "Width of Image",
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "height": {
+                    "description": "Height of Image",
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        }
+    }
+}

@@ -19,6 +19,7 @@ var childProcess   = require( 'child_process' ),
     path           = require( 'path' ),
     express        = require( 'express' ),
     cors           = require( 'cors' ),
+    swaggerize     = require('swaggerize-express'),
     passport       = require( 'passport' ),
     BearerStrategy = require( 'passport-http-bearer' ).Strategy,
     // Only going to return json
@@ -181,6 +182,17 @@ var configureExpressServer = function configureExpressServer () {
     });
 
     app.use( config.versionPrefix, apiRouter );
+
+    // Serves up the swagger spec and docs
+    app.use( config.versionPrefix, express.static( __dirname + '/public' ));
+
+    // Seems pretty cool in theory. Gives "Maximum call stack size exceeded" error when I try to run it though.
+    // https://github.com/krakenjs/swaggerize-express/issues/38
+    // app.use( swaggerize( {
+    //     api: require('./api.json'),
+    //     docspath: '/docs',
+    //     handlers: './lib/routes'
+    // } ) );
 
     httpServer = app.listen( config.port );
     log.info( 'api on port: %s' , config.port );

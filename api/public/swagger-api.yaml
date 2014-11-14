@@ -3,23 +3,152 @@ info:
   version: 0.0.1
   title: NLMG API
   description: New Lion HighSchool Sports App API.
-host: localhost:8002
+host: localhost:8280
 basePath: /v1
 # basePath: /api
 schemes:
   - http
   - https
-consumes:
-  - application/json
 produces:
   - application/json
-#securityDefinitions:
-  # TODO: Flush out OAuth2, and Basic auth strategies
-  # README: this is a list of all available security protocols
-#security:
-  # TODO: Implement strategies to use across API
-  # README: this is a list of security protocols to use for all API endpoints
+securityDefinitions:
+  seasonLinkInternal:
+    type: oauth2
+    description: >
+      Exchanges an email/password for an access_token. Only
+      to be used by the SeasonLink app.
+    name: access_token
+    in: header
+    flow: password
+    tokenUrl: http://localhost:8280/v1/login
+    scopes: {}
 paths:
+  /me:
+    get:
+      summary: Returns the current logged in user.
+      operationId: me
+      security:
+        - seasonLinkInternal: []
+      responses:
+        200:
+          description: User summary
+          schema:
+            type: object
+            required:
+              - meta
+              - response
+            properties:
+              meta:
+                $ref: Meta
+              response:
+                $ref: User
+        default:
+          description: The standard error envelope.
+          schema:
+            $ref: Error
+
+  /login:
+    post:
+      summary: Exchange a username (i.e. email) and password for an access token.
+      description: >
+        Logging in will return just the access_token in the
+        response when successful. Follow up with a call to `/me` if you
+        want to get the user details.
+      parameters:
+        - name: username
+          in: formData
+          desciption: >
+            The user's email. SeasonLink does not have usernames,
+            but the OAuth2 spec requires this to be the param name.
+          required: true
+          type: string
+        - name: password
+          in: formData
+          desciption: The user's password.
+          required: true
+          type: string
+        - name: client_id
+          in: formData
+          desciption: The client_id requesting to exchange the username and password for an access token.
+          required: true
+          type: string
+        - name: grant_type
+          in: formData
+          desciption: This is part of the OAuth2 spec and should be set to "password"
+          required: true
+          type: string
+      responses:
+        200:
+          description: Returns the access_token
+          schema:
+            type: object
+            required:
+              - meta
+              - response
+            properties:
+              meta:
+                $ref: Meta
+              response:
+                required:
+                  - access_token
+                properties:
+                  access_token:
+                    type: string
+        default:
+          description: The standard error envelope.
+          schema:
+            $ref: Error
+
+  /signup:
+    post:
+      summary: Creates a new user account.
+      description: >
+        Creating a new user will return just the access_token in the
+        response when successful. Follow up with a call to `/me` if you
+        want to get the user details.
+      parameters:
+        - name: firstName
+          in: formData
+          desciption: First name of the user.
+          required: true
+          type: string
+        - name: lastName
+          in: formData
+          desciption: Last name of the user.
+          required: true
+          type: string
+        - name: password
+          in: formData
+          desciption: The user's password.
+          required: true
+          type: string
+        - name: email
+          in: formData
+          desciption: The user's email address.
+          required: true
+          type: string
+      responses:
+        200:
+          description: Returns the access_token for the new user.
+          schema:
+            type: object
+            required:
+              - meta
+              - response
+            properties:
+              meta:
+                $ref: Meta
+              response:
+                required:
+                  - access_token
+                properties:
+                  access_token:
+                    type: string
+        default:
+          description: The standard error envelope.
+          schema:
+            $ref: Error
+
   /users:
     get:
       description: Returns array of Users.
@@ -30,9 +159,6 @@ paths:
       #       - user:read
       #       - user:write
       #   - internalApiKey: []
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description: List all users.
@@ -41,9 +167,9 @@ paths:
             items:
               $ref: User
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
     post:
       parameters:
       - name: id
@@ -55,37 +181,13 @@ paths:
       description: Creates a new User.
       summary: Create User.
       operationId: createUser
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description: Creates a User
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
-    put:
-      parameters:
-      - name: id
-        in: body
-        description: JSON object of UserModel
-        required: true
-        schema:
-          $ref: User
-      description: Updates an existing User.
-      summary: Update Existing User.
-      operationId: updateUser
-      produces:
-        - application/json
-        - text/html
-      responses:
-        200:
-          description: Updates the User
-        default:
-          description: error payload
-          schema:
-            $ref: ErrorModel
+            $ref: Error
   /users/{userId}:
     get:
       parameters:
@@ -102,18 +204,33 @@ paths:
       #       - user:read
       #       - user:write
       #   - internalApiKey: []
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description:  Return a User.
           schema:
             $ref: User
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
+    put:
+      parameters:
+      - name: id
+        in: body
+        description: JSON object of UserModel
+        required: true
+        schema:
+          $ref: User
+      description: Updates an existing User.
+      summary: Update Existing User.
+      operationId: updateUser
+      responses:
+        200:
+          description: Updates the User
+        default:
+          description: The standard error envelope.
+          schema:
+            $ref: Error
     delete:
       parameters:
       - name: userId
@@ -124,16 +241,13 @@ paths:
       description: Deletes a User based on supplied Id.
       summary: Deletes a User Object.
       operationId: deleteUserById
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description: Deletes the User
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
   /players:
     get:
       description: Returns array of Players.
@@ -144,9 +258,6 @@ paths:
       #       - user:read
       #       - user:write
       #   - internalApiKey: []
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description: List all Players.
@@ -155,9 +266,9 @@ paths:
             items:
               $ref: Player
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
     post:
       parameters:
       - name: id
@@ -169,16 +280,13 @@ paths:
       description: Creates a new Player.
       summary: Create Player.
       operationId: createPlayer
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description: Creates a Player
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
     put:
       parameters:
       - name: id
@@ -190,16 +298,13 @@ paths:
       description: Updates an existing Player.
       summary: Update Existing Player.
       operationId: updatePlayer
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description: Updates the Player
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
   /players/{playerId}:
     get:
       parameters:
@@ -216,18 +321,15 @@ paths:
       #       - user:read
       #       - user:write
       #   - internalApiKey: []
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description:  Return a Player.
           schema:
             $ref: Player
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
     delete:
       parameters:
       - name: playerId
@@ -238,16 +340,13 @@ paths:
       description: Deletes a Player based on supplied Id.
       summary: Deletes a Player Object.
       operationId: deletePlayerById
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description: Deletes the Player
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
 
   /teams:
     get:
@@ -259,9 +358,6 @@ paths:
       #       - user:read
       #       - user:write
       #   - internalApiKey: []
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description: List all Teams.
@@ -270,9 +366,9 @@ paths:
             items:
               $ref: Team
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
     post:
       parameters:
       - name: id
@@ -284,16 +380,13 @@ paths:
       description: Creates a new Team.
       summary: Create Team.
       operationId: createTeam
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description: Creates a Team
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
     put:
       parameters:
       - name: id
@@ -305,16 +398,13 @@ paths:
       description: Updates an existing Team.
       summary: Update Existing Team.
       operationId: updateTeam
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description: Updates the Team
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
   /teams/{teamId}:
     get:
       parameters:
@@ -331,18 +421,15 @@ paths:
       #       - user:read
       #       - user:write
       #   - internalApiKey: []
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description:  Return a Team.
           schema:
             $ref: Team
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
     delete:
       parameters:
       - name: teamId
@@ -353,16 +440,13 @@ paths:
       description: Deletes a Team based on supplied Id.
       summary: Deletes a Team Object.
       operationId: deleteTeamById
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description: Deletes the Team
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
   /schools:
     get:
       description: Returns array of Schools.
@@ -373,9 +457,6 @@ paths:
       #       - user:read
       #       - user:write
       #   - internalApiKey: []
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description: List all Schools.
@@ -384,9 +465,9 @@ paths:
             items:
               $ref: School
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
     post:
       parameters:
       - name: id
@@ -398,16 +479,13 @@ paths:
       description: Creates a new School.
       summary: Create School.
       operationId: createSchool
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description: Creates a School
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
     put:
       parameters:
       - name: id
@@ -419,16 +497,13 @@ paths:
       description: Updates an existing School.
       summary: Update Existing School.
       operationId: updateSchool
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description: Updates the School
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
   /schools/{schoolId}:
     get:
       parameters:
@@ -445,18 +520,15 @@ paths:
       #       - user:read
       #       - user:write
       #   - internalApiKey: []
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description:  Return a School.
           schema:
             $ref: School
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
     delete:
       parameters:
       - name: schoolId
@@ -467,16 +539,13 @@ paths:
       description: Deletes a School based on supplied Id.
       summary: Deletes a School Object.
       operationId: deleteSchoolById
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description: Deletes the School
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
   /events:
     get:
       description: Returns array of Events.
@@ -487,9 +556,6 @@ paths:
       #       - user:read
       #       - user:write
       #   - internalApiKey: []
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description: List all Events.
@@ -498,9 +564,9 @@ paths:
             items:
               $ref: Event
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
     post:
       parameters:
       - name: id
@@ -512,16 +578,13 @@ paths:
       description: Creates a new Event.
       summary: Create Event.
       operationId: createEvent
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description: Creates a Event
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
     put:
       parameters:
       - name: id
@@ -533,16 +596,13 @@ paths:
       description: Updates an existing Event.
       summary: Update Existing Event.
       operationId: updateEvent
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description: Updates the Event
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
   /events/{eventId}:
     get:
       parameters:
@@ -559,18 +619,15 @@ paths:
       #       - user:read
       #       - user:write
       #   - internalApiKey: []
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description:  Return an Event.
           schema:
             $ref: Event
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
     delete:
       parameters:
       - name: eventId
@@ -581,38 +638,166 @@ paths:
       description: Deletes a Event based on supplied Id.
       summary: Deletes a Event Object.
       operationId: deleteEventById
-      produces:
-        - application/json
-        - text/html
       responses:
         200:
           description: Deletes the Event
         default:
-          description: error payload
+          description: The standard error envelope.
           schema:
-            $ref: ErrorModel
+            $ref: Error
 definitions:
-  User:
-    description: User Object
+  Envelope:
+    description: API envelope object
+    required:
+      - meta
+    properties:
+      meta:
+        $ref: Meta
+      response:
+        anyOf:
+          -
+            type: object
+          -
+            type: array
+  Meta:
+    description: meta portion of the API envelope
+    type: object
+    required:
+      - code
+    properties:
+      code:
+        type: integer
+        format: int32
+      errorType:
+        description: Machine-readable error type
+        type: string
+      errorDetail:
+        description: "Additional information about what went wrong, intended for the developer."
+        type: string
+      errorMessage:
+        description: A localized string intended for the client to display back to the user directly.
+        type: string
+  Error:
+    description: "Error response will only have meta with the code, errorType and optionally errorDetail and errorMessage."
+    required:
+      - meta
+    properties:
+      meta:
+        $ref: Meta
+  SuccessEnvelope:
+    description: Responses that only need to show the request succeeded
+    required:
+      - meta
+      - response
+    properties:
+      meta:
+        $ref: Meta
+      response:
+        required:
+          - success
+        properties:
+          success:
+            description: This will be set to `true`.
+            type: boolean
+
+  Event:
+    description: Event Object
+    required:
+      - id
+      - name
+      - eventDescription
+      - dates
+    properties:
+      id:
+        description: Event Id
+        type: integer
+        format: int32
+      team:
+        description: Team associated with Event
+        $ref: Team
+      name:
+        description: Event Name/Title
+        type: string
+      eventDescription:
+        description: Event body
+        type: string
+      eventType:
+        description: Event type ()
+        type: string
+      dates:
+        description: EventTime (start/end) of Event
+        $ref: EventTime
+      rescheduled:
+        description: Rescheduled flag
+        type: boolean
+        defaultValue: false
+      opponent:
+        description: Team playing against in Event
+        $ref: Team
+      score:
+        description: Scoring object of Event
+        $ref: ScoringObj
+  Notification:
+    description: Notification Object
     required:
       - name
-      - email
+      - message
     properties:
+      id:
+        description: Id of Notification
+        type: integer
+        format: int32
       name:
-        description: Name of User
+        description: Name/Title of Notification
+        type: string
+      message:
+        description: Body of Notification
+        type: string
+      msgType:
+        description: Type of Notification (games/schedule/score/etc.)
+        type: string
+      msgCategory:
+        #not sure if needed
+        description: Category of Notification (fan/parent)
+        type: string
+  Player:
+    description: Player Object
+    required:
+      - id
+      - team
+      - name
+    properties:
+      id:
+        description: Player Id
+        type: integer
+        format: int32
+      team:
+        description: Team of Player
+        $ref: Team
+      school:
+        description: School of Player
+        $ref: School
+      name:
+        description: Player Name
+        type: string
+      number:
+        description: Player Number
+        type: integer
+        format: int32
+      position:
+        description: Position of Player
         type: string
       email:
-        description: Email address of User
+        description: Email of Player
         type: string
-      settings:
-        description: Global Notification Settings
-        $ref: Settings
-      notifcations:
-        description: Notification history
+      images:
+        description: List of Images associated with Player
         type: array
         items:
-          description: Notification object
-          $ref: Notification
+          $ref: Image
+      stats:
+        description: Stats associated with Player
+        type: object
   School:
     description: School Object
     required:
@@ -691,81 +876,48 @@ definitions:
       notifications:
         description: Team Notification Settings
         $ref: NotificationSettings
-  Player:
-    description: Player Object
+  User:
+    description: User Object
     required:
-      - id
-      - team
-      - name
+      - firstName
+      - lastName
+      - email
     properties:
-      id:
-        description: Player Id
-        type: integer
-        format: int32
-      team:
-        description: Team of Player
-        $ref: Team
-      school:
-        description: School of Player
-        $ref: School
-      name:
-        description: Player Name
+      firstName:
+        description: First name of User
         type: string
-      number:
-        description: Player Number
-        type: integer
-        format: int32
-      position:
-        description: Position of Player
+      lastName:
+        description: Last name of User
         type: string
       email:
-        description: Email of Player
+        description: Email address of User
         type: string
-      images:
-        description: List of Images associated with Player
+      settings:
+        description: Global Notification Settings
+        $ref: Settings
+      notifications:
+        description: "Notification history (@todo this probably won't be in the user, remove this)"
         type: array
         items:
-          $ref: Image
-      stats:
-        description: Stats associated with Player
-        type: object
-  Event:
-    description: Event Object
-    required:
-      - id
-      - name
-      - eventDescription
-      - dates
+          description: Notification object
+          $ref: Notification
+  Venue:
+    description: Venue Object
     properties:
       id:
-        description: Event Id
+        description: Id of Venue
         type: integer
         format: int32
-      team:
-        description: Team associated with Event
-        $ref: Team
       name:
-        description: Event Name/Title
+        description: Name of Venue
         type: string
-      eventDescription:
-        description: Event body
+      address:
+        description: Address of Venue
         type: string
-      eventType:
-        description: Event type ()
+      location:
+        description: location of Venue - url for map
         type: string
-      dates:
-        description: EventTime (start/end) of Event
-        $ref: EventTime
-      rescheduled:
-        description: Rescheduled flag
-        type: boolean
-        defaultValue: false
-      opponent:
-        description: Team playing against in Event
-        $ref: Team
-      score:
-        description: Scoring object of Event
-        $ref: ScoringObj
+
   Address:
     description: Address of location
     required:
@@ -828,45 +980,6 @@ definitions:
         defaultValue: false
       accountType:
         description: Type of account associated with this notification (fan/parent/etc.)
-        type: string
-  Notification:
-    description: Notification Object
-    required:
-      - name
-      - message
-    properties:
-      id:
-        description: Id of Notification
-        type: integer
-        format: int32
-      name:
-        description: Name/Title of Notification
-        type: string
-      message:
-        description: Body of Notification
-        type: string
-      msgType:
-        description: Type of Notification (games/schedule/score/etc.)
-        type: string
-      msgCategory:
-        #not sure if needed
-        description: Category of Notification (fan/parent)
-        type: string
-  Venue:
-    description: Venue Object
-    properties:
-      id:
-        description: Id of Venue
-        type: integer
-        format: int32
-      name:
-        description: Name of Venue
-        type: string
-      address:
-        description: Address of Venue
-        type: string
-      location:
-        description: location of Venue - url for map
         type: string
   TeamColors:
     description: TeamColors Object
@@ -933,14 +1046,5 @@ definitions:
         description: Height of Image
         type: integer
         format: int32
-  ErrorModel:
-    description: ErrorModel Object
-    required:
-      - code
-      - message
-    properties:
-      code:
-        type: integer
-        format: int32
-      message:
-        type: string
+
+
