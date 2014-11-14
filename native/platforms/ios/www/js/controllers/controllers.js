@@ -11,6 +11,10 @@ define(function(require) {
 
     controllers.controller('AppCtrl', require('controllers/AppCtrl'));
     controllers.controller('LoginCtrl', require('controllers/LoginCtrl'));
+<<<<<<< HEAD
+=======
+    controllers.controller('SearchCtrl', require('controllers/SearchCtrl'));
+>>>>>>> d7982598b571b45a0300d830dd87f6775631377c
     controllers.controller('HomeCtrl', require('controllers/HomeCtrl'));
     controllers.controller('FavoriteTeamsCtrl', require('controllers/FavoriteTeamsCtrl'));
     controllers.controller('ScoresCtrl', require('controllers/ScoresCtrl'));

@@ -4,3 +4,8 @@
   width: 96px;
   height: 96px;
 }
+
+.tabs li {
+  display:inline;
+  padding: 0 5px;
+}

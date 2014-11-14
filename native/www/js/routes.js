@@ -31,6 +31,11 @@ define(['app'], function(app) {
                     templateUrl: "templates/roleselect.html",
                     controller: 'LoginCtrl'
                 })
+                .state('search', {
+                    url: "/search",
+                    templateUrl: "templates/search.html",
+                    controller: 'SearchCtrl'
+                })
                 .state('fav', {
                     url: '/fav',
                     templateUrl: 'templates/favorite-teams.html',
@@ -38,11 +43,28 @@ define(['app'], function(app) {
                 })
                 .state('team', {
                     url: '/team',
-                    templateUrl: "templates/team.html"
+                    templateUrl: "templates/team.html",
+                    controller: 'TeamCtrl'
+                })
+                .state('game', {
+                    url: '/game',
+                    templateUrl: "templates/game/game.html",
+                    controller: 'GameCtrl'
                 })
                 .state('scores', {
                     url: '/scores',
-                    templateUrl: 'templates/scores/scores.html'
+                    templateUrl: 'templates/scores/scores.html',
+                    controller: 'ScoresCtrl'
+                })
+                .state('divisions', {
+                    url: '/scores.divisions',
+                    templateUrl: 'templates/scores/divisions.html',
+                    controller: 'ScoresCtrl'
+                })
+                .state('settings', {
+                    url: '/settings',
+                    templateUrl: 'templates/settings.html',
+                    controller: 'SettingsCtrl'
                 })
             /*.state('tab.pet-detail', {
                 url: '/pet/:petId',

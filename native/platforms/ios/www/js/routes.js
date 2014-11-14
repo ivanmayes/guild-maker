@@ -31,15 +31,31 @@ define(['app'], function(app) {
                     templateUrl: "templates/roleselect.html",
                     controller: 'LoginCtrl'
                 })
+<<<<<<< HEAD
+=======
+                .state('search', {
+                	url: "/search",
+                	templateUrl: "templates/search.html",
+                	controller: 'SearchCtrl'
+                })
+>>>>>>> d7982598b571b45a0300d830dd87f6775631377c
                 .state('fav', {
                     url: '/fav',
                     templateUrl: 'templates/favorite-teams.html',
                     controller: 'FavoriteTeamsCtrl'
+<<<<<<< HEAD
                 })
                 .state('team', {
                     url: '/team',
                     templateUrl: "templates/team.html"
                 })
+=======
+                })
+                .state('team', {
+                    url: '/team',
+                    templateUrl: "templates/team.html"
+                })
+>>>>>>> d7982598b571b45a0300d830dd87f6775631377c
                 .state('scores', {
                     url: '/scores',
                     templateUrl: 'templates/scores.html'

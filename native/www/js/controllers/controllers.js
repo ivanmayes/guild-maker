@@ -11,9 +11,13 @@ define(function(require) {
 
     controllers.controller('AppCtrl', require('controllers/AppCtrl'));
     controllers.controller('LoginCtrl', require('controllers/LoginCtrl'));
+    controllers.controller('SearchCtrl', require('controllers/SearchCtrl'));
     controllers.controller('HomeCtrl', require('controllers/HomeCtrl'));
     controllers.controller('FavoriteTeamsCtrl', require('controllers/FavoriteTeamsCtrl'));
     controllers.controller('ScoresCtrl', require('controllers/ScoresCtrl'));
+    controllers.controller('TeamCtrl', require('controllers/TeamCtrl'));
+    controllers.controller('GameCtrl', require('controllers/GameCtrl'));
+    controllers.controller('SettingsCtrl', require('controllers/SettingsCtrl'));
 
     /*controllers.run(['$rootScope', function($rootScope) {
             $rootScope.sampleParam = "value";
