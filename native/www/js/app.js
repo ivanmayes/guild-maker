@@ -7,7 +7,8 @@ define(['angular',
     'services/services',
     'directives/directives',
     'controllers/controllers',
-'ionicAngular'], function(angular, uiRouter) {
+    'ionicAngular'
+], function(angular, uiRouter) {
         'use strict';
 
         var app = angular.module('app', [

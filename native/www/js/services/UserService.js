@@ -1,42 +1,52 @@
 define(['angular'], function(angular) {
     "use strict";
 
-    var factory = function($http, $q, $window) {
+    var factory = function(API_VERSION, $http, $q, $window) {
 
         var userInfo;
 
         /**
-         * Logs a user into the application
-         * @param  {[type]} userName [description]
-         * @param  {[type]} password [description]
-         * @return {[type]}          [description]
+         * Checks if user is logged in
+         * @return {Boolean} User login state
          */
-        function login(userName, password) {
-            var deferred = $q.defer();
-
-            $http.post("/api/login", {
-                userName: userName,
-                password: password
-            }).then(function(result) {
-                userInfo = {
-                    accessToken: result.data.access_token,
-                    userName: result.data.userName
-                };
-                $window.sessionStorage["userInfo"] = JSON.stringify(userInfo);
-                deferred.resolve(userInfo);
-            }, function(error) {
-                    deferred.reject(error);
-                });
-
-            return deferred.promise;
-        }
-
         function isLoggedIn() {
             if ($window.sessionStorage["userInfo"]) {
                 return true;
             } else {
                 return false;
             }
+        }
+
+        /**
+         * Logs a user into the application
+         * @param  {String} email User Email Address
+         * @param  {String} password User Password
+         * @return {String} access_token  A user access token to access other page data
+         */
+        function login(email, password) {
+            var deferred = $q.defer();
+
+            $http.post("http://localhost:8280/v" + API_VERSION + "/login", {
+                email: email,
+                password: password
+            }).then(function(result) {
+                if (result.data.access_token) {
+                    userInfo = {
+                        accessToken: result.data.access_token,
+                        email: result.data.email
+                    };
+                    $window.sessionStorage["userInfo"] = JSON.stringify(userInfo);
+                    deferred.resolve(userInfo);
+                } else {
+                    deferred.reject(result.data.meta.errorType);
+                }
+
+
+            }, function(error) {
+                    deferred.reject(error);
+                });
+
+            return deferred.promise;
         }
 
         /**
@@ -49,14 +59,48 @@ define(['angular'], function(angular) {
             return true;
         }
 
+        /**
+         * Signs up a new user with our API
+         * @param  {String} email User Email Address
+         * @param  {String} password User Password (Confirmed with Controller)
+         * @return {String} access_token  A user access token to access other page data
+         */
+        function signup(email, password) {
+            var deferred = $q.defer();
+
+            $http.post("http://localhost:8280/v" + API_VERSION + "/signup", {
+                email: email,
+                password: password
+            }).then(function(result) {
+
+                if (result.data.access_token) {
+                    userInfo = {
+                        accessToken: result.data.access_token,
+                        email: result.data.email
+                    };
+                    $window.sessionStorage["userInfo"] = JSON.stringify(userInfo);
+                    deferred.resolve(userInfo);
+                } else {
+                    deferred.reject(result.data.meta.errorType);
+                }
+
+            }, function(error) {
+                    deferred.reject(error);
+                });
+
+            return deferred.promise;
+        }
+
+        // Return all our public functions
         return {
             login: login,
             isLoggedIn: isLoggedIn,
-            logout: logout
+            logout: logout,
+            signup: signup
         };
 
     };
 
-    factory.$inject = ['$http', '$q', '$window'];
+    factory.$inject = ['API_VERSION', '$http', '$q', '$window'];
     return factory;
 });

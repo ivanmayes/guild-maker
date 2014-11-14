@@ -3,7 +3,7 @@
 define(function() {
     'use strict';
 
-    function ctrl($scope, $state) {
+    function ctrl($scope, $state, UserService) {
         /*var loggedin = true;
 
         if(loggedin) {
@@ -24,7 +24,14 @@ define(function() {
         };
 
         $scope.login = function() {
-            $state.go('home');
+            console.log('logging in');
+            var checkLogin = UserService.login('ivanmayes@gmail.com', 'mypass');
+            checkLogin.then(function(userInfo) {
+                console.log(userInfo);
+                $state.go('home');
+            }, function(reason) {
+                    console.log('Failed:', reason);
+                });
         };
 
         $scope.facebookLogin = function() {
@@ -33,7 +40,15 @@ define(function() {
 
         $scope.register = function() {
             // Create account and sync to local
-            $state.go('roleSelect');
+            console.log('logging in');
+            //TODO: Check passwords to match
+            var checkLogin = UserService.signup('ivanmayes@gmail.com', 'mypass');
+            checkLogin.then(function(userInfo) {
+                console.log(userInfo);
+                $state.go('roleSelect');
+            }, function(reason) {
+                    console.log('Failed:', reason);
+                });
         };
 
         $scope.facebookRegister = function() {
@@ -49,7 +64,7 @@ define(function() {
         };
     }
 
-    ctrl.$inject = ['$scope', '$state'];
+    ctrl.$inject = ['$scope', '$state', 'UserService'];
     return ctrl;
 
 });
