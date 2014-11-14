@@ -175,6 +175,7 @@ var configureExpressServer = function configureExpressServer () {
     app.use( config.versionPrefix, apiRouter );
 
     httpServer = app.listen( config.port );
+    log.info( 'api on port: %s' , config.port );
 };
 
 var cleanup = function cleanup ( options , done ) {

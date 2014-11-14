@@ -1,3 +1,3 @@
 admin: node admin/server.js
-app: node web/app.js
-api:  cd api; npm start
+app: cd native; ionic serve
+api: cd api; npm start
