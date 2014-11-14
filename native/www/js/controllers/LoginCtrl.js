@@ -41,7 +41,7 @@ define(function() {
         };
 
         $scope.selectRole = function(role) {
-        	// Log role locally, push to server if needed
+            // Log role locally, push to server if needed
             console.log(role);
 
             // Go to school selection
