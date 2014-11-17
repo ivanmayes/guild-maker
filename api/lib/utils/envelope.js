@@ -79,6 +79,7 @@ Object.defineProperty( Envelope , 'response' , {
         return this.response;
     },
     set: function ( response ) {
+        console.log( 'resp?: %s' , response );
         this.response = response || Object.create( Object.prototype );
     }
 });
@@ -118,13 +119,43 @@ Envelope.prototype.reset = function reset () {
     return this;
 };
 
-Envelope.prototype.error = function error ( options ) {
-    var opts    = options || {},
-        code    = opts.code,
-        type    = opts.type,
-        detail  = opts.detail,
-        append  = opts.append;
+Envelope.prototype.error = function error ( code , options ) {
+    var opts, append, type, detail, tmpCode;
 
+    if( arguments.length < 2 ) {
+        // only one argument supplied
+        if(
+            ( typeof code === 'number' ) ||
+            ( typeof code === 'string' )
+        ){
+            // options missing, use defaults
+            tmpCode = ( typeof code === 'string' ) ? parseInt( code , 10 ) : code;
+
+            code    = tmpCode;
+            type    = this.status_codes[ tmpCode ].errorType || '';
+            detail  = this.status_codes[ tmpCode ].details || '';
+
+        }
+        else {
+            // code was missing, see if its in options object
+            opts   = code || {};
+            append = opts.append;
+
+            code   = opts.code || 400;
+            type   = opts.type || this.status_codes[ code ].errorType;
+            detail = opts.details || this.status_codes[ code ].details;
+        }
+    }
+    else {
+        opts   = options || {};
+        append = opts.append;
+        // code   = opts.code || 400;
+        type   = opts.type || this.status_codes[ code ].errorType;
+        detail = opts.details || this.status_codes[ code ].details;
+    }
+
+    // remove success data
+    delete this.response;
 
     if( !append ){
         append = true;
@@ -158,37 +189,64 @@ Envelope.prototype.error = function error ( options ) {
     if( type ) {
         this.meta.errorType = type;
     }
+    // else{}
 
-    if( !this.meta.errorType ) {
-        this.meta.errorType = 'param_error';
-    }
+    // if( !this.meta.errorType ) {
+    //     this.meta.errorType = type || 'param_error';
+    // }
 
-    if ( !Array.isArray( detail ) ) {
-        // comma seperated list? i dunno.
-        detail = detail.split( ',' );
-    }
+    // if ( !Array.isArray( detail ) ) {
+    //     // comma seperated list? i dunno.
+    //     detail = detail.split( ',' );
+    // }
 
     if( !append ) {
         this.meta.errorDetail = detail;
     }
     else{
+
         if( Array.isArray( this.meta.errorDetail ) ) {
-            this.meta.errorDetail = [ this.meta.errorDetail ];
+            this.meta.errorDetail.push( detail );
+            // console.log( 'wtf"=:' , this.meta.errorDetail );
         }
         else {
-            _.union( this.meta.errorDetail , detail );
+            this.meta.errorDetail = [ this.meta.errorDetail , detail ];
+            // _.union( this.meta.errorDetail , detail );
+            // console.log( 'wtf"::' , this.meta.errorDetail );
         }
     }
 
     return this;
 };
 
-Envelope.prototype.success = function success ( options ) {
-    var opts    = options || {},
-        code    = opts.code,
-        data    = opts.data;
+Envelope.prototype.success = function success ( code , data ) {
 
-    this.meta.code = 200;
+    // remove error meta data
+    delete this.meta.errorType;
+    delete this.meta.errorDetail;
+
+    // remove success data
+    delete this.response;
+
+    if( arguments.length < 2 ) {
+        // only one argument supplied
+        if(
+            ( typeof code === 'number' ) ||
+            ( typeof code === 'string' )
+        ){
+            // data was missing.
+            this.meta.code = ( typeof code === 'string' ) ? parseInt( code , 10 ) : code;
+        }
+        else {
+            // code was missing, assume 200
+            this.meta.code = 200;
+            this.response  = code;
+        }
+        return this;
+    }
+
+    // set success data
+    this.meta.code = code;
     this.response  = data;
 
     return this;
