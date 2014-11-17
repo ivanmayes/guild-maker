@@ -19,6 +19,7 @@ var childProcess   = require( 'child_process' ),
     path           = require( 'path' ),
     express        = require( 'express' ),
     cors           = require( 'cors' ),
+    swaggerize     = require('swaggerize-express'),
     passport       = require( 'passport' ),
     BearerStrategy = require( 'passport-http-bearer' ).Strategy,
     // Only going to return json
@@ -134,6 +135,8 @@ var configureExpressServer = function configureExpressServer () {
         // curl -d "email=test%40example.com&password=password" http://127.0.0.1:3000/v1/login
         var testString;
 
+        log.info( '?!!?:' , req.body , req.password );
+
         // client, username, password, scope, done
         auth.exchangePassword(
             { id: 'Shoptology.wut.wut' },
@@ -141,6 +144,8 @@ var configureExpressServer = function configureExpressServer () {
             req.body.password,
             null,
             function ( err , token ) {
+
+                log.info( '?!!?:' , err , token );
 
                 if ( err ) {
                     res.json( {
@@ -177,6 +182,17 @@ var configureExpressServer = function configureExpressServer () {
     });
 
     app.use( config.versionPrefix, apiRouter );
+
+    // Serves up the swagger spec and docs
+    app.use( config.versionPrefix, express.static( __dirname + '/public' ));
+
+    // Seems pretty cool in theory. Gives "Maximum call stack size exceeded" error when I try to run it though.
+    // https://github.com/krakenjs/swaggerize-express/issues/38
+    // app.use( swaggerize( {
+    //     api: require('./api.json'),
+    //     docspath: '/docs',
+    //     handlers: './lib/routes'
+    // } ) );
 
     httpServer = app.listen( config.port );
     log.info( 'api on port: %s' , config.port );

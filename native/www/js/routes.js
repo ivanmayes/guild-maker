@@ -9,45 +9,74 @@ define(['app'], function(app) {
                 .state('prelogin', {
                     url: "/prelogin",
                     templateUrl: "templates/prelogin.html",
-                    controller: 'LoginCtrl'
+                    controller: 'LoginCtrl',
+                    authenticate: false
                 })
                 .state('login', {
                     url: "/login",
                     templateUrl: "templates/login.html",
-                    controller: 'LoginCtrl'
+                    controller: 'LoginCtrl',
+                    authenticate: false
                 })
                 .state('home', {
                     url: '/home',
                     templateUrl: 'templates/home.html',
-                    controller: 'HomeCtrl'
+                    controller: 'HomeCtrl',
+                    authenticate: true
                 })
                 .state('signup', {
                     url: "/signup",
                     templateUrl: "templates/signup.html",
-                    controller: 'LoginCtrl'
+                    controller: 'LoginCtrl',
+                    authenticate: false
                 })
                 .state('roleSelect', {
                     url: "/roleselect",
                     templateUrl: "templates/roleselect.html",
-                    controller: 'LoginCtrl'
+                    controller: 'LoginCtrl',
+                    authenticate: true
                 })
                 .state('search', {
-                	url: "/search",
-                	templateUrl: "templates/search.html",
-                	controller: 'SearchCtrl'
+                    url: "/search",
+                    templateUrl: "templates/search.html",
+                    controller: 'SearchCtrl',
+                    authenticate: true
                 })
                 .state('fav', {
                     url: '/fav',
                     templateUrl: 'templates/favorite-teams.html',
-                    controller: 'FavoriteTeamsCtrl'
+                    controller: 'FavoriteTeamsCtrl',
+                    authenticate: true
                 })
                 .state('team', {
                     url: '/team',
-                    templateUrl: "templates/team.html"
+                    templateUrl: "templates/team.html",
+                    controller: 'TeamCtrl',
+                    authenticate: true
+                })
+                .state('game', {
+                    url: '/game',
+                    templateUrl: "templates/game/game.html",
+                    controller: 'GameCtrl',
+                    authenticate: true
                 })
                 .state('scores', {
                     url: '/scores',
-                    templateUrl: 'templates/scores.html'
+                    templateUrl: 'templates/scores/scores.html',
+                    controller: 'ScoresCtrl',
+                    authenticate: true
+                })
+                .state('divisions', {
+                    url: '/scores.divisions',
+                    templateUrl: 'templates/scores/divisions.html',
+                    controller: 'ScoresCtrl',
+                    authenticate: true
+                })
+                .state('settings', {
+                    url: '/settings',
+                    templateUrl: 'templates/settings.html',
+                    controller: 'SettingsCtrl',
+                    authenticate: true
                 })
             /*.state('tab.pet-detail', {
                 url: '/pet/:petId',

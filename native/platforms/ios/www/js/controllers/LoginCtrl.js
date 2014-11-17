@@ -41,11 +41,15 @@ define(function() {
         };
 
         $scope.selectRole = function(role) {
+<<<<<<< HEAD
+            console.log(role);
+=======
         	// Log role locally, push to server if needed
             console.log(role);
 
             // Go to school selection
             $state.go('search');
+>>>>>>> d7982598b571b45a0300d830dd87f6775631377c
         };
     }
 

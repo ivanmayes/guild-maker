@@ -21,13 +21,13 @@ exports = module.exports = expressUtils = {
         app.use(bodyParser.urlencoded({ extended: true }));
 
         // parse application/json
-        // app.use(bodyParser.json());
+        app.use(bodyParser.json());
 
         // parse plain text
-        // app.use(bodyParser.text());
+        app.use(bodyParser.text());
 
         // parse various different custom JSON types as JSON
-        // app.use(bodyParser.json({ type: 'application/*+json' }));
+        app.use(bodyParser.json({ type: 'application/*+json' }));
 
         // parse an HTML body into a string
         // app.use(bodyParser.text({ type: 'text/plain' }));

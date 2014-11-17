@@ -15,6 +15,9 @@ define(function(require) {
     controllers.controller('HomeCtrl', require('controllers/HomeCtrl'));
     controllers.controller('FavoriteTeamsCtrl', require('controllers/FavoriteTeamsCtrl'));
     controllers.controller('ScoresCtrl', require('controllers/ScoresCtrl'));
+    controllers.controller('TeamCtrl', require('controllers/TeamCtrl'));
+    controllers.controller('GameCtrl', require('controllers/GameCtrl'));
+    controllers.controller('SettingsCtrl', require('controllers/SettingsCtrl'));
 
     /*controllers.run(['$rootScope', function($rootScope) {
             $rootScope.sampleParam = "value";

@@ -23,7 +23,8 @@
     "mongoose": "^3.8.19",
     "oauth2orize": "^1.0.1",
     "passport": "^0.2.1",
-    "passport-http-bearer": "^1.0.1"
+    "passport-http-bearer": "^1.0.1",
+    "swaggerize-express": "^3.0.0"
   },
   "devDependencies": {
     "chai": "^1.10.0",
