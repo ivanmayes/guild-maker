@@ -1,19 +1,15 @@
 
-'use strict';
-
-var _ = require( 'lodash' );
-
 /**
  * API Envelope
  *
- * A generic module representing an api response
+ * Provides a configurable object to return a standarized
+ * API response format following emerging standards and best practices.
  *
- * This standardizes the format of api responses and
- * follows best practices that have emerged.
- * Foursquare is one of the sites that follows these
- * best practices, so we can use them as our
- * main point of reference.
+ * Foursquare is one of the sites that follows these best practices,
+ * so we can use them as our main point of reference.
  *
+ * @link https://developer.foursquare.com/overview/responses
+ * @example
  * {
  *     "meta": {
  *         "code": 200,
@@ -28,6 +24,15 @@ var _ = require( 'lodash' );
  * }
  */
 
+
+'use strict';
+
+var _ = require( 'lodash' );
+
+/**
+ * Creates a new Envelope
+ * @constructor
+ */
 var Envelope = function Envelope () {
 
     this.reset();
@@ -40,17 +45,17 @@ var Envelope = function Envelope () {
 };
 
 /**
- * Getter/Setter for Meta Object of Envelope
- * using Object.defineProperty to define getter/setter accessors of the
- * Envelope Object.
+ * Meta Getter/Setter
+ *
+ * define getter/setter accessors for the Meta Object of the
+ * Envelope prototype using Object.defineProperty.
  *
  * get:
- *     @returns {Object} Returns Meta Object
+ *     @returns {Object} Returns    Meta Object
  *
  * set:
- *     @param   {Object} meta Sets the Meta Object
- *     @returns {Object} Returns Meta Object
-
+ *     @param   {Object} meta       Sets the Meta Object
+ *     @returns {Object} Returns    Meta Object
  */
 Object.defineProperty( Envelope , 'meta' , {
     get: function () {
@@ -62,40 +67,40 @@ Object.defineProperty( Envelope , 'meta' , {
 });
 
 /**
- * Getter/Setter for Response Object of Envelope
- * using Object.defineProperty to define getter/setter accessors of the
- * Envelope Object.
+ * Response Getter/Setter
+ *
+ * define getter/setter accessors for the Response Object of the
+ * Envelope prototype using Object.defineProperty.
  *
  * get:
- *     @returns {Object} Returns Response Object
+ *     @returns {Object} returns    Response Object
  *
  * set:
- *     @param   {Object} response Sets the Response Object
- *     @returns {Object} Returns Response Object
-
+ *     @param   {Object} response   Sets the Response Object
+ *     @returns {Object} Returns    Response Object
  */
 Object.defineProperty( Envelope , 'response' , {
     get: function () {
         return this.response;
     },
     set: function ( response ) {
-        console.log( 'resp?: %s' , response );
+        // console.log( 'resp?: %s' , response );
         this.response = response || Object.create( Object.prototype );
     }
 });
 
 /**
- * Getter/Setter for Notifications Object of Envelope
- * using Object.defineProperty to define getter/setter accessors of the
- * Envelope Object.
+ * Notifications Getter/Setter
+ *
+ * define getter/setter accessors for the Notifications Object of the
+ * Envelope prototype using Object.defineProperty.
  *
  * get:
- *     @returns {Object} Returns Notifications Object
+ *     @returns {Object} Returns    Notifications Object
  *
  * set:
- *     @param   {Object} response Sets the Notifications Object
- *     @returns {Object} Returns Notifications Object
-
+ *     @param   {Object} response   Sets the Notifications Object
+ *     @returns {Object} Returns    Notifications Object
  */
 Object.defineProperty( Envelope , 'notifications' , {
     get: function () {
@@ -106,7 +111,20 @@ Object.defineProperty( Envelope , 'notifications' , {
     }
 });
 
-
+/**
+ * Reset Envelope to default state.
+ *
+ * Resets/initializes Envelope to a default state of general error.
+ * @return {Envelope} Envelope in default error state
+ * @example
+ * {
+ *     meta: {
+ *         code: 400,
+ *         errorType: 'error_type',
+ *         errorDetail: 'details of error'
+ *     }
+ * }
+ */
 Envelope.prototype.reset = function reset () {
     var data = this.status_codes[ '400' ];
 
@@ -119,6 +137,36 @@ Envelope.prototype.reset = function reset () {
     return this;
 };
 
+/**
+ * Creates an Error Envelope
+ *
+ * creates an error envelope using supplied code and options,
+ * defaulting to a 400 if no code supplied.
+ *
+ * Error Envelopes do not return a Response object.
+ *
+ * If code and options are supplied:
+ * meta.code will be the code supplied
+ * meta.errorType will be the supplied options.errorType,
+ * falling back to default if not supplied.
+ * meta.details will be the supplied optinos.details,
+ * falling back to default if not supplied.
+ *
+ * If only a code is supplied:
+ * meta.code will be the code supplied
+ * meta.errorType and meta.details are the defaults of that code
+ *
+ * If only options is supplied:
+ * meta.code will default to 400 if options.code is not supplied.
+ * meta.errorType will be the supplied options.errorType,
+ * falling back to default if not supplied.
+ * meta.details will be the supplied optinos.details,
+ * falling back to default if not supplied.
+ *
+ * @param  {String|Number}  code    status code [optional]
+ * @param  {Object}         options object of error options [optional]
+ * @return {Envelope}   Error Envelope
+ */
 Envelope.prototype.error = function error ( code , options ) {
     var opts, append, type, detail, tmpCode;
 
@@ -206,11 +254,26 @@ Envelope.prototype.error = function error ( code , options ) {
     else{
 
         if( Array.isArray( this.meta.errorDetail ) ) {
-            this.meta.errorDetail.push( detail );
+            if( Array.isArray( detail ) ) {
+                detail.forEach( function ( errDetail ) {
+                    this.meta.errorDetail.push( errDetail );
+                } , this );
+            }
+            else {
+                this.meta.errorDetail.push( detail );
+            }
             // console.log( 'wtf"=:' , this.meta.errorDetail );
         }
         else {
-            this.meta.errorDetail = [ this.meta.errorDetail , detail ];
+            if( Array.isArray( detail ) ) {
+                this.meta.errorDetail = [ this.meta.errorDetail ];
+                detail.forEach( function ( errDetail ) {
+                    this.meta.errorDetail.push( errDetail );
+                } , this );
+            }
+            else {
+                this.meta.errorDetail = [ this.meta.errorDetail , detail ];
+            }
             // _.union( this.meta.errorDetail , detail );
             // console.log( 'wtf"::' , this.meta.errorDetail );
         }
@@ -219,6 +282,31 @@ Envelope.prototype.error = function error ( code , options ) {
     return this;
 };
 
+/**
+ * Creates a Success Envelope
+ *
+ * creates a success envelope using supplied code and data,
+ * defaulting to a 200 if no code supplied.
+ *
+ * Success Envelopes do not return meta.errorType or meta.errorDetail
+ *
+ * If code and data are supplied:
+ * meta.code will be the code supplied
+ * response will be supplied data
+
+ *
+ * If only a code is supplied:
+ * meta.code will be the code supplied
+ * response will be undefined
+ *
+ * If only data is supplied:
+ * meta.code will default to 200
+ * response will supplied data
+ *
+ * @param  {String|Number}  code    status code [optional]
+ * @param  {Object}         data    success data [optional]
+ * @return {Envelope}               [description]
+ */
 Envelope.prototype.success = function success ( code , data ) {
 
     // remove error meta data
@@ -252,7 +340,14 @@ Envelope.prototype.success = function success ( code , data ) {
     return this;
 };
 
-
+/**
+ * Status Codes
+ *
+ * A collection of default status codes and their respective
+ * errorType and details.
+ *
+ * @type {Object}
+ */
 Envelope.prototype.status_codes = {
     '200': {
         'code': 200,
@@ -296,4 +391,7 @@ Envelope.prototype.status_codes = {
     }
 };
 
+/**
+ * export Envelope
+ */
 exports = module.exports = Envelope;

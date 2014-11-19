@@ -1,7 +1,7 @@
 
 'use strict';
 
-var Envelope = require( '../../lib/utils/envelope' ),
+var Envelope = require( '../../lib/envelope' ),
     envelope;
 
 suite( 'envelope()', function () {
