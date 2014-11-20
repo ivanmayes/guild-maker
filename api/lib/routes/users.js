@@ -26,7 +26,7 @@ exports = module.exports = function UserRoutes( router ) {
     });
 
     router.post( '/signup', function( req , res ) {
-        // TODO: check if user exists
+
         var userName   = validator.trim( req.body.userName ),
             firstName  = validator.trim( req.body.firstName ),
             lastName   = validator.trim( req.body.lastName ),
@@ -36,6 +36,29 @@ exports = module.exports = function UserRoutes( router ) {
             user;
 
         envelope = new Envelope();
+
+        // check for existing user
+        User.findOneAsync({
+            'email': email
+        })
+        .then( function ( usr ) {
+            if( usr ){
+                envelope.error( 400 , {
+                    'details': 'A user with that email exists.',
+                    'append':  true
+                });
+                res.json( envelope );
+
+                return;
+            }
+        })
+        .catch( function ( e ) {
+            envelope.error( 401 , {
+                'details': [ 'The server returned an error checking for existing user with signup data.' , e.message ],
+                'append':  true
+            });
+            return res.json( envelope );
+        });
 
         if( !firstName ) {
             errDetails.push( 'first name is missing.' );
