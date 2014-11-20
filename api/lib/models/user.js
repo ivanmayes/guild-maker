@@ -11,4 +11,4 @@ var schema = new mongoose.Schema( {
     password:  String
 }, { autoIndex: false } );
 
-module.exports = exports = mongoose.model( 'User', schema );
+exports = module.exports = mongoose.model( 'User', schema );

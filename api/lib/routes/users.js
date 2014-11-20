@@ -1,11 +1,12 @@
 
 'use strict';
 
-var validator = require( 'validator' ),
-    Promises  = require( 'bluebird' ),
-    Envelope  = require( '../envelope' ),
-    auth      = require( '../auth' ),
-    User      = require( '../models/user' ),
+var validator   = require( 'validator' ),
+    Promises    = require( 'bluebird' ),
+    Envelope    = require( '../envelope' ),
+    auth        = require( '../auth' ),
+    User        = require( '../models/user' ),
+    AccessToken = require( '../models/token' ),
     envelope;
 
 exports = module.exports = function UserRoutes( router ) {
@@ -25,67 +26,89 @@ exports = module.exports = function UserRoutes( router ) {
     });
 
     router.post( '/signup', function( req , res ) {
-        var valid     = false,
-            userName  = req.body.userName,
-            firstName = req.body.firstName,
-            lastName  = req.body.lastName,
-            email     = req.body.email,
-            password  = req.body.password;
+        // TODO: check if user exists
+        var userName   = validator.trim( req.body.userName ),
+            firstName  = validator.trim( req.body.firstName ),
+            lastName   = validator.trim( req.body.lastName ),
+            email      = validator.normalizeEmail( validator.trim( req.body.email ) ),
+            password   = req.body.password,
+            errDetails = [],
+            user;
 
         envelope = new Envelope();
 
-        if( !valid ) {
-            envelope.error();
+        if( !firstName ) {
+            errDetails.push( 'first name is missing.' );
+        }
+
+        if( !lastName ) {
+            errDetails.push( 'last name is missing.' );
+        }
+
+        if( !req.body.email ) {
+            errDetails.push( 'email is missing.' );
+        }
+
+        if( !validator.isEmail( email ) ) {
+            errDetails.push( 'email is not a valid email.' );
+        }
+
+        if( !password ) {
+            errDetails.push( 'password is missing.' );
+        }
+
+        if( errDetails.length > 0 ) {
+            // we have errors!
+            envelope.error( 400 , {
+                'details': errDetails,
+                'append':  true
+            });
+            res.json( envelope );
+
+            return;
         }
 
         // curl -d "userName=Test&firstName=Test&lastName=User&email=test%40example.com&password=password" http://127.0.0.1:3000/v1/signup
 
-        // auth.hashPassword( req.body.password , function ( err , hash ) {
-
-        /****/
-        auth.hashPassword( req.body.password , function ( err , hash ) {
-            if( err ){
-                // handleError( err );
-                return;
-            }
-
-            User.create(
-                {
-                    'userName':  req.body.userName,
-                    'firstName': req.body.firstName,
-                    'lastName':  req.body.lastName,
-                    'email':     req.body.email,
+        auth.hashPassword( req.body.password )
+            .then( function ( hash ) {
+                return User.createAsync({
+                    'userName':  userName,
+                    'firstName': firstName,
+                    'lastName':  lastName,
+                    'email':     email,
                     'password':  hash
-                },
-                function ( err , user ) {
-                    accessToken.createToken({
-                        'client': { id: 'Shoptology.wut.wut' },
-                        'user':   user,
-                        'scope':  null
-                    },
-                    function( err , token ) {
-                        if ( err ) {
-                            res.json( {
-                                meta: {
-                                    code: 400,
-                                    errorType: 'server_error',
-                                    errorDetail: "The server returned an error creating a token for userId: " + user._id.toString() + "."
-                                }
-                            } );
-                        }
-                        res.json( {
-                            meta: { code: 200 },
-                            response: {
-                                firstName: user.firstName,
-                                lastName:  user.lastName,
-                                name:      user.name,
-                                email:     user.email,
-                                token:     token
-                            }
-                        } );
-                    });
                 });
-        });
+            })
+            .then( function ( usr ) {
+
+                // cache closure
+                user = usr;
+
+                return AccessToken.createToken({
+                    'client': { id: 'Shoptology.wut.wut' },
+                    'user':   user,
+                    'scope':  null
+                });
+            })
+            .then( function ( token ) {
+                envelope.success( 200 , {
+                    firstName: user.firstName,
+                    lastName:  user.lastName,
+                    name:      user.name,
+                    email:     user.email,
+                    token:     token
+                });
+
+                return res.json( envelope );
+            })
+            .catch( function( e ) {
+                envelope.error( 401 , {
+                    'details': [ 'Could not create account.' , e.message ],
+                    'append':  true
+                });
+                res.json( envelope );
+            });
 
     } );
 
@@ -135,22 +158,19 @@ exports = module.exports = function UserRoutes( router ) {
                     'details': 'No token provided',
                     'append':  true
                 });
-                res.json( envelope );
 
-                return;
+                return res.json( envelope );
             }
-            /******/
 
             envelope.success( 200 , {
                 token: token
             });
 
-            res.json( envelope );
-            return;
+            return res.json( envelope );
         })
         .catch( function( e ) {
             envelope.error( 401 , {
-                'details': 'The server returned an error exchanging a password for a token.',
+                'details': [ 'The server returned an error exchanging a password for a token.' , e.message ],
                 'append':  true
             });
             res.json( envelope );

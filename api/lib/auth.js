@@ -13,17 +13,19 @@
 
 'use strict';
 
-var EventEmitter   = require( 'events' ).EventEmitter,
-    util           = require( 'util' ),
-    hat            = require( 'hat' ),
-    oauth2orize    = require( 'oauth2orize' ),
+var _              = require( 'lodash' ),
+    EventEmitter   = require( 'events' ).EventEmitter,
+    Promises       = require( 'bluebird' ),
+    bcrypt         = require( 'bcrypt' ),
     passport       = require( 'passport' ),
     BearerStrategy = require( 'passport-http-bearer' ).Strategy,
+    oauth2orize    = require( 'oauth2orize' ),
     hat            = require( 'hat' ),
-    bcrypt         = require( 'bcrypt' ),
-    _              = require( 'lodash' );
+    util           = require( 'util' ),
+    Envelope       = require( './envelope' ),
+    envelope, log;
 
-var log = global.log;
+log = global.log;
 
 var Auth = function Auth( options ) {
     this._server = null;
@@ -35,7 +37,7 @@ util.inherits( Auth, EventEmitter );
 Auth.prototype.options = function options( opts ) {
     this._options = _.extend( {
         userModel: null,
-        accessToken: null
+        accessTokenModel: null
     }, opts );
 
     return this;
@@ -60,9 +62,9 @@ Auth.prototype.configureExpress = function configureExpress( app ) {
     passport.use( this.bearerStrategy() );
 };
 
-Auth.prototype.createToken = function createToken( client, user, scope, done ) {
+Auth.prototype.createToken = function createToken( client , user , scope ) {
     var auth  = this,
-        accessToken;
+        accessTokenModel;
 
     if ( !this._options ) {
         this._options = {};
@@ -74,23 +76,23 @@ Auth.prototype.createToken = function createToken( client, user, scope, done ) {
         client = { id: '12345' };
     }
 
-    if ( !this._options.accessToken ) {
-        throw new Error( 'AccessToken must be provided to the auth module.' );
+    if ( !this._options.accessTokenModel ) {
+        throw new Error( 'AccessToken model must be provided to the auth module.' );
     }
 
-    accessToken = this._options.accessToken;
+    accessTokenModel = this._options.accessTokenModel;
 
-    accessToken.createToken({
-        'client': client,
-        'user':   user,
-        'scope':  scope
-    },
-    function( err , token ) {
-        if ( err ) {
-            return done( err );
-        }
-        done( null, token );
-    });
+    return accessTokenModel.createToken({
+            'client': client,
+            'user':   user,
+            'scope':  scope
+        })
+        .then( function( token ) {
+            return token;
+        })
+        .catch( function( err ) {
+            throw err;
+        });
 };
 
 // SRP would be nice... but requires multiple steps,
@@ -101,9 +103,9 @@ Auth.prototype.createToken = function createToken( client, user, scope, done ) {
 // Except we're not going to bother with the refresh token ( and the refresh
 // token example in here is not very secure since it doesn't check the client secret )
 // http://rwlive.wordpress.com/2014/06/24/oauth2-resource-owner-password-flow-using-oauth2orize-express-4-and-mongojs/
-Auth.prototype.exchangePassword = function exchangePassword( client, username, password, scope, done ) {
+Auth.prototype.exchangePassword = function exchangePassword( client , username , password , scope ) {
     var self = this,
-        User, accessToken;
+        userModel, user, accessTokenModel;
 
     // we don't really care about clients right now,
     // if we did, we would probably want to verify the client is registered
@@ -115,96 +117,82 @@ Auth.prototype.exchangePassword = function exchangePassword( client, username, p
         throw new Error('A User model must be provided to the auth module.');
     }
 
-    User = this._options.userModel;
+    userModel = this._options.userModel;
 
-    if ( !this._options.accessToken ) {
-        throw new Error( 'AccessToken must be provided to the auth module.' );
+    if ( !this._options.accessTokenModel ) {
+        throw new Error( 'AccessToken Model must be provided to the auth module.' );
     }
 
-    accessToken = this._options.accessToken;
+    accessTokenModel = this._options.accessTokenModel;
 
-    User.findOne({
+    return userModel.findOneAsync({
         'email': username
-    },
-    function ( err , user ) {
-        if ( err ) {
-            return done( err , null );
+    })
+    .then( function ( usr ) {
+        if ( !usr ) {
+            return new Error( 'A user was not found with the given username/password.' );
         }
 
-        if ( !user ) {
-            return done( null , false );
+        // cache value in closure
+        user = usr;
+
+        return self.checkPassword( password , usr.password );
+    })
+    .then( function ( match ) {
+        if( !match ){
+            throw new Error( 'A user was found, password mismatch' );
         }
 
-        self.checkPassword(
-            password,
-            user.password,
-            function ( err , match ) {
-                if ( err ) {
-                    // Somebody set us up the bomb!!!
-                    // What happen?
-                    done( err , null );
-                    return;
-                }
-
-                if ( !match ) {
-                    // passwords be funky
-                    done( null , false );
-                    return;
-                }
-
-                // the passwords match what is in db
-                // i.e. valid user, see if they have a token.
-                accessToken.model
-                    .findOne({
-                        'userId': user._id.toString()
-                    },
-                    function ( err , token ) {
-                        if( err ){
-                            done( err , null );
-                            return;
-                        }
-
-                        if( token ) {
-                            done( null, token );
-                            return;
-                        }
-
-                        // user doesn't have a token... create one
-                        self.createToken(
-                            client,
-                            user,
-                            scope,
-                            function ( err , token ) {
-                                if( err ){
-                                    done( err , null );
-                                    return;
-                                }
-
-                                done( null, token );
-                            }
-                        );
-                    }
-                );
-            }
-        );
+        return accessTokenModel.findOneAsync({
+            'userId': user._id.toString()
+        });
+    })
+    .then( function ( token ) {
+        if( token ){
+            return token;
+        }
+        // user doesn't have a token... create one
+        return self.createToken( client , user , scope );
+    })
+    .then( function ( token ) {
+        if( token ){
+            return token;
+        }
+    })
+    .catch( function ( err ) {
+        throw err;
     });
 };
 
-Auth.prototype.hashPassword = function hashPassword( password, done ) {
-    bcrypt.hash( password, 8, done );
+Auth.prototype.hashPassword = function hashPassword( password ) {
+    return new Promises( function ( resolve , reject ){
+        bcrypt.hash( password, 8, function ( err , hash ) {
+            if( err ) {
+                return reject( err );
+            }
+            return resolve( hash );
+        });
+    });
 };
 
-Auth.prototype.checkPassword = function checkPassword( password, hash, done ) {
-    bcrypt.compare( password, hash, done );
+Auth.prototype.checkPassword = function checkPassword( password , hash ) {
+    return new Promises( function ( resolve , reject ){
+        bcrypt.compare( password , hash , function ( err , match ) {
+            if( err ) {
+                reject( err );
+            }
+            resolve( match );
+        });
+    });
 };
 
 Auth.prototype.bearerStrategy = function bearerStrategy() {
-    var accessToken, User;
+    var accessTokenModel, User;
 
-    if ( !this._options.accessToken ) {
-        throw new Error('AccessToken must be provided to the auth module.');
+    if ( !this._options.accessTokenModel ) {
+        throw new Error('AccessToken model must be provided to the auth module.');
     }
-    accessToken = this._options.accessToken;
+    accessTokenModel = this._options.accessTokenModel;
 
     if ( !this._options.userModel ) {
         throw new Error('A User model must be provided to the auth module.');
@@ -213,72 +201,69 @@ Auth.prototype.bearerStrategy = function bearerStrategy() {
 
     return new BearerStrategy(
         function( token , done ) {
-            accessToken.model
-                .findOne({
-                    'token': token
-                },
-                function ( err , token ) {
-                    var userId, user;
+            accessTokenModel.findOne({
+                'token': token
+            },
+            function ( err , token ) {
+                var userId, user;
 
+                if ( err ) {
+                    return done( err );
+                }
+
+                if( !token ){
+                    return done( null , false );
+                }
+
+                userId = token.userId;
+
+                User.findOne({
+                    '_id': userId
+                },
+                function ( err , usr ) {
+                    user = usr;
                     if ( err ) {
                         return done( err );
                     }
-
-                    if( !token ){
+                    if ( !user ) {
                         return done( null , false );
                     }
-
-                    userId = token.userId;
-
-                    User.findOne({
-                        '_id': userId
-                    },
-                    function ( err , usr ) {
-                        user = usr;
-                        if ( err ) {
-                            return done( err );
-                        }
-                        if ( !user ) {
-                            return done( null , false );
-                        }
-                        return done( null , user , { scope: 'all' } );
-                    });
-                }
-            );
-        }
-    );
+                    return done( null , user , { scope: 'all' } );
+                });
+            });
+        });
 };
 
 /**
  * Connect middleware to require a valid user access token.
  */
-Auth.prototype.requireUser = function requireUser( req, res, next ) {
-    passport.authenticate( 'bearer', function(err, user, info) {
+Auth.prototype.requireUser = function requireUser( req , res , next ) {
+    passport.authenticate( 'bearer' , function( err , user , info ) {
         if ( err ) {
             return next( err );
         }
 
+        envelope = new Envelope();
+
         if ( !user ) {
             if ( info && info.indexOf( 'invalid_token' ) !== -1 ) {
-                return res.json( {
-                    meta: {
-                        code: 401,
-                        errorType: 'invalid_auth',
-                        errorDetail: "The access_token provided was not valid."
-                    }
-                } );
+                envelope.error( 401 , {
+                    'details': 'The access_token provided was not valid.',
+                    'append':  true
+                });
+
+                return res.json( envelope );
             }
-            return res.json( {
-                meta: {
-                    code: 400,
-                    errorType: 'param_error',
-                    errorDetail: "The access_token parameter must be passed to access this resource."
-                }
-            } );
+            envelope.error( 400 , {
+                'details': 'The access_token parameter must be passed to access this resource.',
+                'append':  true
+            });
+
+            return res.json( envelope );
         }
         req.user = user;
         return next();
-    } )( req, res, next );
+    } )( req , res , next );
 };
 
 // @todo Is this a good idea to create this module as a instantiatable function?

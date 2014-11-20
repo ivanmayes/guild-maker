@@ -1,13 +1,59 @@
 
 'use strict';
 
-var mongoose = require( 'mongoose' );
+var hat      = require( 'hat' ),
+    mongoose = require( 'mongoose' );
 
-module.exports = exports = mongoose.model( 'AccessToken', {
+var schema = new mongoose.Schema( {
     token:         String,
     userId:        mongoose.Schema.Types.ObjectId,
     clientId:      String,
     valid:         Boolean,
     invalidReason: String
-} );
+}, { autoIndex: false } );
 
+schema.static( 'findByToken' , function ( token ) {
+    return this.findOneAsync({
+        'token': token
+    });
+});
+
+schema.static( 'generateToken' , function generateToken() {
+    return hat( 512 , 16 );
+});
+
+schema.static( 'tokenCheck' , function tokenCheck ( token ) {
+    return this.findByToken( token );
+});
+
+schema.static( 'createToken' , function createToken( options ) {
+    var opts   = options || {},
+        token  = this.generateToken(),
+        client = opts.client,
+        user   = opts.user,
+        scope  = opts.scope,
+        self   = this;
+
+    return this.tokenCheck( token )
+        .then( function( model ) {
+            if( model ) {
+                return new Error( 'Token Exists' );
+            }
+
+            return self.createAsync({
+                token:    token,
+                userId:   user._id.toString(),
+                clientId: client.id,
+                valid:    true
+            });
+        })
+        .then( function ( token ) {
+            return token;
+        })
+        .catch( function( err ) {
+            return err;
+        });
+
+});
+
+exports = module.exports = mongoose.model( 'AccessToken' , schema );

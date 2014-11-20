@@ -3,16 +3,15 @@
 
 var bunyan       = require( 'bunyan' ),
     express      = require( 'express' ),
-    mongoose     = require( 'mongoose' ),
     Promises     = require( 'bluebird' ),
+    mongoose     = Promises.promisifyAll( require( 'mongoose' ) ),
     swaggerize   = require( 'swaggerize-express' ),
     config       = require( './config' ),
-    AccessToken  = require( './lib/access-token' ),
     auth         = require( './lib/auth' ),
     expressUtils = require( './lib/express-utils' ),
     routes       = require( './lib/routes' ),
-    User         = require( './lib/models/user' ),
-    accessToken  = new AccessToken(),
+    User         = Promises.promisifyAll( require( './lib/models/user' ) ),
+    AccessToken  = Promises.promisifyAll( require( './lib/models/token' ) ),
     app          = express(),
     apiRouter    = express.Router(),
     context, methods, log;
@@ -46,11 +45,11 @@ methods = {
     },
     'initAuth': function initAuth () {
 
-        Promises.promisifyAll( auth );
+        // Promises.promisifyAll( Object.getPrototypeOf( auth ) );
 
         auth.options({
-            userModel: User,
-            accessToken: accessToken
+            userModel:        User,
+            accessTokenModel: AccessToken
         })
         .server();
 
