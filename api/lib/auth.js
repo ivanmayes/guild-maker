@@ -129,8 +129,11 @@ Auth.prototype.exchangePassword = function exchangePassword( client , username ,
         'email': username
     })
     .then( function ( usr ) {
+        var error;
         if ( !usr ) {
-            return new Error( 'A user was not found with the given username/password.' );
+            error = new Error( 'A user was not found with the given username/password.' );
+            error.statusCode = 401;
+            throw error;
         }
 
         // cache value in closure
@@ -139,8 +142,11 @@ Auth.prototype.exchangePassword = function exchangePassword( client , username ,
         return self.checkPassword( password , usr.password );
     })
     .then( function ( match ) {
+        var error;
         if( !match ){
-            throw new Error( 'A user was found, password mismatch' );
+            error = new Error( 'A user was not found with the given username/password.' );
+            error.statusCode = 401;
+            throw error;
         }
 
         return accessTokenModel.findOneAsync({

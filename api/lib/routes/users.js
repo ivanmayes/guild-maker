@@ -12,10 +12,11 @@ var validator   = require( 'validator' ),
 exports = module.exports = function UserRoutes( router ) {
 
     router.get( '/me', auth.requireUser, function( req , res , next ) {
-        // curl -v http://localhost:3000/foo?access_token=[token]
+        // curl -v http://localhost:3000/v1/me?access_token=[token]
         envelope = new Envelope();
 
         envelope.success( 200 , {
+            userName:  req.user.username,
             firstName: req.user.firstName,
             lastName:  req.user.lastName,
             email:     req.user.email
@@ -26,7 +27,6 @@ exports = module.exports = function UserRoutes( router ) {
     });
 
     router.post( '/signup', function( req , res ) {
-
         var userName   = validator.trim( req.body.userName ),
             firstName  = validator.trim( req.body.firstName ),
             lastName   = validator.trim( req.body.lastName ),
@@ -36,29 +36,6 @@ exports = module.exports = function UserRoutes( router ) {
             user;
 
         envelope = new Envelope();
-
-        // check for existing user
-        User.findOneAsync({
-            'email': email
-        })
-        .then( function ( usr ) {
-            if( usr ){
-                envelope.error( 400 , {
-                    'details': 'A user with that email exists.',
-                    'append':  true
-                });
-                res.json( envelope );
-
-                return;
-            }
-        })
-        .catch( function ( e ) {
-            envelope.error( 401 , {
-                'details': [ 'The server returned an error checking for existing user with signup data.' , e.message ],
-                'append':  true
-            });
-            return res.json( envelope );
-        });
 
         if( !firstName ) {
             errDetails.push( 'first name is missing.' );
@@ -86,53 +63,76 @@ exports = module.exports = function UserRoutes( router ) {
                 'details': errDetails,
                 'append':  true
             });
-            res.json( envelope );
 
+            res.json( envelope );
             return;
         }
 
-        // curl -d "userName=Test&firstName=Test&lastName=User&email=test%40example.com&password=password" http://127.0.0.1:3000/v1/signup
-
-        auth.hashPassword( req.body.password )
-            .then( function ( hash ) {
-                return User.createAsync({
-                    'userName':  userName,
-                    'firstName': firstName,
-                    'lastName':  lastName,
-                    'email':     email,
-                    'password':  hash
-                });
-            })
-            .then( function ( usr ) {
-
-                // cache closure
-                user = usr;
-
-                return AccessToken.createToken({
-                    'client': { id: 'Shoptology.wut.wut' },
-                    'user':   user,
-                    'scope':  null
-                });
-            })
-            .then( function ( token ) {
-                envelope.success( 200 , {
-                    firstName: user.firstName,
-                    lastName:  user.lastName,
-                    name:      user.name,
-                    email:     user.email,
-                    token:     token
-                });
-
-                return res.json( envelope );
-            })
-            .catch( function( e ) {
-                envelope.error( 401 , {
-                    'details': [ 'Could not create account.' , e.message ],
+        // check for existing user
+        User.findOneAsync({
+            'email': email
+        })
+        .then( function ( usr ) {
+            if( usr ){
+                envelope.error( 400 , {
+                    'details': 'A user with that email exists.',
                     'append':  true
                 });
-                res.json( envelope );
-            });
 
+                res.json( envelope );
+                return;
+            }
+
+            // curl -d "userName=Test&firstName=Test&lastName=User&email=test%40example.com&password=password" http://127.0.0.1:3000/v1/signup
+            auth.hashPassword( req.body.password )
+                .then( function ( hash ) {
+                    return User.createAsync({
+                        'userName':  userName,
+                        'firstName': firstName,
+                        'lastName':  lastName,
+                        'email':     email,
+                        'password':  hash
+                    });
+                })
+                .then( function ( usr ) {
+
+                    // cache closure
+                    user = usr;
+
+                    return AccessToken.createToken({
+                        'client': { id: 'Shoptology.wut.wut' },
+                        'user':   user,
+                        'scope':  null
+                    });
+                })
+                .then( function ( token ) {
+                    envelope.success( 200 , {
+                        firstName: user.firstName,
+                        lastName:  user.lastName,
+                        name:      user.name,
+                        email:     user.email,
+                        token:     token
+                    });
+
+                    return res.json( envelope );
+                })
+                .catch( function( e ) {
+                    envelope.error( 401 , {
+                        'details': [ 'Could not create account.' , e.message ],
+                        'append':  true
+                    });
+                    res.json( envelope );
+                });
+
+
+        })
+        .catch( function ( e ) {
+            envelope.error( 401 , {
+                'details': [ 'The server returned an error checking for existing user with signup data.' , e.message ],
+                'append':  true
+            });
+            return res.json( envelope );
+        });
     } );
 
     router.post( '/login', function( req , res ) {
@@ -192,9 +192,16 @@ exports = module.exports = function UserRoutes( router ) {
             return res.json( envelope );
         })
         .catch( function( e ) {
-            envelope.error( 401 , {
-                'details': [ 'The server returned an error exchanging a password for a token.' , e.message ],
-                'append':  true
+            var code = 500;
+            if( e.statusCode ) {
+                code = e.statusCode;
+            }
+            if( code !== 401 ){
+                log.info( e );
+            }
+            envelope.error( code , {
+                'details': 'The server returned an error exchanging a password for a token.',
+                'append':  false
             });
             res.json( envelope );
         });
