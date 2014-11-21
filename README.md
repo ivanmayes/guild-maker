@@ -17,58 +17,11 @@
 
 Omnigraffle wireframes for the app and cms are in the design folder.
 
-## API
-
-The API is documented using Swagger 2.0. `/api/public/swagger-api.yaml` is the
-working doc. `/api/public/api.json` is the generated JSON version (would love to
-find a CLI tool to do this, did the current one via Swagger editor). Swagger 2.0 is
-still a bit buggy in both the Swagger UI and Swagger Editor... but under active
-development so hopefull the kinks will be resolved soon.
-
-Our API uses a separate express instance from the CMS presentation layer (based on
-Mongorilla) and the front-end web and native app views. However, they will all
-always be consistently deployed via this repository, so it could be possible
-to have shared files that are used by multiple projects.
-
-## Data Flow
-
-We should create some type of event queue that can effectively source control our
-documents. A log of which user made a change, what time, and what was changed.
-We can log our API calls that modify data with their responses and put them into
-a queryable database. To be complete though, we would need to leverage our api
-for all data changes - and alter or swap out mongorilla. Maybe a more longer
-term goal.
-
-With the api requests, there is theauth overhead to consider. We could have a
-key/value cache by access token that contains user object for /me responses.
-
-```
-save api request ->
-
-    actor,action,target,object
-    retrieve existing user object for log? or not necessary? can replay from log. maybe during certain points of inactivity, an entire object would be saved to the log, so if replaying state afterwards, can start from there.
-
-    record request
-    transform/validate request
-    record validated/transformed request
-        > actions picked up and performed:
-            save to system of record (mongodb)
-            save to caches (this becomes less realistic in large systems, because one small write wouldn't warrant a huge number of fanout cache updates)
-            send to worker queue (if applicable)
-
-    prepare response
-    send response
-```
-
-## Measurement
-
-We're going to need to have a measurement system in place for watching performance and seeing effects of updates.
-
-Recommend Google Analytics and Snowplow Analytics -- would be fun to try using snowplow for everything custom.
-
 ## Schema
 
-All models have the auto-assigned MongoDB _id as their primary key.
+We use MongoDB as our primary data store. All models have the auto-assigned MongoDB _id as their primary key.
+
+Note: we could move this to another file and link to it here to make the readme more concise...
 
 ### Users
 - firstName
@@ -229,4 +182,54 @@ Need testing
 - status - unpublished, published, expired, deleted
 
 Inappropriate (This phase?)
+
+
+## API
+
+The API is documented using Swagger 2.0. `/api/public/swagger-api.yaml` is the
+working doc. `/api/public/api.json` is the generated JSON version (would love to
+find a CLI tool to do this, did the current one via Swagger editor). Swagger 2.0 is
+still a bit buggy in both the Swagger UI and Swagger Editor... but under active
+development so hopefull the kinks will be resolved soon.
+
+Our API uses a separate express instance from the CMS presentation layer (based on
+Mongorilla) and the front-end web and native app views. However, they will all
+always be consistently deployed via this repository, so it could be possible
+to have shared files that are used by multiple projects.
+
+## Data Flow
+
+We should create some type of event queue that can effectively source control our
+documents. A log of which user made a change, what time, and what was changed.
+We can log our API calls that modify data with their responses and put them into
+a queryable database. To be complete though, we would need to leverage our api
+for all data changes - and alter or swap out mongorilla. Maybe a more longer
+term goal.
+
+With the api requests, there is theauth overhead to consider. We could have a
+key/value cache by access token that contains user object for /me responses.
+
+```
+save api request ->
+
+    actor,action,target,object
+    retrieve existing user object for log? or not necessary? can replay from log. maybe during certain points of inactivity, an entire object would be saved to the log, so if replaying state afterwards, can start from there.
+
+    record request
+    transform/validate request
+    record validated/transformed request
+        > actions picked up and performed:
+            save to system of record (mongodb)
+            save to caches (this becomes less realistic in large systems, because one small write wouldn't warrant a huge number of fanout cache updates)
+            send to worker queue (if applicable)
+
+    prepare response
+    send response
+```
+
+## Measurement
+
+We're going to need to have a measurement system in place for watching performance and seeing effects of updates.
+
+Recommend Google Analytics and Snowplow Analytics -- would be fun to try using snowplow for everything custom.
 
