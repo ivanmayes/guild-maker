@@ -175,8 +175,8 @@ exports = module.exports = function UserRoutes( router ) {
             password,
             null
         )
-        .then( function ( token ) {
-            if ( !token ) {
+        .then( function ( obj ) {
+            if ( !obj.token ) {
                 envelope.error( 401 , {
                     'details': 'No token provided',
                     'append':  true
@@ -185,11 +185,30 @@ exports = module.exports = function UserRoutes( router ) {
                 return res.json( envelope );
             }
 
+            // password was successfully exchanged, create a succes
+            // envelope and return that bad boy to the calling view
             envelope.success( 200 , {
-                token: token
+                token: obj.token
             });
 
-            return res.json( envelope );
+            // send response
+            res.json( envelope );
+
+            // front end can proceed, in parallel we're gonna update the
+            // user's last visit time to be now... bc they just logged in.
+            obj.user.lastVisitTime = Date.now();
+            obj.user.saveAsync()
+                .spread( function( savedUser , numAffected ) {
+                    if( numAffected < 1 ){
+                        throw new Error( 'Error updating User\'s lastVisitTime.' );
+                    }
+                })
+                .catch( function( err ) {
+                    throw new Error( 'Error updating User\'s lastVisitTime.' );
+                });
+
+            // now bail.
+            return;
         })
         .catch( function( e ) {
             var code = 500;
@@ -208,5 +227,12 @@ exports = module.exports = function UserRoutes( router ) {
 
         // curl -d "email=test%40example.com&password=password" http://127.0.0.1:3000/v1/login
     });
-};
 
+// accounts
+// devices
+// roles
+// birthday
+// followedTeams
+// preferences
+
+};

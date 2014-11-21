@@ -1,8 +1,10 @@
 
 'use strict';
 
+// TODO: rewrite tests as these tests were written prior to refactoring
+
 var mongoose    = require( 'mongoose' ),
-    AccessToken = require( '../../lib/access-token' ),
+    AccessToken = require( '../../lib/models/token' ),
     accessToken = new AccessToken(),
     tmpId       = mongoose.Types.ObjectId(),
     usr         = {

@@ -155,14 +155,20 @@ Auth.prototype.exchangePassword = function exchangePassword( client , username ,
     })
     .then( function ( token ) {
         if( token ){
-            return token;
+            return {
+                user:  user,
+                token: token
+            };
         }
         // user doesn't have a token... create one
         return self.createToken( client , user , scope );
     })
     .then( function ( token ) {
         if( token ){
-            return token;
+            return {
+                user:  user,
+                token: token
+            };
         }
     })
     .catch( function ( err ) {
