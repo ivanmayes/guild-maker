@@ -17,6 +17,10 @@
 
 Omnigraffle wireframes for the app and cms are in the design folder.
 
+## Development
+
+@todo add notes about leveraging foreman, bunyan, watchers/gulp, default db name, .env settings we may want to configure
+
 ## Schema
 
 We use MongoDB as our primary data store. All models have the auto-assigned MongoDB _id as their primary key.
