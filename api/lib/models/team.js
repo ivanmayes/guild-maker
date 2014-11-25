@@ -5,7 +5,7 @@ var mongoose = require( 'mongoose' );
 
 var schema = new mongoose.Schema(
     {
-        schoolId: { type: mongoose.Schema.Types.ObjectId },
+        schoolId: { type: String },
         sport:    { type: String },
         season:   { type: String },
         level:    { type: String },

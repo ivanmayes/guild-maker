@@ -33,11 +33,10 @@ exports = module.exports = function TeamRoutes( router ) {
 
     // get team(s) by search terms:
     router.get( '/teams/search', auth.requireUser , function( req , res , next ) {
-        // TODO: validate query is supplied, and get schoolId query to work
-        var query, keys, key, param;
+        var keys        = [],
+            query       = {},
+            key,  param;
 
-        keys     = [];
-        query    = {};
         envelope = new Envelope();
 
         // cache members of model.
@@ -48,17 +47,29 @@ exports = module.exports = function TeamRoutes( router ) {
         }
 
         for( param in req.query ) {
+            // access token used to validate request,
+            // don't need to include in query
             if( param === 'access_token' ){
-                break;
+                continue;
             }
 
+            // see if query param is in model
             if( keys.indexOf( param ) >= 0 ) {
                 query[ param ] = req.query[ param ];
             }
-
         }
 
-        console.log( query , '~!');
+        if( Object.getOwnPropertyNames( query ).length === 0 ){
+            // after parsing, no valid query present...
+            // send error envelope and bail
+            envelope.error( 400 , {
+                'details': 'Missing search parameters.',
+                'append':  true
+            });
+            res.json( envelope );
+            return;
+        }
+
         Team.findAsync( query )
             .then( function ( teams ) {
                 envelope.success( 200 , teams );
@@ -67,7 +78,7 @@ exports = module.exports = function TeamRoutes( router ) {
             })
             .catch( function ( err ) {
                 envelope.error( 500 , {
-                    'details': 'The server returned an error finding teams mathcing supplied arguments.',
+                    'details': 'The server returned an error finding teams matching supplied arguments.',
                     'append':  true
                 });
                 res.json( envelope );
@@ -77,11 +88,118 @@ exports = module.exports = function TeamRoutes( router ) {
         return;
     });
 
+    // follow team
+    router.get( '/teams/follow/:teamId?', auth.requireUser , function( req , res , next ) {
+        var teamId = req.params.teamId;
+
+        envelope = new Envelope();
+
+        if( !teamId ){
+            // no teamId present, return error envelope
+            envelope.error( 400 , {
+                'details': 'Missing Team Id.',
+                'append':  true
+            });
+            res.json( envelope );
+            return;
+        }
+
+        Team.findOneAsync({
+            '_id': teamId
+        })
+        .then( function ( team ) {
+            var teamIndex = req.user.followedTeams.indexOf( team._id.toString() );
+
+            if( teamIndex < 0 ){
+                req.user.followedTeams.push( team._id.toString() );
+                return req.user.saveAsync();
+            }
+            else{
+                envelope.success( 200 );
+                res.json( envelope );
+                return;
+            }
+
+        })
+        .spread( function( savedUser , numAffected ) {
+            if( numAffected < 1 ){
+                throw new Error( 'Error updating User\'s lastVisitTime.' );
+            }
+
+            envelope.success( 200 , savedUser );
+            res.json( envelope );
+            return;
+        })
+        .catch( function ( err ) {
+            envelope.error( 500 , {
+                'details': 'The server returned an error finding a team matching supplied id.',
+                'append':  true
+            });
+            res.json( envelope );
+            return;
+        });
+    });
+
+    // unfollow team
+    router.get( '/teams/unfollow/:teamId?', auth.requireUser , function( req , res , next ) {
+        var teamId = req.params.teamId;
+        envelope = new Envelope();
+
+        if( !teamId ){
+            // no teamId present, return error envelope
+            envelope.error( 400 , {
+                'details': 'Missing Team Id.',
+                'append':  true
+            });
+            res.json( envelope );
+            return;
+        }
+
+        Team.findOneAsync({
+            '_id': teamId
+        })
+        .then( function ( team ) {
+            var teamIndex = req.user.followedTeams.indexOf( team._id.toString() );
+
+            if( teamIndex >= 0 ){
+                req.user.followedTeams.splice( teamIndex , 1 );
+            }
+
+            return req.user.saveAsync();
+        })
+        .spread( function( savedUser , numAffected ) {
+            if( numAffected < 1 ){
+                throw new Error( 'Error updating User\'s lastVisitTime.' );
+            }
+
+            envelope.success( 200 , savedUser );
+            res.json( envelope );
+            return;
+        })
+        .catch( function ( err ) {
+            envelope.error( 500 , {
+                'details': 'The server returned an error finding a team matching supplied id.',
+                'append':  true
+            });
+            res.json( envelope );
+            return;
+        });
+    });
+
     // get individual team by teamId
     router.get( '/teams/:teamId', auth.requireUser , function( req , res , next ) {
-        // TODO: validate team Id is supplied
-        var teamId = req.params.teamId || 0;
+        var teamId = req.params.teamId;
         envelope = new Envelope();
+
+        if( !teamId ){
+            // no teamId present, return error envelope
+            envelope.error( 400 , {
+                'details': 'Missing Team Id.',
+                'append':  true
+            });
+            res.json( envelope );
+            return;
+        }
 
         Team.findOneAsync({
             '_id': teamId
@@ -93,96 +211,11 @@ exports = module.exports = function TeamRoutes( router ) {
         })
         .catch( function ( err ) {
             envelope.error( 500 , {
-                'details': 'The server returned an error finding a team mathcing supplied id.',
+                'details': 'The server returned an error finding a team matching supplied id.',
                 'append':  true
             });
             res.json( envelope );
             return;
         });
     });
-
-    // follow team
-    router.get( '/teams/follow/:teamId', auth.requireUser , function( req , res , next ) {
-        // TODO: validate team Id is supplied
-        var teamId = req.params.teamId || 0;
-        envelope = new Envelope();
-
-        Team.findOneAsync({
-            '_id': teamId
-        })
-        .then( function ( team ) {
-            req.user.followedTeams.push( team._id.toString() );
-            console.log( 'follow' , req.user.followedTeams );
-            return req.user.saveAsync();
-        })
-        .spread( function( savedUser , numAffected ) {
-            if( numAffected < 1 ){
-                throw new Error( 'Error updating User\'s lastVisitTime.' );
-            }
-
-            envelope.success( 200 , savedUser );
-            res.json( envelope );
-            return;
-        })
-        .catch( function ( err ) {
-            envelope.error( 500 , {
-                'details': 'The server returned an error finding a team mathcing supplied id.',
-                'append':  true
-            });
-            res.json( envelope );
-            return;
-        });
-    });
-
-    // unfollow team
-    router.get( '/teams/unfollow/:teamId', auth.requireUser , function( req , res , next ) {
-        // TODO: validate team Id is supplied
-        var teamId = req.params.teamId || 0;
-        envelope = new Envelope();
-
-        Team.findOneAsync({
-            '_id': teamId
-        })
-        .then( function ( team ) {
-            var teamIndex = req.user.followedTeams.indexOf( team._id.toString() );
-            req.user.followedTeams.splice( teamIndex , 1 );
-            console.log( 'unfollow' , req.user.followedTeams );
-            return req.user.saveAsync();
-        })
-        .spread( function( savedUser , numAffected ) {
-            if( numAffected < 1 ){
-                throw new Error( 'Error updating User\'s lastVisitTime.' );
-            }
-
-            envelope.success( 200 , savedUser );
-            res.json( envelope );
-            return;
-        })
-        .catch( function ( err ) {
-            envelope.error( 500 , {
-                'details': 'The server returned an error finding a team mathcing supplied id.',
-                'append':  true
-            });
-            res.json( envelope );
-            return;
-        });
-    });
-
-    /*// sport
-    router.get( '/teams/:sport', auth.requireUser , function( req , res , next ) {
-        console.log( 'foo' );
-        return;
-    });
-
-    // season
-    router.get( '/teams/:season', auth.requireUser , function( req , res , next ) {
-        console.log( 'foo' );
-        return;
-    });
-
-    // level
-    router.get( '/teams/:level', auth.requireUser , function( req , res , next ) {
-        console.log( 'foo' );
-        return;
-    });*/
 };
