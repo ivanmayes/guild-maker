@@ -5,6 +5,7 @@ var validator   = require( 'validator' ),
     Promises    = require( 'bluebird' ),
     Envelope    = require( '../envelope' ),
     auth        = require( '../auth' ),
+    routeUtils  = require( '../route-utils' ),
     Team        = require( '../models/team' ),
     envelope;
 
@@ -33,33 +34,20 @@ exports = module.exports = function TeamRoutes( router ) {
 
     // get team(s) by search terms:
     router.get( '/teams/search', auth.requireUser , function( req , res , next ) {
-        var keys        = [],
-            query       = {},
-            key,  param;
+        var keys, query;
 
         envelope = new Envelope();
 
         // cache members of model.
-        for( key in Team.schema.paths ){
-            if( Team.schema.paths.hasOwnProperty( key ) ){
-                keys.push( key );
-            }
-        }
+        keys = routeUtils.findModelMembers( Team );
 
-        for( param in req.query ) {
-            // access token used to validate request,
-            // don't need to include in query
-            if( param === 'access_token' ){
-                continue;
-            }
+        // obtain query schema
+        query = routeUtils.getSearchQuery({
+            'keys':  keys,
+            'query': req.query
+        });
 
-            // see if query param is in model
-            if( keys.indexOf( param ) >= 0 ) {
-                query[ param ] = req.query[ param ];
-            }
-        }
-
-        if( Object.getOwnPropertyNames( query ).length === 0 ){
+        if( !query ){
             // after parsing, no valid query present...
             // send error envelope and bail
             envelope.error( 400 , {

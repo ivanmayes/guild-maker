@@ -4,13 +4,15 @@
 var hat      = require( 'hat' ),
     mongoose = require( 'mongoose' );
 
-var schema = new mongoose.Schema( {
-    token:         String,
-    userId:        mongoose.Schema.Types.ObjectId,
-    clientId:      String,
-    valid:         Boolean,
-    invalidReason: String
-}, { autoIndex: false } );
+var schema = new mongoose.Schema(
+    {
+        token:         { type: String },
+        userId:        { type: mongoose.Schema.Types.ObjectId , ref: 'User' },
+        clientId:      { type: String },
+        valid:         { type: Boolean },
+        invalidReason: { type: String }
+    }
+);
 
 schema.static( 'findByToken' , function ( token ) {
     return this.findOneAsync({

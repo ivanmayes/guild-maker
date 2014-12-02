@@ -13,12 +13,12 @@ var schema = new mongoose.Schema(
         zip:       { type: String },
         latitude:  { type: String },
         longitude: { type: String },
-        schoolId:  { type: mongoose.Schema.Types.ObjectId },
-        homeTeams: { type: Array }
+        schoolId:  { type: mongoose.Schema.Types.ObjectId , ref: 'School' },
+        homeTeams: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Team' }]
     },
     {
         autoIndex: false
     }
 );
 
-exports = module.exports = mongoose.model( 'Locations' , schema );
+exports = module.exports = mongoose.model( 'Location' , schema );

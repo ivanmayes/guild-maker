@@ -6,10 +6,10 @@ var mongoose = require( 'mongoose' );
 var schema = new mongoose.Schema(
     {
         type:           { type: String },
-        eventId:        { type: mongoose.Schema.Types.ObjectId },
-        schoolId:       { type: mongoose.Schema.Types.ObjectId },
-        teamIds:        { type: Array },
-        creator:        { type: mongoose.Schema.Types.ObjectId },
+        eventId:        { type: mongoose.Schema.Types.ObjectId , ref: 'Event' },
+        schoolId:       { type: mongoose.Schema.Types.ObjectId , ref: 'School' },
+        teamIds:        [{ type: mongoose.Schema.Types.ObjectId , ref: 'Team' }],
+        creator:        { type: mongoose.Schema.Types.ObjectId , ref: 'User' },
         source:         { type: String },
         content:        { type: String },
         channels:       { type: String },
@@ -24,4 +24,4 @@ var schema = new mongoose.Schema(
     }
 );
 
-exports = module.exports = mongoose.model( 'Messages' , schema );
+exports = module.exports = mongoose.model( 'Message' , schema );

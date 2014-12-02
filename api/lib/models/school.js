@@ -16,10 +16,17 @@ var schema = new mongoose.Schema(
         logoColorDark:  { type: String },
         logoColorLight: { type: String },
         storeLink:      { type: String }
-    },
-    {
-        autoIndex: false
     }
 );
+
+schema.index({
+    fullName:       'text',
+    shortName:      'text',
+    initials:       'text',
+    city:           'text',
+    state:          'text',
+    division:       'text',
+    mascot:         'text'
+});
 
 exports = module.exports = mongoose.model( 'School' , schema );

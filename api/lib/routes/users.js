@@ -12,6 +12,7 @@ var validator   = require( 'validator' ),
 exports = module.exports = function UserRoutes( router ) {
 
     router.get( '/me', auth.requireUser, function( req , res , next ) {
+        // console.log( 'foofoofoofoofoofoofoofoo' );
         // curl -v http://localhost:3000/v1/me?access_token=[token]
         envelope = new Envelope();
 

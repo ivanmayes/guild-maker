@@ -1,3 +1,4 @@
+
 var schools = [
     {
         '_id':            ObjectId("54739d066dd9a7ae6d02bce1"),
@@ -41,51 +42,47 @@ var schools = [
         'logoColorLight': '#dedede',
         'storeLink':      ''
     }
-];
-
-db.schools.insert( schools );
+];db.schools.insert( schools );
 
 var teams = [
     {
-        'schoolId': '54739d066dd9a7ae6d02bce1',
-        'sport': 'Football',
-        'season': 'Fall',
-        'level': 'Varsity',
-        'gender': 'Male',
-        'mascot': 'Stay Puf\'t Marshmallow Man'
+        'schoolId': ObjectId("54739d066dd9a7ae6d02bce1"),
+        'sport':    'Football',
+        'season':   'Fall',
+        'level':    'Varsity',
+        'gender':   'Male',
+        'mascot':   'Stay Puf\'t Marshmallow Man'
     },
     {
-        'schoolId': '54739d066dd9a7ae6d02bce3',
-        'sport': 'Basketball',
-        'season': 'Winter',
-        'level': 'Varsity',
-        'gender': 'Female',
-        'mascot': 'Poison Ivy'
+        'schoolId': ObjectId("54739d066dd9a7ae6d02bce3"),
+        'sport':    'Basketball',
+        'season':   'Winter',
+        'level':    'Varsity',
+        'gender':   'Female',
+        'mascot':   'Poison Ivy'
     },
     {
-        'schoolId': '54739d066dd9a7ae6d02bce3',
-        'sport': 'Basketball',
-        'season': 'Winter',
-        'level': 'Varsity',
-        'gender': 'Male',
-        'mascot': 'Batman'
+        'schoolId': ObjectId("54739d066dd9a7ae6d02bce3"),
+        'sport':    'Basketball',
+        'season':   'Winter',
+        'level':    'Varsity',
+        'gender':   'Male',
+        'mascot':   'Batman'
     },
     {
-        'schoolId': '54739d066dd9a7ae6d02bce1',
-        'sport': 'Baseball',
-        'season': 'Spring',
-        'level': 'Freshman',
-        'gender': 'Male',
-        'mascot': 'Joe Boo'
+        'schoolId': ObjectId("54739d066dd9a7ae6d02bce1"),
+        'sport':    'Baseball',
+        'season':   'Spring',
+        'level':    'Freshman',
+        'gender':   'Male',
+        'mascot':   'Joe Boo'
     },
     {
-        'schoolId': '54739d066dd9a7ae6d02bce2',
-        'sport': 'Softball',
-        'season': 'Spring',
-        'level': 'JV',
-        'gender': 'Female',
-        'mascot': 'Fish Head'
+        'schoolId': ObjectId("54739d066dd9a7ae6d02bce2"),
+        'sport':    'Softball',
+        'season':   'Spring',
+        'level':    'JV',
+        'gender':   'Female',
+        'mascot':   'Fish Head'
     }
-];
-
-db.teams.insert( teams );
+];db.teams.insert( teams );

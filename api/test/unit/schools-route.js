@@ -9,10 +9,9 @@ var request     = require( 'supertest' ),
     mongoose    = Promises.promisifyAll( require( 'mongoose' ) ),
     config      = require( '../../config' ),
     auth        = require( '../../lib/auth' ),
-    route       = require( '../../lib/routes/users' ),
+    route       = require( '../../lib/routes/schools' ),
     app         = express(),
     router      = express.Router(),
-    password    = '1234567890',
     user        = {
         'username':  'foo',
         'firstName': 'Foobar',
@@ -21,7 +20,7 @@ var request     = require( 'supertest' ),
     },
     authStub;
 
-suite( 'User Routes', function () {
+suite( 'School Routes', function () {
 
     suiteSetup( function ( done ){
 
@@ -68,15 +67,16 @@ suite( 'User Routes', function () {
             });
     });
 
-    test( 'GET /me', function ( done ) {
+    test( 'GET /schools' , function ( done ) {
+
         request( app )
-            .get( '/me' )
+            .get( '/schools' )
             .expect( function( res ) {
                 assert.equal( res.status , 200 , 'response has a status code of 200.');
                 assert.isObject( res.body , 'response body is object' );
                 assert.isObject( res.body.meta , 'response body.meta is object' );
                 assert.equal( res.body.meta.code , 200 , 'response meta code is 200.');
-                assert.isObject( res.body.response , 'response body.response is object' );
+                assert.isArray( res.body.response , 'response body.response is object' );
             })
             .end( function( err , res ){
                 if ( err ) {
@@ -85,47 +85,23 @@ suite( 'User Routes', function () {
                 done();
             });
     });
-
-    test( 'POST /signup', function ( done ) {
-
-        request( app )
-            .post( '/signup' )
-            .send({
-                'userName':  user.username,
-                'firstName': user.firstName,
-                'lastName':  user.lastName,
-                'email':     user.email,
-                'password':  password
-            })
-            .expect( function( res ) {
-                assert.equal( res.status , 200 , 'response has a status code of 200.');
-                assert.isObject( res.body , 'response body is object' );
-                assert.isObject( res.body.meta , 'response body.meta is object' );
-                assert.equal( res.body.meta.code , 200 , 'response meta code is 200.');
-                assert.isObject( res.body.response , 'response body.response is object' );
-            })
-            .end( function( err , res ){
-                if ( err ) {
-                    return done( err );
-                }
-                done();
-            });
+/*
+    test( 'GET /schools/search' , function ( done ) {
     });
+*/
 
-    test( 'POST /login', function ( done ) {
-
+    test( 'GET /schools/:schoolId' , function ( done ) {
+        // we expect failure because we're using a testing db
+        // that hasn't been seeded
         request( app )
-            .post( '/login' )
-            .send({
-                'email':     user.email,
-                'password':  password
-            })
+            .get( '/schools/000' )
             .expect( function( res ) {
+                console.log( res.body );
                 assert.equal( res.status , 200 , 'response has a status code of 200.');
                 assert.isObject( res.body , 'response body is object' );
                 assert.isObject( res.body.meta , 'response body.meta is object' );
-                assert.equal( res.body.meta.code , 200 , 'response meta code is 200.');
-                assert.isObject( res.body.response , 'response body.response is object' );
+                assert.equal( res.body.meta.code , 500 , 'response meta code is 500.');
+                // assert.isObject( res.body.response , 'response body.response is object' );
             })
             .end( function( err , res ){
                 if ( err ) {
