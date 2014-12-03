@@ -35,4 +35,8 @@ schema.index({
     date:    1
 });
 
+schema.index({
+    description: 'text'
+});
+
 exports = module.exports = mongoose.model( 'Event' , schema );

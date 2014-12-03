@@ -2,14 +2,12 @@
 'use strict';
 
 var validator   = require( 'validator' ),
-    Promises    = require( 'bluebird' ),
     Envelope    = require( '../envelope' ),
-    auth        = require( '../auth' ),
     User        = require( '../models/user' ),
     AccessToken = require( '../models/token' ),
     envelope;
 
-exports = module.exports = function UserRoutes( router ) {
+exports = module.exports = function UserRoutes( auth , router ) {
 
     router.get( '/me', auth.requireUser, function( req , res , next ) {
         // console.log( 'foofoofoofoofoofoofoofoo' );

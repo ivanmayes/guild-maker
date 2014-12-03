@@ -1,7 +1,8 @@
 
 'use strict';
 
-var config = require( '../../config' );
+var auth   = require( '../auth' ),
+    config = require( '../../config' );
 
 exports = module.exports = function routes ( app , router ) {
 
@@ -19,7 +20,7 @@ exports = module.exports = function routes ( app , router ) {
                             // ,
                             // fileObject = fileFunc();
 
-                            fileFunc( router );
+                            fileFunc( auth , router );
                     }
                 }
             );

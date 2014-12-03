@@ -1,15 +1,12 @@
 
 'use strict';
 
-var validator   = require( 'validator' ),
-    Promises    = require( 'bluebird' ),
-    Envelope    = require( '../envelope' ),
-    auth        = require( '../auth' ),
+var Envelope    = require( '../envelope' ),
     routeUtils  = require( '../route-utils' ),
     Team        = require( '../models/team' ),
     envelope;
 
-exports = module.exports = function TeamRoutes( router ) {
+exports = module.exports = function TeamRoutes( auth , router ) {
     // router.get( '/teams/:required/:optional?*', auth.requireUser , function( req , res , next ) {
 
     // get list of all teams
