@@ -9,7 +9,7 @@ var validator   = require( 'validator' ),
 
 exports = module.exports = function UserRoutes( auth , router ) {
 
-    router.get( '/me', auth.requireUser, function( req , res , next ) {
+    router.get( '/me' , auth.requireUser, function( req , res , next ) {
         // console.log( 'foofoofoofoofoofoofoofoo' );
         // curl -v http://localhost:3000/v1/me?access_token=[token]
         envelope = new Envelope();
@@ -32,7 +32,7 @@ exports = module.exports = function UserRoutes( auth , router ) {
         return;
     });
 
-    router.post( '/signup', function( req , res ) {
+    router.post( '/signup' , function( req , res ) {
         var userName   = validator.trim( req.body.userName ),
             firstName  = validator.trim( req.body.firstName ),
             lastName   = validator.trim( req.body.lastName ),
@@ -138,7 +138,7 @@ exports = module.exports = function UserRoutes( auth , router ) {
         });
     } );
 
-    router.post( '/login', function( req , res ) {
+    router.post( '/login' , function( req , res ) {
         var valid     = false,
             email     = validator.normalizeEmail( validator.trim( req.body.email ) ),
             password  = req.body.password,
@@ -231,9 +231,56 @@ exports = module.exports = function UserRoutes( auth , router ) {
         // curl -d "email=test%40example.com&password=password" http://127.0.0.1:3000/v1/login
     });
 
-    // TODO: define routes.
-    router.post( '/users', function( req , res ) {});
-    router.post( '/users/:userId', function( req , res ) {});
+    router.post( '/users' , auth.requireUser , function( req , res ) {
+        envelope = new Envelope();
+
+        User.findAsync({})
+            .then( function ( users ) {
+                envelope.success( 200 , users );
+                res.json( envelope );
+                return;
+            })
+            .catch( function ( err ) {
+                envelope.error( 500 , {
+                    'details': 'The server returned an error finding all users.',
+                    'append':  true
+                });
+                res.json( envelope );
+                return;
+            });
+    });
+
+    router.post( '/users/:userId' , auth.requireUser , function( req , res ) {
+        var userId = req.params.userId;
+        envelope = new Envelope();
+
+        if( !userId ){
+            // no userId present, return error envelope
+            envelope.error( 400 , {
+                'details': 'Missing User Id.',
+                'append':  true
+            });
+            res.json( envelope );
+            return;
+        }
+
+        User.findOneAsync({
+            '_id': userId
+        })
+        .then( function ( user ) {
+            envelope.success( 200 , user );
+            res.json( envelope );
+            return;
+        })
+        .catch( function ( err ) {
+            envelope.error( 500 , {
+                'details': 'The server returned an error finding a user matching supplied id.',
+                'append':  true
+            });
+            res.json( envelope );
+            return;
+        });
+    });
 
 // accounts
 // devices
