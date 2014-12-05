@@ -43,13 +43,13 @@ exports = module.exports = function UserRoutes( auth , router ) {
 
         envelope = new Envelope();
 
-        if( !firstName ) {
-            errDetails.push( 'first name is missing.' );
-        }
+        // if( !firstName ) {
+        //     errDetails.push( 'first name is missing.' );
+        // }
 
-        if( !lastName ) {
-            errDetails.push( 'last name is missing.' );
-        }
+        // if( !lastName ) {
+        //     errDetails.push( 'last name is missing.' );
+        // }
 
         if( !req.body.email ) {
             errDetails.push( 'email is missing.' );
@@ -113,11 +113,8 @@ exports = module.exports = function UserRoutes( auth , router ) {
                 })
                 .then( function ( token ) {
                     envelope.success( 200 , {
-                        firstName: user.firstName,
-                        lastName:  user.lastName,
-                        name:      user.name,
-                        email:     user.email,
-                        token:     token
+                        user:  user,
+                        token: token
                     });
 
                     return res.json( envelope );

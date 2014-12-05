@@ -93,19 +93,18 @@ paths:
     post:
       summary: Creates a new user account.
       description: >
-        Creating a new user will return just the access_token in the
-        response when successful. Follow up with a call to `/me` if you
-        want to get the user details.
+        Creating a new user will return an object containing the user
+        and the access_token in the response when successful.
       parameters:
         - name: firstName
           in: formData
           desciption: First name of the user.
-          required: true
+          required: false
           type: string
         - name: lastName
           in: formData
           desciption: Last name of the user.
-          required: true
+          required: false
           type: string
         - name: password
           in: formData
@@ -130,8 +129,11 @@ paths:
                 $ref: Meta
               response:
                 required:
+                  - user
                   - access_token
                 properties:
+                  user:
+                    $ref: User
                   access_token:
                     type: string
         default:
