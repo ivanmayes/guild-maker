@@ -17,10 +17,8 @@ exports = module.exports = function routes ( app , router ) {
                     ) {
                         var name       = file.replace( '.js' , '' ),
                             fileFunc   = require( './' + file );
-                            // ,
-                            // fileObject = fileFunc();
 
-                            fileFunc( auth , router );
+                        fileFunc( auth , router );
                     }
                 }
             );

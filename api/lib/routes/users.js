@@ -14,14 +14,21 @@ exports = module.exports = function UserRoutes( auth , router ) {
         // curl -v http://localhost:3000/v1/me?access_token=[token]
         envelope = new Envelope();
 
-        envelope.success( 200 , {
-            userName:  req.user.username,
-            firstName: req.user.firstName,
-            lastName:  req.user.lastName,
-            email:     req.user.email
+        User.findOneAsync({
+            'email': req.user.email
+        })
+        .then( function ( user ) {
+            envelope.success( 200 , user );
+            return res.json( envelope );
+        })
+        .catch( function ( e ) {
+            envelope.error( 401 , {
+                'details': [ 'The server returned an error finding current user.' , e.message ],
+                'append':  true
+            });
+            return res.json( envelope );
         });
 
-        res.json( envelope );
         return;
     });
 
@@ -226,6 +233,10 @@ exports = module.exports = function UserRoutes( auth , router ) {
 
         // curl -d "email=test%40example.com&password=password" http://127.0.0.1:3000/v1/login
     });
+
+    // TODO: define routes.
+    router.post( '/users', function( req , res ) {});
+    router.post( '/users/:userId', function( req , res ) {});
 
 // accounts
 // devices
