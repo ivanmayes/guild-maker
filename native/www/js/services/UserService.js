@@ -31,16 +31,16 @@ define(['angular'], function(angular) {
                 {
                     email: email,
                     password: password
-                }/*,
+                } /*,
                 {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                     }
                 }*/
             ).then(function(result) {
-                if (result.data.access_token) {
+                if (result.data.response.token) {
                     userInfo = {
-                        accessToken: result.data.access_token,
+                        accessToken: result.data.response.token,
                         email: result.data.email
                     };
                     $window.sessionStorage["userInfo"] = JSON.stringify(userInfo);
@@ -81,9 +81,9 @@ define(['angular'], function(angular) {
                 password: password
             }).then(function(result) {
 
-                if (result.data.access_token) {
+                if (result.data && result.data.response.token) {
                     userInfo = {
-                        accessToken: result.data.access_token,
+                        accessToken: result.data.response.token,
                         email: result.data.email
                     };
                     $window.sessionStorage["userInfo"] = JSON.stringify(userInfo);

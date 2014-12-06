@@ -40,9 +40,9 @@ define(function() {
 
         $scope.register = function() {
             // Create account and sync to local
-            console.log('logging in');
+            console.log('signing up');
             //TODO: Check passwords to match
-            var checkLogin = UserService.signup('ivanmayes@gmail.com', 'mypass');
+            var checkLogin = UserService.signup('ivan@gmail.com', 'mypass');
             checkLogin.then(function(userInfo) {
                 console.log(userInfo);
                 $state.go('roleSelect');
