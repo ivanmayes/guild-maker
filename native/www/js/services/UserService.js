@@ -38,15 +38,15 @@ define(['angular'], function(angular) {
                     }
                 }*/
             ).then(function(result) {
-                if (result.data.response.token) {
+                if (result.data && result.data.response && result.data.response.token) {
                     userInfo = {
-                        accessToken: result.data.response.token,
-                        email: result.data.email
+                        accessToken: result.data.response.token.token,
+                        user: result.data.response.token.user
                     };
                     $window.sessionStorage["userInfo"] = JSON.stringify(userInfo);
                     deferred.resolve(userInfo);
                 } else {
-                    deferred.reject(result.data.meta.errorType);
+                    deferred.reject(result.data.meta.errorDetail[0]);
                 }
 
 
@@ -76,12 +76,13 @@ define(['angular'], function(angular) {
         function signup(email, password) {
             var deferred = $q.defer();
 
+            // TODO: Remove hard coded url
             $http.post("http://localhost:8280/v" + API_VERSION + "/signup", {
                 email: email,
                 password: password
             }).then(function(result) {
 
-                if (result.data && result.data.response.token) {
+                if (result.data && result.data.response && result.data.response) {
                     userInfo = {
                         accessToken: result.data.response.token,
                         email: result.data.email
@@ -89,7 +90,7 @@ define(['angular'], function(angular) {
                     $window.sessionStorage["userInfo"] = JSON.stringify(userInfo);
                     deferred.resolve(userInfo);
                 } else {
-                    deferred.reject(result.data.meta.errorType);
+                    deferred.reject(result.data.meta.errorDetail[0]);
                 }
 
             }, function(error) {

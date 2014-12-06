@@ -2,22 +2,23 @@
 
     <ion-content>
 
+		<form novalidate class="simple-form">
         <div class="list">
             <label class="item item-input">
-                <span class="input-label">Username</span>
-                <input type="text">
+                <span class="input-label">Email</span>
+                <input type="text" ng-model="user.email">
             </label>
             <label class="item item-input">
                 <span class="input-label">Password</span>
-                <input type="password">
+                <input type="password" ng-model="user.pass">
             </label>
         </div>
 
 		<div>
-			<button class="button button-block button-positive" ng-click="login()">
-				Submit
-			</button>
+			<p class="error-msg">{{ errorMsg }}</p>
+			<input class="button button-block button-positive" type="button" value="Submit" ng-click="login(user)">
 		</div>
+		</form>
 
 		<span>or</span>
 
