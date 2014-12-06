@@ -131,7 +131,8 @@ Envelope.prototype.reset = function reset () {
     this.meta = {
         'code': data.code,
         'errorType': data.errorType,
-        'errorDetail': data.details
+        'errorDetail': []
+        // 'errorDetail': data.details
     };
 
     return this;
@@ -181,7 +182,8 @@ Envelope.prototype.error = function error ( code , options ) {
 
             code    = tmpCode;
             type    = this.status_codes[ tmpCode ].errorType || '';
-            detail  = this.status_codes[ tmpCode ].details || '';
+            detail  = '';
+            // detail  = this.status_codes[ tmpCode ].details || '';
 
         }
         else {
@@ -191,7 +193,8 @@ Envelope.prototype.error = function error ( code , options ) {
 
             code   = opts.code || 400;
             type   = opts.type || this.status_codes[ code ].errorType;
-            detail = opts.details || this.status_codes[ code ].details;
+            detail = opts.details || '';
+            // detail = opts.details || this.status_codes[ code ].details;
         }
     }
     else {
@@ -199,7 +202,8 @@ Envelope.prototype.error = function error ( code , options ) {
         append = opts.append;
         // code   = opts.code || 400;
         type   = opts.type || this.status_codes[ code ].errorType;
-        detail = opts.details || this.status_codes[ code ].details;
+        detail = opts.details || '';
+        // detail = opts.details || this.status_codes[ code ].details;
     }
 
     // remove success data

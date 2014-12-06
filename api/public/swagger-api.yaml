@@ -55,7 +55,7 @@ paths:
         response when successful. Follow up with a call to `/me` if you
         want to get the user details.
       parameters:
-        - name: username
+        - name: email
           in: formData
           desciption: >
             The user's email. SeasonLink does not have usernames,
@@ -65,16 +65,6 @@ paths:
         - name: password
           in: formData
           desciption: The user's password.
-          required: true
-          type: string
-        - name: client_id
-          in: formData
-          desciption: The client_id requesting to exchange the username and password for an access token.
-          required: true
-          type: string
-        - name: grant_type
-          in: formData
-          desciption: This is part of the OAuth2 spec and should be set to "password"
           required: true
           type: string
       responses:
@@ -170,24 +160,7 @@ paths:
           description: The standard error envelope.
           schema:
             $ref: Error
-    post:
-      parameters:
-      - name: id
-        in: body
-        description: JSON object of UserModel
-        required: true
-        schema:
-          $ref: User
-      description: Creates a new User.
-      summary: Create User.
-      operationId: createUser
-      responses:
-        200:
-          description: Creates a User
-        default:
-          description: The standard error envelope.
-          schema:
-            $ref: Error
+
   /users/{userId}:
     get:
       parameters:
@@ -213,41 +186,7 @@ paths:
           description: The standard error envelope.
           schema:
             $ref: Error
-    put:
-      parameters:
-      - name: id
-        in: body
-        description: JSON object of UserModel
-        required: true
-        schema:
-          $ref: User
-      description: Updates an existing User.
-      summary: Update Existing User.
-      operationId: updateUser
-      responses:
-        200:
-          description: Updates the User
-        default:
-          description: The standard error envelope.
-          schema:
-            $ref: Error
-    delete:
-      parameters:
-      - name: userId
-        in: path
-        description: the Id of the User
-        required: true
-        type: string
-      description: Deletes a User based on supplied Id.
-      summary: Deletes a User Object.
-      operationId: deleteUserById
-      responses:
-        200:
-          description: Deletes the User
-        default:
-          description: The standard error envelope.
-          schema:
-            $ref: Error
+
   /players:
     get:
       description: Returns array of Players.
@@ -269,42 +208,7 @@ paths:
           description: The standard error envelope.
           schema:
             $ref: Error
-    post:
-      parameters:
-      - name: id
-        in: body
-        description: JSON object of PlayerModel
-        required: true
-        schema:
-          $ref: Player
-      description: Creates a new Player.
-      summary: Create Player.
-      operationId: createPlayer
-      responses:
-        200:
-          description: Creates a Player
-        default:
-          description: The standard error envelope.
-          schema:
-            $ref: Error
-    put:
-      parameters:
-      - name: id
-        in: body
-        description: JSON object of PlayerModel
-        required: true
-        schema:
-          $ref: Player
-      description: Updates an existing Player.
-      summary: Update Existing Player.
-      operationId: updatePlayer
-      responses:
-        200:
-          description: Updates the Player
-        default:
-          description: The standard error envelope.
-          schema:
-            $ref: Error
+
   /players/{playerId}:
     get:
       parameters:
@@ -326,23 +230,6 @@ paths:
           description:  Return a Player.
           schema:
             $ref: Player
-        default:
-          description: The standard error envelope.
-          schema:
-            $ref: Error
-    delete:
-      parameters:
-      - name: playerId
-        in: path
-        description: the Id of the Player
-        required: true
-        type: string
-      description: Deletes a Player based on supplied Id.
-      summary: Deletes a Player Object.
-      operationId: deletePlayerById
-      responses:
-        200:
-          description: Deletes the Player
         default:
           description: The standard error envelope.
           schema:
@@ -369,42 +256,7 @@ paths:
           description: The standard error envelope.
           schema:
             $ref: Error
-    post:
-      parameters:
-      - name: id
-        in: body
-        description: JSON object of TeamModel
-        required: true
-        schema:
-          $ref: Team
-      description: Creates a new Team.
-      summary: Create Team.
-      operationId: createTeam
-      responses:
-        200:
-          description: Creates a Team
-        default:
-          description: The standard error envelope.
-          schema:
-            $ref: Error
-    put:
-      parameters:
-      - name: id
-        in: body
-        description: JSON object of TeamModel
-        required: true
-        schema:
-          $ref: Team
-      description: Updates an existing Team.
-      summary: Update Existing Team.
-      operationId: updateTeam
-      responses:
-        200:
-          description: Updates the Team
-        default:
-          description: The standard error envelope.
-          schema:
-            $ref: Error
+
   /teams/{teamId}:
     get:
       parameters:
@@ -430,23 +282,7 @@ paths:
           description: The standard error envelope.
           schema:
             $ref: Error
-    delete:
-      parameters:
-      - name: teamId
-        in: path
-        description: the Id of the Team
-        required: true
-        type: string
-      description: Deletes a Team based on supplied Id.
-      summary: Deletes a Team Object.
-      operationId: deleteTeamById
-      responses:
-        200:
-          description: Deletes the Team
-        default:
-          description: The standard error envelope.
-          schema:
-            $ref: Error
+
   /schools:
     get:
       description: Returns array of Schools.
@@ -468,42 +304,7 @@ paths:
           description: The standard error envelope.
           schema:
             $ref: Error
-    post:
-      parameters:
-      - name: id
-        in: body
-        description: JSON object of SchoolModel
-        required: true
-        schema:
-          $ref: School
-      description: Creates a new School.
-      summary: Create School.
-      operationId: createSchool
-      responses:
-        200:
-          description: Creates a School
-        default:
-          description: The standard error envelope.
-          schema:
-            $ref: Error
-    put:
-      parameters:
-      - name: id
-        in: body
-        description: JSON object of SchoolModel
-        required: true
-        schema:
-          $ref: School
-      description: Updates an existing School.
-      summary: Update Existing School.
-      operationId: updateSchool
-      responses:
-        200:
-          description: Updates the School
-        default:
-          description: The standard error envelope.
-          schema:
-            $ref: Error
+
   /schools/{schoolId}:
     get:
       parameters:
@@ -529,23 +330,7 @@ paths:
           description: The standard error envelope.
           schema:
             $ref: Error
-    delete:
-      parameters:
-      - name: schoolId
-        in: path
-        description: the Id of the School
-        required: true
-        type: string
-      description: Deletes a School based on supplied Id.
-      summary: Deletes a School Object.
-      operationId: deleteSchoolById
-      responses:
-        200:
-          description: Deletes the School
-        default:
-          description: The standard error envelope.
-          schema:
-            $ref: Error
+
   /events:
     get:
       description: Returns array of Events.
@@ -567,42 +352,7 @@ paths:
           description: The standard error envelope.
           schema:
             $ref: Error
-    post:
-      parameters:
-      - name: id
-        in: body
-        description: JSON object of EventModel
-        required: true
-        schema:
-          $ref: Event
-      description: Creates a new Event.
-      summary: Create Event.
-      operationId: createEvent
-      responses:
-        200:
-          description: Creates a Event
-        default:
-          description: The standard error envelope.
-          schema:
-            $ref: Error
-    put:
-      parameters:
-      - name: id
-        in: body
-        description: JSON object of EventModel
-        required: true
-        schema:
-          $ref: Event
-      description: Updates an existing Event.
-      summary: Update Existing Event.
-      operationId: updateEvent
-      responses:
-        200:
-          description: Updates the Event
-        default:
-          description: The standard error envelope.
-          schema:
-            $ref: Error
+
   /events/{eventId}:
     get:
       parameters:
@@ -628,23 +378,7 @@ paths:
           description: The standard error envelope.
           schema:
             $ref: Error
-    delete:
-      parameters:
-      - name: eventId
-        in: path
-        description: the Id of the Event
-        required: true
-        type: string
-      description: Deletes a Event based on supplied Id.
-      summary: Deletes a Event Object.
-      operationId: deleteEventById
-      responses:
-        200:
-          description: Deletes the Event
-        default:
-          description: The standard error envelope.
-          schema:
-            $ref: Error
+
 definitions:
   Envelope:
     description: API envelope object
@@ -699,7 +433,6 @@ definitions:
           success:
             description: This will be set to `true`.
             type: boolean
-
   Event:
     description: Event Object
     required:
@@ -917,7 +650,6 @@ definitions:
       location:
         description: location of Venue - url for map
         type: string
-
   Address:
     description: Address of location
     required:
