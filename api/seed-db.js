@@ -1,6 +1,7 @@
 
 var events = [
     {
+        '_id':          ObjectId("547f50ba2121db80ce2d8da9"),
         'name':         'RandomPractice',
         'schoolIds':    [ObjectId("54739d066dd9a7ae6d02bce3")],
         'teamIds':      [ObjectId("547cc96f19a4863d136ccb46")],
@@ -18,6 +19,7 @@ var events = [
         'stats':        ''
     },
     {
+        '_id':          ObjectId("547f50fb2121db80ce2d8daa"),
         'name':         'gametime',
         'schoolIds':    [ObjectId("54739d066dd9a7ae6d02bce3"),ObjectId("54739d066dd9a7ae6d02bce2")],
         'teamIds':      [ObjectId("547cc96f19a4863d136ccb47"),ObjectId("547cc96f19a4863d136ccb52")],
@@ -35,6 +37,7 @@ var events = [
         'stats':        ''
     },
     {
+        '_id':          ObjectId("547f51032121db80ce2d8dab"),
         'name':         'foo',
         'schoolIds':    [ObjectId("54739d066dd9a7ae6d02bce1"),ObjectId("54739d066dd9a7ae6d02bce2"),ObjectId("54739d066dd9a7ae6d02bce3")],
         'teamIds':      [ObjectId("547cc96f19a4863d136ccb45"),ObjectId("547cc96f19a4863d136ccb46"),ObjectId("547cc96f19a4863d136ccb47"),ObjectId("547cc96f19a4863d136ccb48"),ObjectId("547cc96f19a4863d136ccb49"),ObjectId("547cc96f19a4863d136ccb50"),ObjectId("547cc96f19a4863d136ccb51"),ObjectId("547cc96f19a4863d136ccb52"),ObjectId("547cc96f19a4863d136ccb53"),ObjectId("547cc96f19a4863d136ccb54")],
