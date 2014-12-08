@@ -23,32 +23,55 @@ define(function() {
             $state.go('roleSelect');
         };
 
-        $scope.login = function() {
+        $scope.login = function(user) {
             console.log('logging in');
-            var checkLogin = UserService.login('ivanmayes@gmail.com', 'mypass');
-            checkLogin.then(function(userInfo) {
-                console.log(userInfo);
-                $state.go('home');
-            }, function(reason) {
-                    console.log('Failed:', reason);
-                });
+
+            if (user && user.email && user.pass) {
+                var checkLogin = UserService.login(user.email, user.pass);
+                checkLogin.then(function(userInfo) {
+                    console.log(userInfo);
+                    $state.go('home');
+                }, function(reason) {
+                        console.log('Failed:', reason);
+                        $scope.errorMsg = reason;
+                    });
+            } else {
+                $scope.errorMsg = "Please add your email and password.";
+            }
+
+
         };
 
         $scope.facebookLogin = function() {
             // Launch OAUTH process
         };
 
-        $scope.register = function() {
+        $scope.register = function(user) {
             // Create account and sync to local
-            console.log('logging in');
-            //TODO: Check passwords to match
-            var checkLogin = UserService.signup('ivanmayes@gmail.com', 'mypass');
-            checkLogin.then(function(userInfo) {
-                console.log(userInfo);
-                $state.go('roleSelect');
-            }, function(reason) {
-                    console.log('Failed:', reason);
-                });
+            console.log('signing up');
+
+            if (user && user.email && user.pass && user.confirm) {
+
+                if (user.pass !== user.confirm) {
+                    $scope.errorMsg = "Passwords do not match";
+                    return false;
+                }
+
+                //TODO: Check passwords to match
+                var checkLogin = UserService.signup(user.email, user.pass);
+                checkLogin.then(function(userInfo) {
+                    console.log(userInfo);
+                    $state.go('search');
+                }, function(reason) {
+                        console.log('Failed:', reason);
+                        $scope.errorMsg = reason;
+                    });
+
+            } else {
+                $scope.errorMsg = "Please fill in all fields";
+            }
+
+
         };
 
         $scope.facebookRegister = function() {

@@ -31,22 +31,22 @@ define(['angular'], function(angular) {
                 {
                     email: email,
                     password: password
-                }/*,
+                } /*,
                 {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                     }
                 }*/
             ).then(function(result) {
-                if (result.data.access_token) {
+                if (result.data && result.data.response && result.data.response.token) {
                     userInfo = {
-                        accessToken: result.data.access_token,
-                        email: result.data.email
+                        accessToken: result.data.response.token.token,
+                        user: result.data.response.token.user
                     };
                     $window.sessionStorage["userInfo"] = JSON.stringify(userInfo);
                     deferred.resolve(userInfo);
                 } else {
-                    deferred.reject(result.data.meta.errorType);
+                    deferred.reject(result.data.meta.errorDetail[0]);
                 }
 
 
@@ -76,20 +76,21 @@ define(['angular'], function(angular) {
         function signup(email, password) {
             var deferred = $q.defer();
 
+            // TODO: Remove hard coded url
             $http.post("http://localhost:8280/v" + API_VERSION + "/signup", {
                 email: email,
                 password: password
             }).then(function(result) {
 
-                if (result.data.access_token) {
+                if (result.data && result.data.response && result.data.response) {
                     userInfo = {
-                        accessToken: result.data.access_token,
+                        accessToken: result.data.response.token,
                         email: result.data.email
                     };
                     $window.sessionStorage["userInfo"] = JSON.stringify(userInfo);
                     deferred.resolve(userInfo);
                 } else {
-                    deferred.reject(result.data.meta.errorType);
+                    deferred.reject(result.data.meta.errorDetail[0]);
                 }
 
             }, function(error) {
