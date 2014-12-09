@@ -282,11 +282,4 @@ exports = module.exports = function UserRoutes( auth , router ) {
         });
     });
 
-// accounts
-// devices
-// roles
-// birthday
-// followedTeams
-// preferences
-
 };

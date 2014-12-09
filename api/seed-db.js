@@ -1,4 +1,47 @@
 
+var messages = [
+{
+    '_id': ObjectId("54874fe14142a8571c40f21b"),
+    'type': 'genericType',
+    'eventId': ObjectId("547f50ba2121db80ce2d8da9"),
+    'schoolId': ObjectId("54739d066dd9a7ae6d02bce3"),
+    'teamIds': [ObjectId("547cc96f19a4863d136ccb46")],
+    'creator': 'admin',
+    'source': 'foo',
+    'content': 'message foo!',
+    'channels': 'channelFoo',
+    'channelContent': 'Foo for channel foo.',
+    'publishTime': new Date( 2014 , 11 , 0 , 14 , 15 ),'expireTime': new Date( 2015 , 2 , 15 ),'status': 'statusFoo',
+    'inappropriate': false},
+{
+    '_id': ObjectId("54874fe14142a8571c40f21c"),
+    'type': 'inappropriateType',
+    'eventId': ObjectId("547f50fb2121db80ce2d8daa"),
+    'schoolId': ObjectId("54739d066dd9a7ae6d02bce3"),
+    'teamIds': [ObjectId("547cc96f19a4863d136ccb47"),ObjectId("547cc96f19a4863d136ccb52")],
+    'creator': 'admin',
+    'source': 'foobar',
+    'content': 'message foobar!',
+    'channels': 'channelFoo',
+    'channelContent': 'Foobar for channel foobar.',
+    'publishTime': new Date( 2014 , 11 , 0 , 14 , 15 ),'expireTime': new Date( 2015 , 2 , 15 ),'status': 'statusFoobar',
+    'inappropriate': true},
+{
+    '_id': ObjectId("54874fe14142a8571c40f21d"),
+    'type': 'expiredType',
+    'eventId': ObjectId("547f51032121db80ce2d8dab"),
+    'schoolId': ObjectId("54739d066dd9a7ae6d02bce1"),
+    'teamIds': [ObjectId("547cc96f19a4863d136ccb45"),ObjectId("547cc96f19a4863d136ccb46"),ObjectId("547cc96f19a4863d136ccb47"),ObjectId("547cc96f19a4863d136ccb48"),ObjectId("547cc96f19a4863d136ccb49"),ObjectId("547cc96f19a4863d136ccb50"),ObjectId("547cc96f19a4863d136ccb51"),ObjectId("547cc96f19a4863d136ccb52"),ObjectId("547cc96f19a4863d136ccb53"),ObjectId("547cc96f19a4863d136ccb54")],
+    'creator': 'admin',
+    'source': 'expired source here',
+    'content': 'expired content here',
+    'channels': 'expiredChannel',
+    'channelContent': 'expired content for expiredChannel',
+    'publishTime': new Date( 2014 , 11 , 0 , 14 , 15 ),'expireTime': new Date( 2014 , 11 , 15 ),'status': 'statusExpired',
+    'inappropriate': false}
+];
+db.messages.insert( messages );
+
 var events = [
     {
         '_id':          ObjectId("547f50ba2121db80ce2d8da9"),

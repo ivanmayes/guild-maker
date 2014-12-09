@@ -18,10 +18,24 @@ var schema = new mongoose.Schema(
         expireTime:     { type: Date },
         status:         { type: String },
         inappropriate:  { type: Boolean }
-    },
-    {
-        autoIndex: false
     }
 );
+
+schema.index({
+    teamIds: 1,
+    date:    1
+});
+
+schema.index({
+    // eventId:        'text',
+    // schoolId:       'text',
+    type:           'text',
+    creator:        'text',
+    source:         'text',
+    content:        'text',
+    channels:       'text',
+    channelContnet: 'text',
+    status:         'text'
+});
 
 exports = module.exports = mongoose.model( 'Message' , schema );
