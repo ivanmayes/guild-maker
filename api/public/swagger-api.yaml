@@ -810,7 +810,7 @@ definitions:
         description: List of User preference objects
         type: array
         items:
-          type: object
+          $ref: NotificationPreference
 
   Team:
     description: Team Object
@@ -999,6 +999,41 @@ definitions:
         type: string
       inappropriate:
         description: Boolean flag indicating if Message is or is not appropriate
+        type: boolean
+
+  NotificationPreference:
+    description: User's Notification Preferences Object
+    required:
+      - enabled
+      - scope
+      - group
+      - email
+      - push
+      - sms
+    properties:
+      enabled:
+        description: Overall on/off boolean of this NotificationPreference
+        type: boolean
+      scope:
+        description: Scope of NotificationPreference (global, team, school, etc.)
+        type: string
+      group:
+        description: User's group setting of this NotificationPreference (player, fan, coach, etc.)
+        type: string
+      school:
+        description: Mongodb ObjectId of School associated with this NotificationPreference
+        $ref: ObjectId
+      team:
+        description: Mongodb ObjectId of Team associated with this NotificationPreference
+        $ref: ObjectId
+      email:
+        description: Boolean flag indicating email notification preference
+        type: boolean
+      push:
+        description: Boolean flag indicating push notification preference
+        type: boolean
+      sms:
+        description: Boolean flag indicating sms notification preference
         type: boolean
 
   ObjectId:
