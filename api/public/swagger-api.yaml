@@ -185,32 +185,268 @@ paths:
         200:
           description: List all Teams.
           schema:
-            type: array
-            items:
-              $ref: SuccessEnvelope
-              properties:
-                meta:
-                  type: object
-                response:
+            $ref: SuccessEnvelope
+            properties:
+              meta:
+                type: object
+              response:
+                type: array
+                items:
                   $ref: Team
         default:
           description: The standard error envelope.
           schema:
             $ref: ErrorEnvelope
 
-  # /teams/search:
+  /teams/search:
+    get:
+      parameters:
+      - name: q
+        in: query
+        description: case insensitve text search (Optional)
+        required: false
+        type: string
+      - name: schoolId
+        in: query
+        description: case sensitve schoolId search (Optional)
+        required: false
+        type: string
+      - name: sport
+        in: query
+        description: case sensitve sport search (Optional)
+        required: false
+        type: string
+      - name: season
+        in: query
+        description: case sensitve season search (Optional)
+        required: false
+        type: string
+      - name: level
+        in: query
+        description: case sensitve level search (Optional)
+        required: false
+        type: string
+      - name: gender
+        in: query
+        description: case sensitve gender search (Optional)
+        required: false
+        type: string
+      - name: mascot
+        in: query
+        description: case sensitve mascot search (Optional)
+        required: false
+        type: string
+      description: |
+        Returns an array of Teams matching supplied query. Query can be a case insensitve text search and/or a case sensitive key/value pair.
+      summary: Retrieve Teams based on search terms or key values
+      operationId: getTeamsByQuery
+      responses:
+        200:
+          description: List results
+          schema:
+            $ref: SuccessEnvelope
+            properties:
+              meta:
+                type: object
+              response:
+                type: array
+                items:
+                  $ref: Team
 
-  # /teams/follow/:teamId?:
+  /teams/follow/{teamId}:
+    get:
+      parameters:
+      - name: teamId
+        in: path
+        description: the Id of the Team
+        required: true
+        type: string
+      description: Applies teamId to User's followed teams.
+      operationId: followTeamById
+      responses:
+        200:
+          description: Return a User.
+          schema:
+            $ref: SuccessEnvelope
+            properties:
+              meta:
+                type: object
+              response:
+                $ref: User
+        default:
+          description: The standard error envelope.
+          schema:
+            $ref: ErrorEnvelope
 
-  # /teams/unfollow/:teamId?:
+  /teams/unfollow/{teamId}:
+    get:
+      parameters:
+      - name: teamId
+        in: path
+        description: the Id of the Team
+        required: true
+        type: string
+      description: Removes teamId from User's followed teams.
+      operationId: unfollowTeamById
+      responses:
+        200:
+          description: Return a User.
+          schema:
+            $ref: SuccessEnvelope
+            properties:
+              meta:
+                type: object
+              response:
+                $ref: User
+        default:
+          description: The standard error envelope.
+          schema:
+            $ref: ErrorEnvelope
 
-  # /teams/:teamId:
+  /teams/{teamId}:
+    get:
+      parameters:
+      - name: teamId
+        in: path
+        description: the Id of the Team
+        required: true
+        type: string
+      description: Returns a Team based on supplied Id.
+      summary: Retrieve a Team Object.
+      operationId: getTeamById
+      responses:
+        200:
+          description: Return a Team.
+          schema:
+            $ref: SuccessEnvelope
+            properties:
+              meta:
+                type: object
+              response:
+                $ref: Team
+        default:
+          description: The standard error envelope.
+          schema:
+            $ref: ErrorEnvelope
 
-  # /schools:
+  /schools:
+    get:
+      description: Returns array of Schools.
+      summary: Retrieve Schools.
+      operationId: getSchoolsList
+      responses:
+        200:
+          description: List all Schools.
+          schema:
+            $ref: SuccessEnvelope
+            properties:
+              meta:
+                type: object
+              response:
+                type: array
+                items:
+                  $ref: School
+        default:
+          description: The standard error envelope.
+          schema:
+            $ref: ErrorEnvelope
 
-  # /schools/search:
+  /schools/search:
+    get:
+      parameters:
+      - name: q
+        in: query
+        description: case insensitve text search (Optional)
+        required: false
+        type: string
+      - name: fullName
+        in: query
+        description: case sensitve fullName search (Optional)
+        type: string
+      - name: shortName
+        in: query
+        description: case sensitve shortName search (Optional)
+        type: string
+      - name: initials
+        in: query
+        description: case sensitve initials search (Optional)
+        type: string
+      - name: city
+        in: query
+        description: case sensitve city search (Optional)
+        type: string
+      - name: state
+        in: query
+        description: case sensitve state search (Optional)
+        type: string
+      - name: zip
+        in: query
+        description: case sensitve zip search (Optional)
+        type: string
+      - name: division
+        in: query
+        description: case sensitve division search (Optional)
+        type: string
+      - name: mascot
+        in: query
+        description: case sensitve mascot search (Optional)
+        type: string
+      - name: logoColorDark
+        in: query
+        description: case sensitve logoColorDark search (Optional)
+        type: string
+      - name: logoColorLight
+        in: query
+        description: case sensitve logoColorLight search (Optional)
+        type: string
+      - name: storeLink
+        in: query
+        description: case sensitve storeLink search (Optional)
+        type: string
+      description: |
+        Returns an array of Schools matching supplied query. Query can
+        be a case insensitve text search and/or a case sensitive
+        key/value pair.
+      summary: Retrieve Schools based on search terms or key values
+      operationId: getSchoolsByQuery
+      responses:
+        200:
+          description: List results
+          schema:
+            $ref: SuccessEnvelope
+            properties:
+              meta:
+                type: object
+              response:
+                type: array
+                items:
+                  $ref: School
 
-  # /schools/:schoolId:
+  /schools/{schoolId}:
+    get:
+      parameters:
+      - name: schoolId
+        in: path
+        description: the Id of the School
+        required: true
+        type: string
+      description: Returns a School based on supplied Id.
+      summary: Retrieve a School Object.
+      operationId: getSchoolById
+      responses:
+        200:
+          description: Return a School.
+          schema:
+            $ref: SuccessEnvelope
+            properties:
+              meta:
+                type: object
+              response:
+                $ref: School
+        default:
+          description: The standard error envelope.
+          schema:
+            $ref: ErrorEnvelope
 
   # /events:
 
@@ -325,6 +561,76 @@ definitions:
         type: array
         items:
           type: object
+
+  Team:
+    description: Team Object
+    required:
+      - schoolId
+      - sport
+      - season
+      - level
+      - gender
+    properties:
+      schoolId:
+        description: Mongodb ObjectId of School this Team belongs too
+        $ref: ObjectId
+      sport:
+        description: The sport this Team is associated with
+        type: string
+      season:
+        description: The season of this Team's sport
+        type: string
+      level:
+        description: The Team's level of play (Frosh, JV, Varsity)
+        type: string
+      gender:
+        description: The gender of this Team (Male, Female)
+        type: string
+      mascot:
+        description: The Team's mascot
+        type: string
+
+  School:
+    description: School Object
+    required:
+      - fullName
+      - city
+      - state
+      - zip
+    properties:
+      fullName:
+        description: Full name of School
+        type: string
+      shortName:
+        description: Short name of School
+        type: string
+      initials:
+        description: Initials of School
+        type: string
+      city:
+        description: City School is located in
+        type: string
+      state:
+        description: State School is located in
+        type: string
+      zip:
+        description: Zip/Postal code of School's location
+        type: string
+      division:
+        description: Division of School
+        type: string
+      mascot:
+        description: Mascot of School
+        type: string
+      logoColorDark:
+        description: Dark color of School's colors
+        type: string
+      logoColorLight:
+        description: Light color of School's colors
+        type: string
+      storeLink:
+        description: Link to School's store
+        type: string
 
   ObjectId:
     description: Mongodb ObjectId definition
