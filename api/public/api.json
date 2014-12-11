@@ -18,8 +18,6 @@
         "seasonLinkInternal": {
             "type": "oauth2",
             "description": "Exchanges an email/password for an access_token. Only to be used by the SeasonLink app.\n",
-            "name": "access_token",
-            "in": "header",
             "flow": "password",
             "tokenUrl": "http://localhost:8280/v1/login",
             "scopes": {}
@@ -39,16 +37,13 @@
                     "200": {
                         "description": "User summary",
                         "schema": {
-                            "type": "object",
-                            "required": [
-                                "meta",
-                                "response"
-                            ],
+                            "$ref": "SuccessEnvelope",
                             "properties": {
                                 "meta": {
-                                    "$ref": "Meta"
+                                    "type": "object"
                                 },
                                 "response": {
+                                    "description": "User Model",
                                     "$ref": "User"
                                 }
                             }
@@ -57,7 +52,7 @@
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "Error"
+                            "$ref": "ErrorEnvelope"
                         }
                     }
                 }
@@ -69,30 +64,16 @@
                 "description": "Logging in will return just the access_token in the response when successful. Follow up with a call to `/me` if you want to get the user details.\n",
                 "parameters": [
                     {
-                        "name": "username",
+                        "name": "email",
                         "in": "formData",
-                        "desciption": "The user's email. SeasonLink does not have usernames, but the OAuth2 spec requires this to be the param name.\n",
+                        "description": "The user's email. SeasonLink does not have usernames, but the OAuth2 spec requires this to be the param name.\n",
                         "required": true,
                         "type": "string"
                     },
                     {
                         "name": "password",
                         "in": "formData",
-                        "desciption": "The user's password.",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "client_id",
-                        "in": "formData",
-                        "desciption": "The client_id requesting to exchange the username and password for an access token.",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "grant_type",
-                        "in": "formData",
-                        "desciption": "This is part of the OAuth2 spec and should be set to \"password\"",
+                        "description": "The user's password.",
                         "required": true,
                         "type": "string"
                     }
@@ -101,19 +82,12 @@
                     "200": {
                         "description": "Returns the access_token",
                         "schema": {
-                            "type": "object",
-                            "required": [
-                                "meta",
-                                "response"
-                            ],
+                            "$ref": "SuccessEnvelope",
                             "properties": {
                                 "meta": {
-                                    "$ref": "Meta"
+                                    "type": "object"
                                 },
                                 "response": {
-                                    "required": [
-                                        "access_token"
-                                    ],
                                     "properties": {
                                         "access_token": {
                                             "type": "string"
@@ -126,7 +100,7 @@
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "Error"
+                            "$ref": "ErrorEnvelope"
                         }
                     }
                 }
@@ -135,33 +109,33 @@
         "/signup": {
             "post": {
                 "summary": "Creates a new user account.",
-                "description": "Creating a new user will return just the access_token in the response when successful. Follow up with a call to `/me` if you want to get the user details.\n",
+                "description": "Creating a new user will return an object containing the user and the access_token in the response when successful.\n",
                 "parameters": [
                     {
                         "name": "firstName",
                         "in": "formData",
-                        "desciption": "First name of the user.",
-                        "required": true,
+                        "description": "First name of the user.",
+                        "required": false,
                         "type": "string"
                     },
                     {
                         "name": "lastName",
                         "in": "formData",
-                        "desciption": "Last name of the user.",
-                        "required": true,
+                        "description": "Last name of the user.",
+                        "required": false,
                         "type": "string"
                     },
                     {
                         "name": "password",
                         "in": "formData",
-                        "desciption": "The user's password.",
+                        "description": "The user's password.",
                         "required": true,
                         "type": "string"
                     },
                     {
                         "name": "email",
                         "in": "formData",
-                        "desciption": "The user's email address.",
+                        "description": "The user's email address.",
                         "required": true,
                         "type": "string"
                     }
@@ -170,20 +144,16 @@
                     "200": {
                         "description": "Returns the access_token for the new user.",
                         "schema": {
-                            "type": "object",
-                            "required": [
-                                "meta",
-                                "response"
-                            ],
+                            "$ref": "SuccessEnvelope",
                             "properties": {
                                 "meta": {
-                                    "$ref": "Meta"
+                                    "type": "object"
                                 },
                                 "response": {
-                                    "required": [
-                                        "access_token"
-                                    ],
                                     "properties": {
+                                        "user": {
+                                            "$ref": "User"
+                                        },
                                         "access_token": {
                                             "type": "string"
                                         }
@@ -195,7 +165,7 @@
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "Error"
+                            "$ref": "ErrorEnvelope"
                         }
                     }
                 }
@@ -210,43 +180,24 @@
                     "200": {
                         "description": "List all users.",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "User"
+                            "$ref": "SuccessEnvelope",
+                            "properties": {
+                                "meta": {
+                                    "type": "object"
+                                },
+                                "response": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "User"
+                                    }
+                                }
                             }
                         }
                     },
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "Error"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "body",
-                        "description": "JSON object of UserModel",
-                        "required": true,
-                        "schema": {
-                            "$ref": "User"
-                        }
-                    }
-                ],
-                "description": "Creates a new User.",
-                "summary": "Create User.",
-                "operationId": "createUser",
-                "responses": {
-                    "200": {
-                        "description": "Creates a User"
-                    },
-                    "default": {
-                        "description": "The standard error envelope.",
-                        "schema": {
-                            "$ref": "Error"
+                            "$ref": "ErrorEnvelope"
                         }
                     }
                 }
@@ -270,198 +221,21 @@
                     "200": {
                         "description": "Return a User.",
                         "schema": {
-                            "$ref": "User"
-                        }
-                    },
-                    "default": {
-                        "description": "The standard error envelope.",
-                        "schema": {
-                            "$ref": "Error"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "body",
-                        "description": "JSON object of UserModel",
-                        "required": true,
-                        "schema": {
-                            "$ref": "User"
-                        }
-                    }
-                ],
-                "description": "Updates an existing User.",
-                "summary": "Update Existing User.",
-                "operationId": "updateUser",
-                "responses": {
-                    "200": {
-                        "description": "Updates the User"
-                    },
-                    "default": {
-                        "description": "The standard error envelope.",
-                        "schema": {
-                            "$ref": "Error"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "parameters": [
-                    {
-                        "name": "userId",
-                        "in": "path",
-                        "description": "the Id of the User",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "description": "Deletes a User based on supplied Id.",
-                "summary": "Deletes a User Object.",
-                "operationId": "deleteUserById",
-                "responses": {
-                    "200": {
-                        "description": "Deletes the User"
-                    },
-                    "default": {
-                        "description": "The standard error envelope.",
-                        "schema": {
-                            "$ref": "Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/players": {
-            "get": {
-                "description": "Returns array of Players.",
-                "summary": "Retrieve Players.",
-                "operationId": "getPlayersList",
-                "responses": {
-                    "200": {
-                        "description": "List all Players.",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "Player"
+                            "$ref": "SuccessEnvelope",
+                            "properties": {
+                                "meta": {
+                                    "type": "object"
+                                },
+                                "response": {
+                                    "$ref": "User"
+                                }
                             }
                         }
                     },
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "Error"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "body",
-                        "description": "JSON object of PlayerModel",
-                        "required": true,
-                        "schema": {
-                            "$ref": "Player"
-                        }
-                    }
-                ],
-                "description": "Creates a new Player.",
-                "summary": "Create Player.",
-                "operationId": "createPlayer",
-                "responses": {
-                    "200": {
-                        "description": "Creates a Player"
-                    },
-                    "default": {
-                        "description": "The standard error envelope.",
-                        "schema": {
-                            "$ref": "Error"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "body",
-                        "description": "JSON object of PlayerModel",
-                        "required": true,
-                        "schema": {
-                            "$ref": "Player"
-                        }
-                    }
-                ],
-                "description": "Updates an existing Player.",
-                "summary": "Update Existing Player.",
-                "operationId": "updatePlayer",
-                "responses": {
-                    "200": {
-                        "description": "Updates the Player"
-                    },
-                    "default": {
-                        "description": "The standard error envelope.",
-                        "schema": {
-                            "$ref": "Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/players/{playerId}": {
-            "get": {
-                "parameters": [
-                    {
-                        "name": "playerId",
-                        "in": "path",
-                        "description": "the Id of the Player",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "description": "Returns a Player based on supplied Id.",
-                "summary": "Retrieve a Player Object.",
-                "operationId": "getPlayerById",
-                "responses": {
-                    "200": {
-                        "description": "Return a Player.",
-                        "schema": {
-                            "$ref": "Player"
-                        }
-                    },
-                    "default": {
-                        "description": "The standard error envelope.",
-                        "schema": {
-                            "$ref": "Error"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "parameters": [
-                    {
-                        "name": "playerId",
-                        "in": "path",
-                        "description": "the Id of the Player",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "description": "Deletes a Player based on supplied Id.",
-                "summary": "Deletes a Player Object.",
-                "operationId": "deletePlayerById",
-                "responses": {
-                    "200": {
-                        "description": "Deletes the Player"
-                    },
-                    "default": {
-                        "description": "The standard error envelope.",
-                        "schema": {
-                            "$ref": "Error"
+                            "$ref": "ErrorEnvelope"
                         }
                     }
                 }
@@ -476,70 +250,175 @@
                     "200": {
                         "description": "List all Teams.",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "Team"
+                            "$ref": "SuccessEnvelope",
+                            "properties": {
+                                "meta": {
+                                    "type": "object"
+                                },
+                                "response": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "Team"
+                                    }
+                                }
                             }
                         }
                     },
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "Error"
+                            "$ref": "ErrorEnvelope"
                         }
                     }
                 }
-            },
-            "post": {
+            }
+        },
+        "/teams/search": {
+            "get": {
                 "parameters": [
                     {
-                        "name": "id",
-                        "in": "body",
-                        "description": "JSON object of TeamModel",
-                        "required": true,
-                        "schema": {
-                            "$ref": "Team"
-                        }
+                        "name": "q",
+                        "in": "query",
+                        "description": "case insensitve text search (Optional)",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "schoolId",
+                        "in": "query",
+                        "description": "case sensitve schoolId search (Optional)",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "sport",
+                        "in": "query",
+                        "description": "case sensitve sport search (Optional)",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "season",
+                        "in": "query",
+                        "description": "case sensitve season search (Optional)",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "level",
+                        "in": "query",
+                        "description": "case sensitve level search (Optional)",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "gender",
+                        "in": "query",
+                        "description": "case sensitve gender search (Optional)",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "mascot",
+                        "in": "query",
+                        "description": "case sensitve mascot search (Optional)",
+                        "required": false,
+                        "type": "string"
                     }
                 ],
-                "description": "Creates a new Team.",
-                "summary": "Create Team.",
-                "operationId": "createTeam",
+                "description": "Returns an array of Teams matching supplied query. Query can be a case insensitve text search and/or a case sensitive key/value pair.\n",
+                "summary": "Retrieve Teams based on search terms or key values",
+                "operationId": "getTeamsByQuery",
                 "responses": {
                     "200": {
-                        "description": "Creates a Team"
+                        "description": "List results",
+                        "schema": {
+                            "$ref": "SuccessEnvelope",
+                            "properties": {
+                                "meta": {
+                                    "type": "object"
+                                },
+                                "response": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "Team"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/teams/follow/{teamId}": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "teamId",
+                        "in": "path",
+                        "description": "the Id of the Team",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "description": "Applies teamId to User's followed teams.",
+                "operationId": "followTeamById",
+                "responses": {
+                    "200": {
+                        "description": "Return a User.",
+                        "schema": {
+                            "$ref": "SuccessEnvelope",
+                            "properties": {
+                                "meta": {
+                                    "type": "object"
+                                },
+                                "response": {
+                                    "$ref": "User"
+                                }
+                            }
+                        }
                     },
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "Error"
+                            "$ref": "ErrorEnvelope"
                         }
                     }
                 }
-            },
-            "put": {
+            }
+        },
+        "/teams/unfollow/{teamId}": {
+            "get": {
                 "parameters": [
                     {
-                        "name": "id",
-                        "in": "body",
-                        "description": "JSON object of TeamModel",
+                        "name": "teamId",
+                        "in": "path",
+                        "description": "the Id of the Team",
                         "required": true,
-                        "schema": {
-                            "$ref": "Team"
-                        }
+                        "type": "string"
                     }
                 ],
-                "description": "Updates an existing Team.",
-                "summary": "Update Existing Team.",
-                "operationId": "updateTeam",
+                "description": "Removes teamId from User's followed teams.",
+                "operationId": "unfollowTeamById",
                 "responses": {
                     "200": {
-                        "description": "Updates the Team"
+                        "description": "Return a User.",
+                        "schema": {
+                            "$ref": "SuccessEnvelope",
+                            "properties": {
+                                "meta": {
+                                    "type": "object"
+                                },
+                                "response": {
+                                    "$ref": "User"
+                                }
+                            }
+                        }
                     },
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "Error"
+                            "$ref": "ErrorEnvelope"
                         }
                     }
                 }
@@ -563,38 +442,21 @@
                     "200": {
                         "description": "Return a Team.",
                         "schema": {
-                            "$ref": "Team"
+                            "$ref": "SuccessEnvelope",
+                            "properties": {
+                                "meta": {
+                                    "type": "object"
+                                },
+                                "response": {
+                                    "$ref": "Team"
+                                }
+                            }
                         }
                     },
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "Error"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "parameters": [
-                    {
-                        "name": "teamId",
-                        "in": "path",
-                        "description": "the Id of the Team",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "description": "Deletes a Team based on supplied Id.",
-                "summary": "Deletes a Team Object.",
-                "operationId": "deleteTeamById",
-                "responses": {
-                    "200": {
-                        "description": "Deletes the Team"
-                    },
-                    "default": {
-                        "description": "The standard error envelope.",
-                        "schema": {
-                            "$ref": "Error"
+                            "$ref": "ErrorEnvelope"
                         }
                     }
                 }
@@ -609,70 +471,125 @@
                     "200": {
                         "description": "List all Schools.",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "School"
+                            "$ref": "SuccessEnvelope",
+                            "properties": {
+                                "meta": {
+                                    "type": "object"
+                                },
+                                "response": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "School"
+                                    }
+                                }
                             }
                         }
                     },
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "Error"
+                            "$ref": "ErrorEnvelope"
                         }
                     }
                 }
-            },
-            "post": {
+            }
+        },
+        "/schools/search": {
+            "get": {
                 "parameters": [
                     {
-                        "name": "id",
-                        "in": "body",
-                        "description": "JSON object of SchoolModel",
-                        "required": true,
-                        "schema": {
-                            "$ref": "School"
-                        }
-                    }
-                ],
-                "description": "Creates a new School.",
-                "summary": "Create School.",
-                "operationId": "createSchool",
-                "responses": {
-                    "200": {
-                        "description": "Creates a School"
+                        "name": "q",
+                        "in": "query",
+                        "description": "case insensitve text search (Optional)",
+                        "required": false,
+                        "type": "string"
                     },
-                    "default": {
-                        "description": "The standard error envelope.",
-                        "schema": {
-                            "$ref": "Error"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "parameters": [
                     {
-                        "name": "id",
-                        "in": "body",
-                        "description": "JSON object of SchoolModel",
-                        "required": true,
-                        "schema": {
-                            "$ref": "School"
-                        }
+                        "name": "fullName",
+                        "in": "query",
+                        "description": "case sensitve fullName search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "shortName",
+                        "in": "query",
+                        "description": "case sensitve shortName search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "initials",
+                        "in": "query",
+                        "description": "case sensitve initials search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "city",
+                        "in": "query",
+                        "description": "case sensitve city search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "state",
+                        "in": "query",
+                        "description": "case sensitve state search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "zip",
+                        "in": "query",
+                        "description": "case sensitve zip search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "division",
+                        "in": "query",
+                        "description": "case sensitve division search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "mascot",
+                        "in": "query",
+                        "description": "case sensitve mascot search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "logoColorDark",
+                        "in": "query",
+                        "description": "case sensitve logoColorDark search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "logoColorLight",
+                        "in": "query",
+                        "description": "case sensitve logoColorLight search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "storeLink",
+                        "in": "query",
+                        "description": "case sensitve storeLink search (Optional)",
+                        "type": "string"
                     }
                 ],
-                "description": "Updates an existing School.",
-                "summary": "Update Existing School.",
-                "operationId": "updateSchool",
+                "description": "Returns an array of Schools matching supplied query. Query can\nbe a case insensitve text search and/or a case sensitive\nkey/value pair.\n",
+                "summary": "Retrieve Schools based on search terms or key values",
+                "operationId": "getSchoolsByQuery",
                 "responses": {
                     "200": {
-                        "description": "Updates the School"
-                    },
-                    "default": {
-                        "description": "The standard error envelope.",
+                        "description": "List results",
                         "schema": {
-                            "$ref": "Error"
+                            "$ref": "SuccessEnvelope",
+                            "properties": {
+                                "meta": {
+                                    "type": "object"
+                                },
+                                "response": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "School"
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -696,38 +613,21 @@
                     "200": {
                         "description": "Return a School.",
                         "schema": {
-                            "$ref": "School"
+                            "$ref": "SuccessEnvelope",
+                            "properties": {
+                                "meta": {
+                                    "type": "object"
+                                },
+                                "response": {
+                                    "$ref": "School"
+                                }
+                            }
                         }
                     },
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "Error"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "parameters": [
-                    {
-                        "name": "schoolId",
-                        "in": "path",
-                        "description": "the Id of the School",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "description": "Deletes a School based on supplied Id.",
-                "summary": "Deletes a School Object.",
-                "operationId": "deleteSchoolById",
-                "responses": {
-                    "200": {
-                        "description": "Deletes the School"
-                    },
-                    "default": {
-                        "description": "The standard error envelope.",
-                        "schema": {
-                            "$ref": "Error"
+                            "$ref": "ErrorEnvelope"
                         }
                     }
                 }
@@ -742,70 +642,149 @@
                     "200": {
                         "description": "List all Events.",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "Event"
+                            "$ref": "SuccessEnvelope",
+                            "properties": {
+                                "meta": {
+                                    "type": "object"
+                                },
+                                "response": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "Event"
+                                    }
+                                }
                             }
                         }
                     },
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "Error"
+                            "$ref": "ErrorEnvelope"
                         }
                     }
                 }
-            },
-            "post": {
+            }
+        },
+        "/events/search": {
+            "get": {
                 "parameters": [
                     {
-                        "name": "id",
-                        "in": "body",
-                        "description": "JSON object of EventModel",
-                        "required": true,
-                        "schema": {
-                            "$ref": "Event"
-                        }
-                    }
-                ],
-                "description": "Creates a new Event.",
-                "summary": "Create Event.",
-                "operationId": "createEvent",
-                "responses": {
-                    "200": {
-                        "description": "Creates a Event"
+                        "name": "q",
+                        "in": "query",
+                        "description": "case insensitve text search (Optional)",
+                        "required": false,
+                        "type": "string"
                     },
-                    "default": {
-                        "description": "The standard error envelope.",
-                        "schema": {
-                            "$ref": "Error"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "parameters": [
                     {
-                        "name": "id",
-                        "in": "body",
-                        "description": "JSON object of EventModel",
-                        "required": true,
-                        "schema": {
-                            "$ref": "Event"
-                        }
+                        "name": "name",
+                        "in": "query",
+                        "description": "case sensitive name search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "schoolIds",
+                        "in": "query",
+                        "description": "case sensitive schoolIds search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "teamIds",
+                        "in": "query",
+                        "description": "case sensitive teamIds search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "homeSchoolId",
+                        "in": "query",
+                        "description": "case sensitive homeSchoolId search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "homeTeamId",
+                        "in": "query",
+                        "description": "case sensitive homeTeamId search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "case sensitive type search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "description",
+                        "in": "query",
+                        "description": "case sensitive description search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "description": "case sensitive date search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "startTime",
+                        "in": "query",
+                        "description": "case sensitive startTime search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "endTime",
+                        "in": "query",
+                        "description": "case sensitive endTime search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "rescheduled",
+                        "in": "query",
+                        "description": "case sensitive rescheduled search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "dateAdded",
+                        "in": "query",
+                        "description": "case sensitive dateAdded search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "locationId",
+                        "in": "query",
+                        "description": "case sensitive locationId search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "score",
+                        "in": "query",
+                        "description": "case sensitive score search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "stats",
+                        "in": "query",
+                        "description": "case sensitive stats search (Optional)",
+                        "type": "string"
                     }
                 ],
-                "description": "Updates an existing Event.",
-                "summary": "Update Existing Event.",
-                "operationId": "updateEvent",
+                "description": "Returns an array of Events matching supplied query. Query can\nbe a case insensitve text search and/or a case sensitive\nkey/value pair.\n",
+                "summary": "Retrieve Events based on search terms or key values",
+                "operationId": "getEventsByQuery",
                 "responses": {
                     "200": {
-                        "description": "Updates the Event"
-                    },
-                    "default": {
-                        "description": "The standard error envelope.",
+                        "description": "List results",
                         "schema": {
-                            "$ref": "Error"
+                            "$ref": "SuccessEnvelope",
+                            "properties": {
+                                "meta": {
+                                    "type": "object"
+                                },
+                                "response": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "Event"
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -827,40 +806,206 @@
                 "operationId": "getEventById",
                 "responses": {
                     "200": {
-                        "description": "Return an Event.",
+                        "description": "Return a Event.",
                         "schema": {
-                            "$ref": "Event"
+                            "$ref": "SuccessEnvelope",
+                            "properties": {
+                                "meta": {
+                                    "type": "object"
+                                },
+                                "response": {
+                                    "$ref": "Event"
+                                }
+                            }
                         }
                     },
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "Error"
+                            "$ref": "ErrorEnvelope"
                         }
                     }
                 }
-            },
-            "delete": {
+            }
+        },
+        "/messages": {
+            "get": {
+                "description": "Returns array of Messages.",
+                "summary": "Retrieve Messages.",
+                "operationId": "getMessagesList",
+                "responses": {
+                    "200": {
+                        "description": "List all Messages.",
+                        "schema": {
+                            "$ref": "SuccessEnvelope",
+                            "properties": {
+                                "meta": {
+                                    "type": "object"
+                                },
+                                "response": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "Message"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "$ref": "ErrorEnvelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/messages/search": {
+            "get": {
                 "parameters": [
                     {
+                        "name": "q",
+                        "in": "query",
+                        "description": "case insensitve text search (Optional)",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "case sensitve type search (Optional)",
+                        "type": "string"
+                    },
+                    {
                         "name": "eventId",
+                        "in": "query",
+                        "description": "case sensitve eventId search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "schoolId",
+                        "in": "query",
+                        "description": "case sensitve schoolId search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "teamIds",
+                        "in": "query",
+                        "description": "case sensitve teamIds search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "creator",
+                        "in": "query",
+                        "description": "case sensitve creator search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "source",
+                        "in": "query",
+                        "description": "case sensitve source search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "content",
+                        "in": "query",
+                        "description": "case sensitve content search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "channels",
+                        "in": "query",
+                        "description": "case sensitve channels search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "channelContent",
+                        "in": "query",
+                        "description": "case sensitve channelContent search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "publishTime",
+                        "in": "query",
+                        "description": "case sensitve publishTime search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "expireTime",
+                        "in": "query",
+                        "description": "case sensitve expireTime search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "case sensitve status search (Optional)",
+                        "type": "string"
+                    },
+                    {
+                        "name": "inappropriate",
+                        "in": "query",
+                        "description": "case sensitve inappropriate search (Optional)",
+                        "type": "string"
+                    }
+                ],
+                "description": "Returns an array of Events matching supplied query. Query can\nbe a case insensitve text search and/or a case sensitive\nkey/value pair.\n",
+                "summary": "Retrieve Events based on search terms or key values",
+                "operationId": "getEventsByQuery",
+                "responses": {
+                    "200": {
+                        "description": "List results",
+                        "schema": {
+                            "$ref": "SuccessEnvelope",
+                            "properties": {
+                                "meta": {
+                                    "type": "object"
+                                },
+                                "response": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "Event"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/messages/{messageId}": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "messageId",
                         "in": "path",
-                        "description": "the Id of the Event",
+                        "description": "the Id of the Message",
                         "required": true,
                         "type": "string"
                     }
                 ],
-                "description": "Deletes a Event based on supplied Id.",
-                "summary": "Deletes a Event Object.",
-                "operationId": "deleteEventById",
+                "description": "Returns a Message based on supplied Id.",
+                "summary": "Retrieve a Message Object.",
+                "operationId": "getMessageById",
                 "responses": {
                     "200": {
-                        "description": "Deletes the Event"
+                        "description": "Return a Message.",
+                        "schema": {
+                            "$ref": "SuccessEnvelope",
+                            "properties": {
+                                "meta": {
+                                    "type": "object"
+                                },
+                                "response": {
+                                    "$ref": "Message"
+                                }
+                            }
+                        }
                     },
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "Error"
+                            "$ref": "ErrorEnvelope"
                         }
                     }
                 }
@@ -868,328 +1013,74 @@
         }
     },
     "definitions": {
-        "Envelope": {
-            "description": "API envelope object",
+        "ErrorEnvelope": {
+            "description": "API error envelope response",
             "required": [
                 "meta"
             ],
             "properties": {
                 "meta": {
-                    "$ref": "Meta"
-                },
-                "response": {
-                    "anyOf": [
-                        {
-                            "type": "object"
+                    "description": "meta data of the error envelope",
+                    "type": "object",
+                    "required": [
+                        "code",
+                        "errorType",
+                        "errorDetail"
+                    ],
+                    "properties": {
+                        "code": {
+                            "type": "integer",
+                            "format": "int32"
                         },
-                        {
-                            "type": "array"
+                        "errorType": {
+                            "description": "Additional information about what went wrong, intended for the developer.",
+                            "type": "string"
+                        },
+                        "errorDetail": {
+                            "description": "A localized string intended for the client to display back to the user directly.",
+                            "type": "string"
                         }
-                    ]
-                }
-            }
-        },
-        "Meta": {
-            "description": "meta portion of the API envelope",
-            "type": "object",
-            "required": [
-                "code"
-            ],
-            "properties": {
-                "code": {
-                    "type": "integer",
-                    "format": "int32"
-                },
-                "errorType": {
-                    "description": "Machine-readable error type",
-                    "type": "string"
-                },
-                "errorDetail": {
-                    "description": "Additional information about what went wrong, intended for the developer.",
-                    "type": "string"
-                },
-                "errorMessage": {
-                    "description": "A localized string intended for the client to display back to the user directly.",
-                    "type": "string"
-                }
-            }
-        },
-        "Error": {
-            "description": "Error response will only have meta with the code, errorType and optionally errorDetail and errorMessage.",
-            "required": [
-                "meta"
-            ],
-            "properties": {
-                "meta": {
-                    "$ref": "Meta"
+                    }
                 }
             }
         },
         "SuccessEnvelope": {
-            "description": "Responses that only need to show the request succeeded",
+            "description": "API success envelope response",
             "required": [
                 "meta",
                 "response"
             ],
             "properties": {
                 "meta": {
-                    "$ref": "Meta"
-                },
-                "response": {
+                    "description": "meta data of the sucess envelope",
+                    "type": "object",
                     "required": [
-                        "success"
+                        "code"
                     ],
                     "properties": {
-                        "success": {
-                            "description": "This will be set to `true`.",
-                            "type": "boolean"
+                        "code": {
+                            "type": "integer",
+                            "format": "int32"
                         }
                     }
-                }
-            }
-        },
-        "Event": {
-            "description": "Event Object",
-            "required": [
-                "id",
-                "name",
-                "eventDescription",
-                "dates"
-            ],
-            "properties": {
-                "id": {
-                    "description": "Event Id",
-                    "type": "integer",
-                    "format": "int32"
                 },
-                "team": {
-                    "description": "Team associated with Event",
-                    "$ref": "Team"
-                },
-                "name": {
-                    "description": "Event Name/Title",
-                    "type": "string"
-                },
-                "eventDescription": {
-                    "description": "Event body",
-                    "type": "string"
-                },
-                "eventType": {
-                    "description": "Event type ()",
-                    "type": "string"
-                },
-                "dates": {
-                    "description": "EventTime (start/end) of Event",
-                    "$ref": "EventTime"
-                },
-                "rescheduled": {
-                    "description": "Rescheduled flag",
-                    "type": "boolean",
-                    "defaultValue": false
-                },
-                "opponent": {
-                    "description": "Team playing against in Event",
-                    "$ref": "Team"
-                },
-                "score": {
-                    "description": "Scoring object of Event",
-                    "$ref": "ScoringObj"
-                }
-            }
-        },
-        "Notification": {
-            "description": "Notification Object",
-            "required": [
-                "name",
-                "message"
-            ],
-            "properties": {
-                "id": {
-                    "description": "Id of Notification",
-                    "type": "integer",
-                    "format": "int32"
-                },
-                "name": {
-                    "description": "Name/Title of Notification",
-                    "type": "string"
-                },
-                "message": {
-                    "description": "Body of Notification",
-                    "type": "string"
-                },
-                "msgType": {
-                    "description": "Type of Notification (games/schedule/score/etc.)",
-                    "type": "string"
-                },
-                "msgCategory": {
-                    "description": "Category of Notification (fan/parent)",
-                    "type": "string"
-                }
-            }
-        },
-        "Player": {
-            "description": "Player Object",
-            "required": [
-                "id",
-                "team",
-                "name"
-            ],
-            "properties": {
-                "id": {
-                    "description": "Player Id",
-                    "type": "integer",
-                    "format": "int32"
-                },
-                "team": {
-                    "description": "Team of Player",
-                    "$ref": "Team"
-                },
-                "school": {
-                    "description": "School of Player",
-                    "$ref": "School"
-                },
-                "name": {
-                    "description": "Player Name",
-                    "type": "string"
-                },
-                "number": {
-                    "description": "Player Number",
-                    "type": "integer",
-                    "format": "int32"
-                },
-                "position": {
-                    "description": "Position of Player",
-                    "type": "string"
-                },
-                "email": {
-                    "description": "Email of Player",
-                    "type": "string"
-                },
-                "images": {
-                    "description": "List of Images associated with Player",
-                    "type": "array",
-                    "items": {
-                        "$ref": "Image"
-                    }
-                },
-                "stats": {
-                    "description": "Stats associated with Player",
+                "response": {
+                    "description": "response data of successful API call",
                     "type": "object"
-                }
-            }
-        },
-        "School": {
-            "description": "School Object",
-            "required": [
-                "id",
-                "name",
-                "mascot"
-            ],
-            "properties": {
-                "id": {
-                    "description": "Id of School",
-                    "type": "integer",
-                    "format": "int32"
-                },
-                "name": {
-                    "description": "Name of School",
-                    "type": "string"
-                },
-                "address": {
-                    "description": "Address of School",
-                    "$ref": "Address"
-                },
-                "division": {
-                    "description": "School division",
-                    "type": "string"
-                },
-                "mascot": {
-                    "description": "School Mascot",
-                    "type": "string"
-                },
-                "logo": {
-                    "description": "School Logo",
-                    "type": "string"
-                },
-                "colors": {
-                    "description": "School Colors",
-                    "$ref": "TeamColors"
-                },
-                "eCommerce": {
-                    "description": "Link to School's eCommerce",
-                    "type": "string"
-                }
-            }
-        },
-        "Team": {
-            "description": "Team Object",
-            "required": [
-                "id",
-                "school",
-                "sport",
-                "gender",
-                "mascot"
-            ],
-            "properties": {
-                "id": {
-                    "description": "Id of Team",
-                    "type": "integer",
-                    "format": "int32"
-                },
-                "school": {
-                    "description": "School of Team",
-                    "type": "string"
-                },
-                "sport": {
-                    "description": "Sport of Team",
-                    "type": "string"
-                },
-                "gender": {
-                    "description": "Guys/Girls Team",
-                    "type": "string",
-                    "enum": [
-                        "Guys",
-                        "Girls"
-                    ]
-                },
-                "division": {
-                    "description": "Division of Team (Varsity/JV/Frosh/etc.)",
-                    "type": "string"
-                },
-                "mascot": {
-                    "description": "Mascot of Team",
-                    "type": "string"
-                },
-                "venue": {
-                    "description": "Venue of Team",
-                    "$ref": "Venue"
-                },
-                "logo": {
-                    "description": "Team Logo",
-                    "type": "string"
-                },
-                "colors": {
-                    "description": "Team Colors",
-                    "$ref": "TeamColors"
-                },
-                "location": {
-                    "description": "Team Location - url for map",
-                    "type": "string"
-                },
-                "notifications": {
-                    "description": "Team Notification Settings",
-                    "$ref": "NotificationSettings"
                 }
             }
         },
         "User": {
             "description": "User Object",
             "required": [
-                "firstName",
-                "lastName",
-                "email"
+                "email",
+                "password"
             ],
             "properties": {
+                "username": {
+                    "description": "Username of User",
+                    "type": "string"
+                },
                 "firstName": {
                     "description": "First name of User",
                     "type": "string"
@@ -1202,212 +1093,313 @@
                     "description": "Email address of User",
                     "type": "string"
                 },
-                "settings": {
-                    "description": "Global Notification Settings",
-                    "$ref": "Settings"
+                "password": {
+                    "description": "Salted passward hash of User",
+                    "type": "string"
                 },
-                "notifications": {
-                    "description": "Notification history (@todo this probably won't be in the user, remove this)",
+                "accounts": {
+                    "description": "List of accounts associated with User",
                     "type": "array",
                     "items": {
-                        "description": "Notification object",
-                        "$ref": "Notification"
+                        "type": "object"
+                    }
+                },
+                "devices": {
+                    "description": "List of devices associated with User",
+                    "type": "array",
+                    "items": {
+                        "type": "object"
+                    }
+                },
+                "roles": {
+                    "description": "List of roles associated with User",
+                    "type": "array",
+                    "items": {
+                        "type": "object"
+                    }
+                },
+                "createdTime": {
+                    "description": "Date of User model creation",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "lastVisitTime": {
+                    "description": "Date of User's last visit",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "birthday": {
+                    "description": "Date of User's birthday",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "followedTeams": {
+                    "description": "List of Mongodb ObjectIds of teams followed",
+                    "type": "array",
+                    "items": {
+                        "$ref": "ObjectId"
+                    }
+                },
+                "preferences": {
+                    "description": "List of User preference objects",
+                    "type": "array",
+                    "items": {
+                        "type": "object"
                     }
                 }
             }
         },
-        "Venue": {
-            "description": "Venue Object",
+        "Team": {
+            "description": "Team Object",
+            "required": [
+                "schoolId",
+                "sport",
+                "season",
+                "level",
+                "gender"
+            ],
             "properties": {
-                "id": {
-                    "description": "Id of Venue",
-                    "type": "integer",
-                    "format": "int32"
+                "schoolId": {
+                    "description": "Mongodb ObjectId of School this Team belongs too",
+                    "$ref": "ObjectId"
                 },
-                "name": {
-                    "description": "Name of Venue",
+                "sport": {
+                    "description": "The sport this Team is associated with",
                     "type": "string"
                 },
-                "address": {
-                    "description": "Address of Venue",
+                "season": {
+                    "description": "The season of this Team's sport",
                     "type": "string"
                 },
-                "location": {
-                    "description": "location of Venue - url for map",
+                "level": {
+                    "description": "The Team's level of play (Frosh, JV, Varsity)",
+                    "type": "string"
+                },
+                "gender": {
+                    "description": "The gender of this Team (Male, Female)",
+                    "type": "string"
+                },
+                "mascot": {
+                    "description": "The Team's mascot",
                     "type": "string"
                 }
             }
         },
-        "Address": {
-            "description": "Address of location",
+        "School": {
+            "description": "School Object",
             "required": [
-                "addr1",
+                "fullName",
                 "city",
                 "state",
                 "zip"
             ],
             "properties": {
-                "addr1": {
-                    "description": "Location address line 1",
+                "fullName": {
+                    "description": "Full name of School",
                     "type": "string"
                 },
-                "addr2": {
-                    "description": "Location address line 2",
+                "shortName": {
+                    "description": "Short name of School",
+                    "type": "string"
+                },
+                "initials": {
+                    "description": "Initials of School",
                     "type": "string"
                 },
                 "city": {
-                    "description": "Location City",
+                    "description": "City School is located in",
                     "type": "string"
                 },
                 "state": {
-                    "description": "Location state",
+                    "description": "State School is located in",
                     "type": "string"
                 },
                 "zip": {
-                    "description": "Location zip/postal code",
+                    "description": "Zip/Postal code of School's location",
                     "type": "string"
                 },
-                "location": {
-                    "description": "Location url for map",
+                "division": {
+                    "description": "Division of School",
                     "type": "string"
-                }
-            }
-        },
-        "Settings": {
-            "description": "Settings Object",
-            "properties": {
-                "notifications": {
-                    "description": "Notification Settings",
-                    "$ref": "NotificationSettings"
                 },
-                "teams": {
-                    "description": "List of favorited teams",
-                    "type": "array",
-                    "items": {
-                        "$ref": "Team"
-                    }
-                }
-            }
-        },
-        "NotificationSettings": {
-            "description": "NotificationSettings Object",
-            "properties": {
-                "notifications": {
-                    "description": "Accept/Deny notifications flag",
-                    "type": "boolean",
-                    "defaultValue": false
+                "mascot": {
+                    "description": "Mascot of School",
+                    "type": "string"
                 },
-                "upcomingGames": {
-                    "description": "Accept/Deny upcoming games notifications",
-                    "type": "boolean",
-                    "defaultValue": false
+                "logoColorDark": {
+                    "description": "Dark color of School's colors",
+                    "type": "string"
                 },
-                "scheduleChanges": {
-                    "description": "Accept/Deny schedule change notifications",
-                    "type": "boolean",
-                    "defaultValue": false
+                "logoColorLight": {
+                    "description": "Light color of School's colors",
+                    "type": "string"
                 },
-                "scoreUpdates": {
-                    "description": "Accpet/Deny score update notifications",
-                    "type": "boolean",
-                    "defaultValue": false
-                },
-                "finalScores": {
-                    "description": "Accept/Deny final score notifications",
-                    "type": "boolean",
-                    "defaultValue": false
-                },
-                "accountType": {
-                    "description": "Type of account associated with this notification (fan/parent/etc.)",
+                "storeLink": {
+                    "description": "Link to School's store",
                     "type": "string"
                 }
             }
         },
-        "TeamColors": {
-            "description": "Colors associated with team/school",
-            "properties": {
-                "light": {
-                    "description": "Light Color",
-                    "type": "string"
-                },
-                "dark": {
-                    "description": "Dark Color",
-                    "type": "string"
-                },
-                "alt_0": {
-                    "description": "Alternate Color - 0",
-                    "type": "string"
-                },
-                "alt_1": {
-                    "description": "Alternate Color - 1",
-                    "type": "string"
-                },
-                "alt_2": {
-                    "description": "Alternate Color - 2",
-                    "type": "string"
-                }
-            }
-        },
-        "EventTime": {
-            "description": "Start and End dates/times for Events",
-            "properties": {
-                "start": {
-                    "description": "Event start datetime",
-                    "type": "string",
-                    "format": "date-time"
-                },
-                "end": {
-                    "description": "Event end datetime",
-                    "type": "string",
-                    "format": "date-time"
-                }
-            }
-        },
-        "ScoringObj": {
-            "description": "Team and Opponent Team score",
-            "properties": {
-                "teamScore": {
-                    "type": "integer",
-                    "format": "int32"
-                },
-                "opponentScore": {
-                    "type": "integer",
-                    "format": "int32"
-                }
-            }
-        },
-        "Image": {
-            "description": "Image Object",
+        "Event": {
+            "description": "Event Object",
             "required": [
-                "path"
+                "name",
+                "schoolIds",
+                "teamIds",
+                "homeSchoolId",
+                "homeTeamId",
+                "type",
+                "description",
+                "date",
+                "startTime"
             ],
             "properties": {
-                "id": {
-                    "description": "Id attribute of image tag",
-                    "type": "integer",
-                    "format": "int32"
-                },
                 "name": {
-                    "description": "Name attribute of image tag",
+                    "description": "Name of Event",
                     "type": "string"
                 },
-                "alt": {
-                    "description": "Alt attribute of image tag",
+                "schoolIds": {
+                    "description": "List of Schools associated with Event",
+                    "type": "array",
+                    "items": {
+                        "$ref": "ObjectId"
+                    }
+                },
+                "teamIds": {
+                    "description": "List of Teams associated with Event",
+                    "type": "array",
+                    "items": {
+                        "$ref": "ObjectId"
+                    }
+                },
+                "homeSchoolId": {
+                    "description": "Mongodb ObjectId of home School associated with this Event",
+                    "$ref": "ObjectId"
+                },
+                "homeTeamId": {
+                    "description": "Mongodb ObjectId of the home Team associated with this Event",
+                    "$ref": "ObjectId"
+                },
+                "type": {
+                    "description": "The type of Event, i.e. Game/Practice/etc.",
                     "type": "string"
                 },
-                "path": {
-                    "description": "Source path of image",
+                "description": {
+                    "description": "The desctiption of the Event.",
                     "type": "string"
                 },
-                "width": {
-                    "description": "Width of Image",
-                    "type": "integer",
-                    "format": "int32"
+                "date": {
+                    "description": "The date of the Event",
+                    "type": "string",
+                    "format": "date-time"
                 },
-                "height": {
-                    "description": "Height of Image",
-                    "type": "integer",
-                    "format": "int32"
+                "startTime": {
+                    "description": "The start time of the Event",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "endTime": {
+                    "description": "The end time of the Event",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "rescheduled": {
+                    "description": "A boolean indicating if this Event has been rescheduled",
+                    "type": "boolean"
+                },
+                "dateAdded": {
+                    "description": "The date this Event was created",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "locationId": {
+                    "description": "Mongodb ObjectId of the Location of this Event",
+                    "$ref": "ObjectId"
+                },
+                "score": {
+                    "description": "The score (if applicable) of this Event",
+                    "type": "string"
+                },
+                "stats": {
+                    "description": "The stats object(s) of this Event",
+                    "type": "object"
+                }
+            }
+        },
+        "Message": {
+            "description": "Message Object",
+            "required": [
+                "type",
+                "creator",
+                "source",
+                "content"
+            ],
+            "properties": {
+                "type": {
+                    "description": "The type of Message",
+                    "type": "string"
+                },
+                "eventId": {
+                    "description": "Mongodb ObjectId of Event associated with this Message",
+                    "$ref": "ObjectId"
+                },
+                "schoolId": {
+                    "description": "Mongodb ObjectId of School associated with this Message",
+                    "$ref": "ObjectId"
+                },
+                "teamIds": {
+                    "description": "List of Team ObjectIds associated with this Message",
+                    "type": "array",
+                    "items": {
+                        "$ref": "ObjectId"
+                    }
+                },
+                "creator": {
+                    "description": "Mongodb ObjectId of User who created this Message",
+                    "$ref": "ObjectId"
+                },
+                "source": {
+                    "description": "The source of this Message",
+                    "type": "string"
+                },
+                "content": {
+                    "description": "The content of this Message",
+                    "type": "string"
+                },
+                "channels": {
+                    "description": "The channels associated with this Message",
+                    "type": "string"
+                },
+                "channelContent": {
+                    "description": "The channel content of this Message",
+                    "type": "string"
+                },
+                "publishTime": {
+                    "description": "The date this Message was published",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "expireTime": {
+                    "description": "The date this Message expiress",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "status": {
+                    "description": "the status of this Message",
+                    "type": "string"
+                },
+                "inappropriate": {
+                    "description": "Boolean flag indicating if Message is or is not appropriate",
+                    "type": "boolean"
+                }
+            }
+        },
+        "ObjectId": {
+            "description": "Mongodb ObjectId definition",
+            "properties": {
+                "id": {
+                    "description": "Id attribute of ObjectId",
+                    "type": "string"
                 }
             }
         }

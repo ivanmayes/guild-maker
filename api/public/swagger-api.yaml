@@ -448,17 +448,267 @@ paths:
           schema:
             $ref: ErrorEnvelope
 
-  # /events:
+  /events:
+    get:
+      description: Returns array of Events.
+      summary: Retrieve Events.
+      operationId: getEventsList
+      responses:
+        200:
+          description: List all Events.
+          schema:
+            $ref: SuccessEnvelope
+            properties:
+              meta:
+                type: object
+              response:
+                type: array
+                items:
+                  $ref: Event
+        default:
+          description: The standard error envelope.
+          schema:
+            $ref: ErrorEnvelope
 
-  # /events/search:
+  /events/search:
+    get:
+      parameters:
+      - name: q
+        in: query
+        description: case insensitve text search (Optional)
+        required: false
+        type: string
+      - name: name
+        in: query
+        description: case sensitive name search (Optional)
+        type: string
+      - name: schoolIds
+        in: query
+        description: case sensitive schoolIds search (Optional)
+        type: string
+      - name: teamIds
+        in: query
+        description: case sensitive teamIds search (Optional)
+        type: string
+      - name: homeSchoolId
+        in: query
+        description: case sensitive homeSchoolId search (Optional)
+        type: string
+      - name: homeTeamId
+        in: query
+        description: case sensitive homeTeamId search (Optional)
+        type: string
+      - name: type
+        in: query
+        description: case sensitive type search (Optional)
+        type: string
+      - name: description
+        in: query
+        description: case sensitive description search (Optional)
+        type: string
+      - name: date
+        in: query
+        description: case sensitive date search (Optional)
+        type: string
+      - name: startTime
+        in: query
+        description: case sensitive startTime search (Optional)
+        type: string
+      - name: endTime
+        in: query
+        description: case sensitive endTime search (Optional)
+        type: string
+      - name: rescheduled
+        in: query
+        description: case sensitive rescheduled search (Optional)
+        type: string
+      - name: dateAdded
+        in: query
+        description: case sensitive dateAdded search (Optional)
+        type: string
+      - name: locationId
+        in: query
+        description: case sensitive locationId search (Optional)
+        type: string
+      - name: score
+        in: query
+        description: case sensitive score search (Optional)
+        type: string
+      - name: stats
+        in: query
+        description: case sensitive stats search (Optional)
+        type: string
+      description: |
+        Returns an array of Events matching supplied query. Query can
+        be a case insensitve text search and/or a case sensitive
+        key/value pair.
+      summary: Retrieve Events based on search terms or key values
+      operationId: getEventsByQuery
+      responses:
+        200:
+          description: List results
+          schema:
+            $ref: SuccessEnvelope
+            properties:
+              meta:
+                type: object
+              response:
+                type: array
+                items:
+                  $ref: Event
 
-  # /events/:eventId:
+  /events/{eventId}:
+    get:
+      parameters:
+      - name: eventId
+        in: path
+        description: the Id of the Event
+        required: true
+        type: string
+      description: Returns a Event based on supplied Id.
+      summary: Retrieve a Event Object.
+      operationId: getEventById
+      responses:
+        200:
+          description: Return a Event.
+          schema:
+            $ref: SuccessEnvelope
+            properties:
+              meta:
+                type: object
+              response:
+                $ref: Event
+        default:
+          description: The standard error envelope.
+          schema:
+            $ref: ErrorEnvelope
 
-  # /messages:
+  /messages:
+    get:
+      description: Returns array of Messages.
+      summary: Retrieve Messages.
+      operationId: getMessagesList
+      responses:
+        200:
+          description: List all Messages.
+          schema:
+            $ref: SuccessEnvelope
+            properties:
+              meta:
+                type: object
+              response:
+                type: array
+                items:
+                  $ref: Message
+        default:
+          description: The standard error envelope.
+          schema:
+            $ref: ErrorEnvelope
 
-  # /messages/search:
+  /messages/search:
+    get:
+      parameters:
+      - name: q
+        in: query
+        description: case insensitve text search (Optional)
+        required: false
+        type: string
+      - name: type
+        in: query
+        description: case sensitve type search (Optional)
+        type: string
+      - name: eventId
+        in: query
+        description: case sensitve eventId search (Optional)
+        type: string
+      - name: schoolId
+        in: query
+        description: case sensitve schoolId search (Optional)
+        type: string
+      - name: teamIds
+        in: query
+        description: case sensitve teamIds search (Optional)
+        type: string
+      - name: creator
+        in: query
+        description: case sensitve creator search (Optional)
+        type: string
+      - name: source
+        in: query
+        description: case sensitve source search (Optional)
+        type: string
+      - name: content
+        in: query
+        description: case sensitve content search (Optional)
+        type: string
+      - name: channels
+        in: query
+        description: case sensitve channels search (Optional)
+        type: string
+      - name: channelContent
+        in: query
+        description: case sensitve channelContent search (Optional)
+        type: string
+      - name: publishTime
+        in: query
+        description: case sensitve publishTime search (Optional)
+        type: string
+      - name: expireTime
+        in: query
+        description: case sensitve expireTime search (Optional)
+        type: string
+      - name: status
+        in: query
+        description: case sensitve status search (Optional)
+        type: string
+      - name: inappropriate
+        in: query
+        description: case sensitve inappropriate search (Optional)
+        type: string
+      description: |
+        Returns an array of Events matching supplied query. Query can
+        be a case insensitve text search and/or a case sensitive
+        key/value pair.
+      summary: Retrieve Events based on search terms or key values
+      operationId: getEventsByQuery
+      responses:
+        200:
+          description: List results
+          schema:
+            $ref: SuccessEnvelope
+            properties:
+              meta:
+                type: object
+              response:
+                type: array
+                items:
+                  $ref: Event
 
-  # /messages/:messageId:
+  /messages/{messageId}:
+    get:
+      parameters:
+      - name: messageId
+        in: path
+        description: the Id of the Message
+        required: true
+        type: string
+      description: Returns a Message based on supplied Id.
+      summary: Retrieve a Message Object.
+      operationId: getMessageById
+      responses:
+        200:
+          description: Return a Message.
+          schema:
+            $ref: SuccessEnvelope
+            properties:
+              meta:
+                type: object
+              response:
+                $ref: Message
+        default:
+          description: The standard error envelope.
+          schema:
+            $ref: ErrorEnvelope
 
 definitions:
   ErrorEnvelope:
@@ -631,6 +881,125 @@ definitions:
       storeLink:
         description: Link to School's store
         type: string
+
+  Event:
+    description: Event Object
+    required:
+      - name
+      - schoolIds
+      - teamIds
+      - homeSchoolId
+      - homeTeamId
+      - type
+      - description
+      - date
+      - startTime
+    properties:
+      name:
+        description: Name of Event
+        type: string
+      schoolIds:
+        description: List of Schools associated with Event
+        type: array
+        items:
+          $ref: ObjectId
+      teamIds:
+        description: List of Teams associated with Event
+        type: array
+        items:
+          $ref: ObjectId
+      homeSchoolId:
+        description: Mongodb ObjectId of home School associated with this Event
+        $ref: ObjectId
+      homeTeamId:
+        description: Mongodb ObjectId of the home Team associated with this Event
+        $ref: ObjectId
+      type:
+        description: The type of Event, i.e. Game/Practice/etc.
+        type: string
+      description:
+        description: The desctiption of the Event.
+        type: string
+      date:
+        description: The date of the Event
+        type: string
+        format: date-time
+      startTime:
+        description: The start time of the Event
+        type: string
+        format: date-time
+      endTime:
+        description: The end time of the Event
+        type: string
+        format: date-time
+      rescheduled:
+        description: A boolean indicating if this Event has been rescheduled
+        type: boolean
+      dateAdded:
+        description: The date this Event was created
+        type: string
+        format: date-time
+      locationId:
+        description: Mongodb ObjectId of the Location of this Event
+        $ref: ObjectId
+      score:
+        description: The score (if applicable) of this Event
+        type: string
+      stats:
+        description: The stats object(s) of this Event
+        type: object
+
+  Message:
+    description: Message Object
+    required:
+      - type
+      - creator
+      - source
+      - content
+    properties:
+      type:
+        description: The type of Message
+        type: string
+      eventId:
+        description: Mongodb ObjectId of Event associated with this Message
+        $ref:  ObjectId
+      schoolId:
+        description: Mongodb ObjectId of School associated with this Message
+        $ref: ObjectId
+      teamIds:
+        description: List of Team ObjectIds associated with this Message
+        type: array
+        items:
+          $ref: ObjectId
+      creator:
+        description: Mongodb ObjectId of User who created this Message
+        $ref: ObjectId
+      source:
+        description: The source of this Message
+        type: string
+      content:
+        description: The content of this Message
+        type: string
+      channels:
+        description: The channels associated with this Message
+        type: string
+      channelContent:
+        description: The channel content of this Message
+        type: string
+      publishTime:
+        description: The date this Message was published
+        type: string
+        format: date-time
+      expireTime:
+        description: The date this Message expiress
+        type: string
+        format: date-time
+      status:
+        description: the status of this Message
+        type: string
+      inappropriate:
+        description: Boolean flag indicating if Message is or is not appropriate
+        type: boolean
 
   ObjectId:
     description: Mongodb ObjectId definition
