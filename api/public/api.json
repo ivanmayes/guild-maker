@@ -37,10 +37,9 @@
                     "200": {
                         "description": "User summary",
                         "schema": {
-                            "$ref": "SuccessEnvelope",
                             "properties": {
                                 "meta": {
-                                    "type": "object"
+                                    "$ref": "SuccessMeta"
                                 },
                                 "response": {
                                     "description": "User Model",
@@ -52,7 +51,11 @@
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "ErrorEnvelope"
+                            "properties": {
+                                "meta": {
+                                    "$ref": "ErrorMeta"
+                                }
+                            }
                         }
                     }
                 }
@@ -82,10 +85,9 @@
                     "200": {
                         "description": "Returns the access_token",
                         "schema": {
-                            "$ref": "SuccessEnvelope",
                             "properties": {
                                 "meta": {
-                                    "type": "object"
+                                    "$ref": "SuccessMeta"
                                 },
                                 "response": {
                                     "properties": {
@@ -100,7 +102,11 @@
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "ErrorEnvelope"
+                            "properties": {
+                                "meta": {
+                                    "$ref": "ErrorMeta"
+                                }
+                            }
                         }
                     }
                 }
@@ -144,10 +150,9 @@
                     "200": {
                         "description": "Returns the access_token for the new user.",
                         "schema": {
-                            "$ref": "SuccessEnvelope",
                             "properties": {
                                 "meta": {
-                                    "type": "object"
+                                    "$ref": "SuccessMeta"
                                 },
                                 "response": {
                                     "properties": {
@@ -165,7 +170,156 @@
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "ErrorEnvelope"
+                            "properties": {
+                                "meta": {
+                                    "$ref": "ErrorMeta"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/update": {
+            "post": {
+                "summary": "Updates a new user account with supplied information.",
+                "description": "Updates the User account with group, notifications, or any other settings.\n",
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "formData",
+                        "description": "Username of the user.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "firstName",
+                        "in": "formData",
+                        "description": "First name of the user.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "lastName",
+                        "in": "formData",
+                        "description": "Last name of the user.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "email",
+                        "in": "formData",
+                        "description": "Email address of the user.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "group",
+                        "in": "formData",
+                        "description": "Group of the user (fan, player, parent, etc.).",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "accounts",
+                        "in": "formData",
+                        "description": "Accounts of the user.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "birthday",
+                        "in": "formData",
+                        "description": "Date of Birth of the user( string format - YYYY-MM-DD ).",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "preferences",
+                        "in": "body",
+                        "description": "User's notification preferences.",
+                        "required": false,
+                        "schema": {
+                            "$ref": "NotificationPreference"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the updated User model.",
+                        "schema": {
+                            "properties": {
+                                "meta": {
+                                    "$ref": "SuccessMeta"
+                                },
+                                "response": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "User"
+                                        },
+                                        "access_token": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "properties": {
+                                "meta": {
+                                    "$ref": "ErrorMeta"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/updatePassword": {
+            "post": {
+                "summary": "Updates the User's password",
+                "description": "Salts the supplied password and updates the User model with the\nsalted password hash.\n",
+                "parameters": [
+                    {
+                        "name": "password",
+                        "in": "formData",
+                        "description": "Updated password to salt and add to User's account",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the updated User model.",
+                        "schema": {
+                            "properties": {
+                                "meta": {
+                                    "$ref": "SuccessMeta"
+                                },
+                                "response": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "User"
+                                        },
+                                        "access_token": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "properties": {
+                                "meta": {
+                                    "$ref": "ErrorMeta"
+                                }
+                            }
                         }
                     }
                 }
@@ -180,10 +334,9 @@
                     "200": {
                         "description": "List all users.",
                         "schema": {
-                            "$ref": "SuccessEnvelope",
                             "properties": {
                                 "meta": {
-                                    "type": "object"
+                                    "$ref": "SuccessMeta"
                                 },
                                 "response": {
                                     "type": "array",
@@ -197,7 +350,11 @@
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "ErrorEnvelope"
+                            "properties": {
+                                "meta": {
+                                    "$ref": "ErrorMeta"
+                                }
+                            }
                         }
                     }
                 }
@@ -221,10 +378,9 @@
                     "200": {
                         "description": "Return a User.",
                         "schema": {
-                            "$ref": "SuccessEnvelope",
                             "properties": {
                                 "meta": {
-                                    "type": "object"
+                                    "$ref": "SuccessMeta"
                                 },
                                 "response": {
                                     "$ref": "User"
@@ -235,7 +391,11 @@
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "ErrorEnvelope"
+                            "properties": {
+                                "meta": {
+                                    "$ref": "ErrorMeta"
+                                }
+                            }
                         }
                     }
                 }
@@ -250,10 +410,9 @@
                     "200": {
                         "description": "List all Teams.",
                         "schema": {
-                            "$ref": "SuccessEnvelope",
                             "properties": {
                                 "meta": {
-                                    "type": "object"
+                                    "$ref": "SuccessMeta"
                                 },
                                 "response": {
                                     "type": "array",
@@ -267,7 +426,11 @@
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "ErrorEnvelope"
+                            "properties": {
+                                "meta": {
+                                    "$ref": "ErrorMeta"
+                                }
+                            }
                         }
                     }
                 }
@@ -333,10 +496,9 @@
                     "200": {
                         "description": "List results",
                         "schema": {
-                            "$ref": "SuccessEnvelope",
                             "properties": {
                                 "meta": {
-                                    "type": "object"
+                                    "$ref": "SuccessMeta"
                                 },
                                 "response": {
                                     "type": "array",
@@ -367,10 +529,9 @@
                     "200": {
                         "description": "Return a User.",
                         "schema": {
-                            "$ref": "SuccessEnvelope",
                             "properties": {
                                 "meta": {
-                                    "type": "object"
+                                    "$ref": "SuccessMeta"
                                 },
                                 "response": {
                                     "$ref": "User"
@@ -381,7 +542,11 @@
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "ErrorEnvelope"
+                            "properties": {
+                                "meta": {
+                                    "$ref": "ErrorMeta"
+                                }
+                            }
                         }
                     }
                 }
@@ -404,10 +569,9 @@
                     "200": {
                         "description": "Return a User.",
                         "schema": {
-                            "$ref": "SuccessEnvelope",
                             "properties": {
                                 "meta": {
-                                    "type": "object"
+                                    "$ref": "SuccessMeta"
                                 },
                                 "response": {
                                     "$ref": "User"
@@ -418,7 +582,11 @@
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "ErrorEnvelope"
+                            "properties": {
+                                "meta": {
+                                    "$ref": "ErrorMeta"
+                                }
+                            }
                         }
                     }
                 }
@@ -442,10 +610,9 @@
                     "200": {
                         "description": "Return a Team.",
                         "schema": {
-                            "$ref": "SuccessEnvelope",
                             "properties": {
                                 "meta": {
-                                    "type": "object"
+                                    "$ref": "SuccessMeta"
                                 },
                                 "response": {
                                     "$ref": "Team"
@@ -456,7 +623,11 @@
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "ErrorEnvelope"
+                            "properties": {
+                                "meta": {
+                                    "$ref": "ErrorMeta"
+                                }
+                            }
                         }
                     }
                 }
@@ -471,10 +642,9 @@
                     "200": {
                         "description": "List all Schools.",
                         "schema": {
-                            "$ref": "SuccessEnvelope",
                             "properties": {
                                 "meta": {
-                                    "type": "object"
+                                    "$ref": "SuccessMeta"
                                 },
                                 "response": {
                                     "type": "array",
@@ -488,7 +658,11 @@
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "ErrorEnvelope"
+                            "properties": {
+                                "meta": {
+                                    "$ref": "ErrorMeta"
+                                }
+                            }
                         }
                     }
                 }
@@ -578,10 +752,9 @@
                     "200": {
                         "description": "List results",
                         "schema": {
-                            "$ref": "SuccessEnvelope",
                             "properties": {
                                 "meta": {
-                                    "type": "object"
+                                    "$ref": "SuccessMeta"
                                 },
                                 "response": {
                                     "type": "array",
@@ -613,10 +786,9 @@
                     "200": {
                         "description": "Return a School.",
                         "schema": {
-                            "$ref": "SuccessEnvelope",
                             "properties": {
                                 "meta": {
-                                    "type": "object"
+                                    "$ref": "SuccessMeta"
                                 },
                                 "response": {
                                     "$ref": "School"
@@ -627,7 +799,11 @@
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "ErrorEnvelope"
+                            "properties": {
+                                "meta": {
+                                    "$ref": "ErrorMeta"
+                                }
+                            }
                         }
                     }
                 }
@@ -642,10 +818,9 @@
                     "200": {
                         "description": "List all Events.",
                         "schema": {
-                            "$ref": "SuccessEnvelope",
                             "properties": {
                                 "meta": {
-                                    "type": "object"
+                                    "$ref": "SuccessMeta"
                                 },
                                 "response": {
                                     "type": "array",
@@ -659,7 +834,11 @@
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "ErrorEnvelope"
+                            "properties": {
+                                "meta": {
+                                    "$ref": "ErrorMeta"
+                                }
+                            }
                         }
                     }
                 }
@@ -773,10 +952,9 @@
                     "200": {
                         "description": "List results",
                         "schema": {
-                            "$ref": "SuccessEnvelope",
                             "properties": {
                                 "meta": {
-                                    "type": "object"
+                                    "$ref": "SuccessMeta"
                                 },
                                 "response": {
                                     "type": "array",
@@ -808,10 +986,9 @@
                     "200": {
                         "description": "Return a Event.",
                         "schema": {
-                            "$ref": "SuccessEnvelope",
                             "properties": {
                                 "meta": {
-                                    "type": "object"
+                                    "$ref": "SuccessMeta"
                                 },
                                 "response": {
                                     "$ref": "Event"
@@ -822,7 +999,11 @@
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "ErrorEnvelope"
+                            "properties": {
+                                "meta": {
+                                    "$ref": "ErrorMeta"
+                                }
+                            }
                         }
                     }
                 }
@@ -837,10 +1018,9 @@
                     "200": {
                         "description": "List all Messages.",
                         "schema": {
-                            "$ref": "SuccessEnvelope",
                             "properties": {
                                 "meta": {
-                                    "type": "object"
+                                    "$ref": "SuccessMeta"
                                 },
                                 "response": {
                                     "type": "array",
@@ -854,7 +1034,11 @@
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "ErrorEnvelope"
+                            "properties": {
+                                "meta": {
+                                    "$ref": "ErrorMeta"
+                                }
+                            }
                         }
                     }
                 }
@@ -956,16 +1140,25 @@
                     "200": {
                         "description": "List results",
                         "schema": {
-                            "$ref": "SuccessEnvelope",
                             "properties": {
                                 "meta": {
-                                    "type": "object"
+                                    "$ref": "SuccessMeta"
                                 },
                                 "response": {
                                     "type": "array",
                                     "items": {
                                         "$ref": "Event"
                                     }
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "The standard error envelope.",
+                        "schema": {
+                            "properties": {
+                                "meta": {
+                                    "$ref": "ErrorMeta"
                                 }
                             }
                         }
@@ -991,10 +1184,9 @@
                     "200": {
                         "description": "Return a Message.",
                         "schema": {
-                            "$ref": "SuccessEnvelope",
                             "properties": {
                                 "meta": {
-                                    "type": "object"
+                                    "$ref": "SuccessMeta"
                                 },
                                 "response": {
                                     "$ref": "Message"
@@ -1005,7 +1197,11 @@
                     "default": {
                         "description": "The standard error envelope.",
                         "schema": {
-                            "$ref": "ErrorEnvelope"
+                            "properties": {
+                                "meta": {
+                                    "$ref": "ErrorMeta"
+                                }
+                            }
                         }
                     }
                 }
@@ -1013,60 +1209,37 @@
         }
     },
     "definitions": {
-        "ErrorEnvelope": {
-            "description": "API error envelope response",
+        "ErrorMeta": {
+            "description": "error meta object for API envelope response",
             "required": [
-                "meta"
+                "code",
+                "errorType",
+                "errorDetail"
             ],
             "properties": {
-                "meta": {
-                    "description": "meta data of the error envelope",
-                    "type": "object",
-                    "required": [
-                        "code",
-                        "errorType",
-                        "errorDetail"
-                    ],
-                    "properties": {
-                        "code": {
-                            "type": "integer",
-                            "format": "int32"
-                        },
-                        "errorType": {
-                            "description": "Additional information about what went wrong, intended for the developer.",
-                            "type": "string"
-                        },
-                        "errorDetail": {
-                            "description": "A localized string intended for the client to display back to the user directly.",
-                            "type": "string"
-                        }
-                    }
+                "code": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "errorType": {
+                    "description": "Additional information about what went wrong, intended for the developer.",
+                    "type": "string"
+                },
+                "errorDetail": {
+                    "description": "A localized string intended for the client to display back to the user directly.",
+                    "type": "string"
                 }
             }
         },
-        "SuccessEnvelope": {
-            "description": "API success envelope response",
+        "SuccessMeta": {
+            "description": "success meta object for API envelope response",
             "required": [
-                "meta",
-                "response"
+                "code"
             ],
             "properties": {
-                "meta": {
-                    "description": "meta data of the sucess envelope",
-                    "type": "object",
-                    "required": [
-                        "code"
-                    ],
-                    "properties": {
-                        "code": {
-                            "type": "integer",
-                            "format": "int32"
-                        }
-                    }
-                },
-                "response": {
-                    "description": "response data of successful API call",
-                    "type": "object"
+                "code": {
+                    "type": "integer",
+                    "format": "int32"
                 }
             }
         },
@@ -1144,7 +1317,7 @@
                     "description": "List of User preference objects",
                     "type": "array",
                     "items": {
-                        "type": "object"
+                        "$ref": "NotificationPreference"
                     }
                 }
             }
@@ -1390,6 +1563,51 @@
                 },
                 "inappropriate": {
                     "description": "Boolean flag indicating if Message is or is not appropriate",
+                    "type": "boolean"
+                }
+            }
+        },
+        "NotificationPreference": {
+            "description": "User's Notification Preferences Object",
+            "required": [
+                "enabled",
+                "scope",
+                "group",
+                "email",
+                "push",
+                "sms"
+            ],
+            "properties": {
+                "enabled": {
+                    "description": "Overall on/off boolean of this NotificationPreference",
+                    "type": "boolean"
+                },
+                "scope": {
+                    "description": "Scope of NotificationPreference (global, team, school, etc.)",
+                    "type": "string"
+                },
+                "group": {
+                    "description": "User's group setting of this NotificationPreference (player, fan, coach, etc.)",
+                    "type": "string"
+                },
+                "school": {
+                    "description": "Mongodb ObjectId of School associated with this NotificationPreference",
+                    "$ref": "ObjectId"
+                },
+                "team": {
+                    "description": "Mongodb ObjectId of Team associated with this NotificationPreference",
+                    "$ref": "ObjectId"
+                },
+                "email": {
+                    "description": "Boolean flag indicating email notification preference",
+                    "type": "boolean"
+                },
+                "push": {
+                    "description": "Boolean flag indicating push notification preference",
+                    "type": "boolean"
+                },
+                "sms": {
+                    "description": "Boolean flag indicating sms notification preference",
                     "type": "boolean"
                 }
             }

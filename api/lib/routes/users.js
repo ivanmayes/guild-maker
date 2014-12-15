@@ -9,7 +9,7 @@ var validator   = require( 'validator' ),
 
 exports = module.exports = function UserRoutes( auth , router ) {
 
-    router.get( '/me' , auth.requireUser, function( req , res , next ) {
+    router.get( '/me' , auth.requireUser , function( req , res , next ) {
         // console.log( 'foofoofoofoofoofoofoofoo' );
         // curl -v http://localhost:3000/v1/me?access_token=[token]
         envelope = new Envelope();
@@ -231,7 +231,92 @@ exports = module.exports = function UserRoutes( auth , router ) {
         // curl -d "email=test%40example.com&password=password" http://127.0.0.1:3000/v1/login
     });
 
-    router.post( '/users' , auth.requireUser , function( req , res ) {
+    router.post( '/update' , function( req , res ) {
+//         var username  = validator.trim( req.body.userName ),
+//             firstName = validator.trim( req.body.firstName ),
+//             lastName  = validator.trim( req.body.lastName ),
+//             email     = validator.normalizeEmail( validator.trim( req.body.email ) ),
+//             group     = validator.trim( req.body.group ),
+//             accounts,
+//             birthday,
+//             preferences;
+
+// username
+// firstName
+// lastName
+// email
+// group
+// accounts
+// birthday
+// preferences
+
+    });
+
+    router.post( '/updatePassword' , auth.requireUser , function( req , res ) {
+        var password   = req.body.password,
+            errDetails = [],
+            saltedPW;
+
+        envelope = new Envelope();
+
+        // if( !validator.isMongoId( userId ) ) {
+        //     errDetails.push( 'UserId is not a valid Mongo Id.' );
+        // }
+
+        if( !password ) {
+            errDetails.push( 'password is missing.' );
+        }
+
+        if( errDetails.length > 0 ) {
+            // we have errors!
+            envelope.error( 400 , {
+                'details': errDetails,
+                'append':  true
+            });
+
+            res.json( envelope );
+            return;
+        }
+
+        auth.hashPassword( password )
+            .then( function ( hash ) {
+                saltedPW = hash;
+                return User.findOneAsync({
+                    '_id':  req.user._id
+                });
+            })
+            .then( function ( usr ) {
+                usr.password = saltedPW;
+                usr.saveAsync()
+                    .spread( function( savedUser , numAffected ) {
+                        if( numAffected < 1 ){
+                            throw new Error( 'Error updating User\'s password.' );
+                        }
+
+                        envelope.success( 200 , savedUser );
+                        res.json( envelope );
+                    })
+                    .catch( function( err ) {
+                        throw new Error( 'Error updating User\'s password.' );
+                    });
+            })
+            .catch( function( e ) {
+                var code = 500;
+                if( e.statusCode ) {
+                    code = e.statusCode;
+                }
+                if( code !== 401 ){
+                    log.info( e );
+                }
+                envelope.error( code , {
+                    'details': 'The server returned an error updating User\'s password.',
+                    'append':  false
+                });
+                res.json( envelope );
+            });
+    });
+
+    router.get( '/users' , auth.requireUser , function( req , res ) {
         envelope = new Envelope();
 
         User.findAsync({})
@@ -250,7 +335,7 @@ exports = module.exports = function UserRoutes( auth , router ) {
             });
     });
 
-    router.post( '/users/:userId' , auth.requireUser , function( req , res ) {
+    router.get( '/users/:userId' , auth.requireUser , function( req , res ) {
         var userId = req.params.userId;
         envelope = new Envelope();
 

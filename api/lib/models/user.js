@@ -1,9 +1,23 @@
 
 'use strict';
 
-var mongoose = require( 'mongoose' );
+var mongoose = require( 'mongoose' ),
+    notifcationsSchema, schema;
 
-var schema = new mongoose.Schema(
+notifcationsSchema = new mongoose.Schema(
+    {
+        enabled: { type: Boolean },
+        scope:   { type: String },
+        group:   { type: String },
+        school:  { type: mongoose.Schema.Types.ObjectId, ref: 'School' },
+        team:    { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
+        email:   { type: Boolean },
+        push:    { type: Boolean },
+        sms:     { type: Boolean }
+    }
+);
+
+schema = new mongoose.Schema(
     {
         username:      { type: String },
         firstName:     { type: String },
@@ -17,7 +31,7 @@ var schema = new mongoose.Schema(
         lastVisitTime: { type: Date , default: Date.now },
         birthday:      { type: Date },
         followedTeams: [{ type: mongoose.Schema.Types.ObjectId , ref: 'Team' }],
-        preferences:   { type: Array }
+        preferences:   [notifcationsSchema]
     }
 );
 
