@@ -23,7 +23,7 @@ var schema = new mongoose.Schema(
 
 schema.index({
     teamIds: 1,
-    date:    1
+    date:    -1
 });
 
 schema.index({
@@ -34,7 +34,7 @@ schema.index({
     source:         'text',
     content:        'text',
     channels:       'text',
-    channelContnet: 'text',
+    channelContent: 'text',
     status:         'text'
 });
 

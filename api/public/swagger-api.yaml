@@ -33,17 +33,18 @@ paths:
         200:
           description: User summary
           schema:
-            $ref: SuccessEnvelope
             properties:
               meta:
-                type: object
+                $ref: SuccessMeta
               response:
                 description: User Model
                 $ref: User
         default:
           description: The standard error envelope.
           schema:
-            $ref: ErrorEnvelope
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /login:
     post:
@@ -69,10 +70,9 @@ paths:
         200:
           description: Returns the access_token
           schema:
-            $ref: SuccessEnvelope
             properties:
               meta:
-                type: object
+                $ref: SuccessMeta
               response:
                 properties:
                   access_token:
@@ -80,7 +80,9 @@ paths:
         default:
           description: The standard error envelope.
           schema:
-            $ref: ErrorEnvelope
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /signup:
     post:
@@ -113,10 +115,9 @@ paths:
         200:
           description: Returns the access_token for the new user.
           schema:
-            $ref: SuccessEnvelope
             properties:
               meta:
-                type: object
+                $ref: SuccessMeta
               response:
                 properties:
                   user:
@@ -126,7 +127,108 @@ paths:
         default:
           description: The standard error envelope.
           schema:
-            $ref: ErrorEnvelope
+            properties:
+              meta:
+                $ref: ErrorMeta
+
+  /update:
+    post:
+      summary: Updates a new user account with supplied information.
+      description: >
+        Updates the User account with group, notifications, or any other settings.
+      parameters:
+        - name: username
+          in: formData
+          description: Username of the user.
+          required: false
+          type: string
+        - name: firstName
+          in: formData
+          description: First name of the user.
+          required: false
+          type: string
+        - name: lastName
+          in: formData
+          description: Last name of the user.
+          required: false
+          type: string
+        - name: email
+          in: formData
+          description: Email address of the user.
+          required: false
+          type: string
+        - name: group
+          in: formData
+          description: Group of the user (fan, player, parent, etc.).
+          required: false
+          type: string
+        - name: accounts
+          in: formData
+          description: Accounts of the user.
+          required: false
+          type: string
+        - name: birthday
+          in: formData
+          description: Date of Birth of the user( string format - YYYY-MM-DD ).
+          required: false
+          type: string
+        - name: preferences
+          in: body
+          description: User's notification preferences.
+          required: false
+          schema:
+            $ref: NotificationPreference
+      responses:
+        200:
+          description: Returns the updated User model.
+          schema:
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                properties:
+                  user:
+                    $ref: User
+                  access_token:
+                    type: string
+        default:
+          description: The standard error envelope.
+          schema:
+            properties:
+              meta:
+                $ref: ErrorMeta
+
+  /updatePassword:
+    post:
+      summary: Updates the User's password
+      description: |
+        Salts the supplied password and updates the User model with the
+        salted password hash.
+      parameters:
+        - name: password
+          in: formData
+          description: Updated password to salt and add to User's account
+          required: true
+          type: string
+      responses:
+        200:
+          description: Returns the updated User model.
+          schema:
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                properties:
+                  user:
+                    $ref: User
+                  access_token:
+                    type: string
+        default:
+          description: The standard error envelope.
+          schema:
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /users:
     get:
@@ -137,10 +239,9 @@ paths:
         200:
           description: List all users.
           schema:
-            $ref: SuccessEnvelope
             properties:
               meta:
-                type: object
+                $ref: SuccessMeta
               response:
                 type: array
                 items:
@@ -148,7 +249,9 @@ paths:
         default:
           description: The standard error envelope.
           schema:
-            $ref: ErrorEnvelope
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /users/{userId}:
     get:
@@ -165,16 +268,17 @@ paths:
         200:
           description:  Return a User.
           schema:
-            $ref: SuccessEnvelope
             properties:
               meta:
-                type: object
+                $ref: SuccessMeta
               response:
                 $ref: User
         default:
           description: The standard error envelope.
           schema:
-            $ref: ErrorEnvelope
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /teams:
     get:
@@ -185,10 +289,9 @@ paths:
         200:
           description: List all Teams.
           schema:
-            $ref: SuccessEnvelope
             properties:
               meta:
-                type: object
+                $ref: SuccessMeta
               response:
                 type: array
                 items:
@@ -196,7 +299,9 @@ paths:
         default:
           description: The standard error envelope.
           schema:
-            $ref: ErrorEnvelope
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /teams/search:
     get:
@@ -244,10 +349,9 @@ paths:
         200:
           description: List results
           schema:
-            $ref: SuccessEnvelope
             properties:
               meta:
-                type: object
+                $ref: SuccessMeta
               response:
                 type: array
                 items:
@@ -267,16 +371,17 @@ paths:
         200:
           description: Return a User.
           schema:
-            $ref: SuccessEnvelope
             properties:
               meta:
-                type: object
+                $ref: SuccessMeta
               response:
                 $ref: User
         default:
           description: The standard error envelope.
           schema:
-            $ref: ErrorEnvelope
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /teams/unfollow/{teamId}:
     get:
@@ -292,16 +397,17 @@ paths:
         200:
           description: Return a User.
           schema:
-            $ref: SuccessEnvelope
             properties:
               meta:
-                type: object
+                $ref: SuccessMeta
               response:
                 $ref: User
         default:
           description: The standard error envelope.
           schema:
-            $ref: ErrorEnvelope
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /teams/{teamId}:
     get:
@@ -318,16 +424,17 @@ paths:
         200:
           description: Return a Team.
           schema:
-            $ref: SuccessEnvelope
             properties:
               meta:
-                type: object
+                $ref: SuccessMeta
               response:
                 $ref: Team
         default:
           description: The standard error envelope.
           schema:
-            $ref: ErrorEnvelope
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /schools:
     get:
@@ -338,10 +445,9 @@ paths:
         200:
           description: List all Schools.
           schema:
-            $ref: SuccessEnvelope
             properties:
               meta:
-                type: object
+                $ref: SuccessMeta
               response:
                 type: array
                 items:
@@ -349,7 +455,9 @@ paths:
         default:
           description: The standard error envelope.
           schema:
-            $ref: ErrorEnvelope
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /schools/search:
     get:
@@ -413,10 +521,9 @@ paths:
         200:
           description: List results
           schema:
-            $ref: SuccessEnvelope
             properties:
               meta:
-                type: object
+                $ref: SuccessMeta
               response:
                 type: array
                 items:
@@ -437,16 +544,17 @@ paths:
         200:
           description: Return a School.
           schema:
-            $ref: SuccessEnvelope
             properties:
               meta:
-                type: object
+                $ref: SuccessMeta
               response:
                 $ref: School
         default:
           description: The standard error envelope.
           schema:
-            $ref: ErrorEnvelope
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /events:
     get:
@@ -457,10 +565,9 @@ paths:
         200:
           description: List all Events.
           schema:
-            $ref: SuccessEnvelope
             properties:
               meta:
-                type: object
+                $ref: SuccessMeta
               response:
                 type: array
                 items:
@@ -468,7 +575,9 @@ paths:
         default:
           description: The standard error envelope.
           schema:
-            $ref: ErrorEnvelope
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /events/search:
     get:
@@ -548,10 +657,9 @@ paths:
         200:
           description: List results
           schema:
-            $ref: SuccessEnvelope
             properties:
               meta:
-                type: object
+                $ref: SuccessMeta
               response:
                 type: array
                 items:
@@ -572,16 +680,17 @@ paths:
         200:
           description: Return a Event.
           schema:
-            $ref: SuccessEnvelope
             properties:
               meta:
-                type: object
+                $ref: SuccessMeta
               response:
                 $ref: Event
         default:
           description: The standard error envelope.
           schema:
-            $ref: ErrorEnvelope
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /messages:
     get:
@@ -592,10 +701,9 @@ paths:
         200:
           description: List all Messages.
           schema:
-            $ref: SuccessEnvelope
             properties:
               meta:
-                type: object
+                $ref: SuccessMeta
               response:
                 type: array
                 items:
@@ -603,7 +711,9 @@ paths:
         default:
           description: The standard error envelope.
           schema:
-            $ref: ErrorEnvelope
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /messages/search:
     get:
@@ -675,14 +785,19 @@ paths:
         200:
           description: List results
           schema:
-            $ref: SuccessEnvelope
             properties:
               meta:
-                type: object
+                $ref: SuccessMeta
               response:
                 type: array
                 items:
                   $ref: Event
+        default:
+          description: The standard error envelope.
+          schema:
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /messages/{messageId}:
     get:
@@ -699,59 +814,44 @@ paths:
         200:
           description: Return a Message.
           schema:
-            $ref: SuccessEnvelope
             properties:
               meta:
-                type: object
+                $ref: SuccessMeta
               response:
                 $ref: Message
         default:
           description: The standard error envelope.
           schema:
-            $ref: ErrorEnvelope
+            properties:
+              meta:
+                $ref: ErrorMeta
 
 definitions:
-  ErrorEnvelope:
-    description: API error envelope response
+  ErrorMeta:
+    description: error meta object for API envelope response
     required:
-      - meta
+      - code
+      - errorType
+      - errorDetail
     properties:
-      meta:
-        description: meta data of the error envelope
-        type: object
-        required:
-          - code
-          - errorType
-          - errorDetail
-        properties:
-          code:
-            type: integer
-            format: int32
-          errorType:
-            description: "Additional information about what went wrong, intended for the developer."
-            type: string
-          errorDetail:
-            description: A localized string intended for the client to display back to the user directly.
-            type: string
+      code:
+        type: integer
+        format: int32
+      errorType:
+        description: "Additional information about what went wrong, intended for the developer."
+        type: string
+      errorDetail:
+        description: A localized string intended for the client to display back to the user directly.
+        type: string
 
-  SuccessEnvelope:
-    description: API success envelope response
+  SuccessMeta:
+    description: success meta object for API envelope response
     required:
-      - meta
-      - response
+      - code
     properties:
-      meta:
-        description: meta data of the sucess envelope
-        type: object
-        required:
-          - code
-        properties:
-          code:
-            type: integer
-            format: int32
-      response:
-        description: response data of successful API call
-        type: object
+      code:
+        type: integer
+        format: int32
 
   User:
     description: User Object
