@@ -1,5 +1,5 @@
 // swagger.js
-// version 2.0.42
+// version 2.0.47
 
 (function () {
 
@@ -139,7 +139,7 @@
       url: this.url,
       method: "get",
       headers: {
-        accept: "application/json,application/json;charset=\"utf-8\",*/*"
+        accept: "application/json,application/json;charset=utf-8,*/*"
       },
       on: {
         error: function (response) {
@@ -373,7 +373,7 @@
         method: "get",
         useJQuery: this.useJQuery,
         headers: {
-          accept: "application/json,application/json;charset=\"utf-8\",*/*"
+          accept: "application/json,application/json;charset=utf-8,*/*"
         },
         on: {
           response: function (resp) {
@@ -905,6 +905,12 @@
       }
       else if (param.paramType === 'form' || param.paramType.toLowerCase() === 'file')
         possibleParams.push(param);
+      else if (param.paramType === 'body' && param.name !== 'body') {
+        if (args.body) {
+          throw new Error("Saw two body params in an API listing; expecting a max of one.");
+        }
+        args.body = args[param.name];
+      }
     }
 
     if (args.body != null) {
@@ -962,7 +968,7 @@
       if (param.paramType === 'path') {
         if (args[param.name]) {
           // apply path params and remove from args
-          var reg = new RegExp('\\{\\s*?' + param.name + '.*?\\}(?=\\s*?(\\/|$))', 'gi');
+          var reg = new RegExp('\\{\\s*?' + param.name + '.*?\\}(?=\\s*?(\\/?|$))', 'gi');
           url = url.replace(reg, this.encodePathParam(args[param.name]));
           delete args[param.name];
         }
@@ -974,22 +980,31 @@
     var queryParams = "";
     for (var i = 0; i < params.length; i++) {
       var param = params[i];
-      if (queryParams !== '')
-        queryParams += '&';    
-      if (Array.isArray(param)) {
-        var j;   
-        var output = '';   
-        for(j = 0; j < param.length; j++) {    
-          if(j > 0)    
-            output += ',';   
-          output += encodeURIComponent(param[j]);    
-        }    
-        queryParams += encodeURIComponent(param.name) + '=' + output;    
-      }    
-      else {   
-        queryParams += encodeURIComponent(param.name) + '=' + encodeURIComponent(args[param.name]);                
+      if(param.paramType === 'query') {
+        if (queryParams !== '')
+          queryParams += '&';    
+        if (Array.isArray(param)) {
+          var j;   
+          var output = '';   
+          for(j = 0; j < param.length; j++) {    
+            if(j > 0)    
+              output += ',';   
+            output += encodeURIComponent(param[j]);    
+          }    
+          queryParams += encodeURIComponent(param.name) + '=' + output;    
+        }
+        else {
+          if (args[param.name]) {
+            queryParams += encodeURIComponent(param.name) + '=' + encodeURIComponent(args[param.name]);
+          } else {
+            if (param.required)
+              throw "" + param.name + " is a required query param.";
+          }
+        }
       }
     }
+    if ((queryParams != null) && queryParams.length > 0)
+      url += '?' + queryParams;
     return url;
   };
 
@@ -1265,7 +1280,7 @@
       else if (this.type === "DELETE")
         body = "{}";
       else if (this.type != "DELETE")
-        accepts = null;
+        consumes = null;
     }
 
     if (consumes && this.operation.consumes) {
@@ -1488,7 +1503,13 @@
       if (contentType != null) {
         if (contentType.indexOf("application/json") == 0 || contentType.indexOf("+json") > 0) {
           if (response.content.data && response.content.data !== "")
-            out.obj = JSON.parse(response.content.data);
+            try {
+              out.obj = JSON.parse(response.content.data);
+            }
+            catch (ex) {
+              // do not set out.obj
+              log ("unable to parse JSON content");
+            }
           else
             out.obj = {}
         }

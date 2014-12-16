@@ -15,9 +15,6 @@ var schema = new mongoose.Schema(
         longitude: { type: String },
         schoolId:  { type: mongoose.Schema.Types.ObjectId , ref: 'School' },
         homeTeams: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Team' }]
-    },
-    {
-        autoIndex: false
     }
 );
 

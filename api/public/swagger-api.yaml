@@ -17,8 +17,8 @@ securityDefinitions:
     description: >
       Exchanges an email/password for an access_token. Only
       to be used by the SeasonLink app.
-    name: access_token
-    in: header
+    # name: access_token
+    # in: header
     flow: password
     tokenUrl: http://localhost:8280/v1/login
     scopes: {}
@@ -33,19 +33,18 @@ paths:
         200:
           description: User summary
           schema:
-            type: object
-            required:
-              - meta
-              - response
             properties:
               meta:
-                $ref: Meta
+                $ref: SuccessMeta
               response:
+                description: User Model
                 $ref: User
         default:
           description: The standard error envelope.
           schema:
-            $ref: Error
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /login:
     post:
@@ -57,109 +56,202 @@ paths:
       parameters:
         - name: email
           in: formData
-          desciption: >
+          description: >
             The user's email. SeasonLink does not have usernames,
             but the OAuth2 spec requires this to be the param name.
           required: true
           type: string
         - name: password
           in: formData
-          desciption: The user's password.
+          description: The user's password.
           required: true
           type: string
       responses:
         200:
           description: Returns the access_token
           schema:
-            type: object
-            required:
-              - meta
-              - response
             properties:
               meta:
-                $ref: Meta
+                $ref: SuccessMeta
               response:
-                required:
-                  - access_token
                 properties:
                   access_token:
                     type: string
         default:
           description: The standard error envelope.
           schema:
-            $ref: Error
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /signup:
     post:
       summary: Creates a new user account.
       description: >
-        Creating a new user will return just the access_token in the
-        response when successful. Follow up with a call to `/me` if you
-        want to get the user details.
+        Creating a new user will return an object containing the user
+        and the access_token in the response when successful.
       parameters:
         - name: firstName
           in: formData
-          desciption: First name of the user.
-          required: true
+          description: First name of the user.
+          required: false
           type: string
         - name: lastName
           in: formData
-          desciption: Last name of the user.
-          required: true
+          description: Last name of the user.
+          required: false
           type: string
         - name: password
           in: formData
-          desciption: The user's password.
+          description: The user's password.
           required: true
           type: string
         - name: email
           in: formData
-          desciption: The user's email address.
+          description: The user's email address.
           required: true
           type: string
       responses:
         200:
           description: Returns the access_token for the new user.
           schema:
-            type: object
-            required:
-              - meta
-              - response
             properties:
               meta:
-                $ref: Meta
+                $ref: SuccessMeta
               response:
-                required:
-                  - access_token
                 properties:
+                  user:
+                    $ref: User
                   access_token:
                     type: string
         default:
           description: The standard error envelope.
           schema:
-            $ref: Error
+            properties:
+              meta:
+                $ref: ErrorMeta
+
+  /update:
+    post:
+      summary: Updates a new user account with supplied information.
+      description: >
+        Updates the User account with group, notifications, or any other settings.
+      parameters:
+        - name: username
+          in: formData
+          description: Username of the user.
+          required: false
+          type: string
+        - name: firstName
+          in: formData
+          description: First name of the user.
+          required: false
+          type: string
+        - name: lastName
+          in: formData
+          description: Last name of the user.
+          required: false
+          type: string
+        - name: email
+          in: formData
+          description: Email address of the user.
+          required: false
+          type: string
+        - name: group
+          in: formData
+          description: Group of the user (fan, player, parent, etc.).
+          required: false
+          type: string
+        - name: accounts
+          in: formData
+          description: Accounts of the user.
+          required: false
+          type: string
+        - name: birthday
+          in: formData
+          description: Date of Birth of the user( string format - YYYY-MM-DD ).
+          required: false
+          type: string
+        - name: preferences
+          in: body
+          description: User's notification preferences.
+          required: false
+          schema:
+            $ref: NotificationPreference
+      responses:
+        200:
+          description: Returns the updated User model.
+          schema:
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                properties:
+                  user:
+                    $ref: User
+                  access_token:
+                    type: string
+        default:
+          description: The standard error envelope.
+          schema:
+            properties:
+              meta:
+                $ref: ErrorMeta
+
+  /updatePassword:
+    post:
+      summary: Updates the User's password
+      description: |
+        Salts the supplied password and updates the User model with the
+        salted password hash.
+      parameters:
+        - name: password
+          in: formData
+          description: Updated password to salt and add to User's account
+          required: true
+          type: string
+      responses:
+        200:
+          description: Returns the updated User model.
+          schema:
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                properties:
+                  user:
+                    $ref: User
+                  access_token:
+                    type: string
+        default:
+          description: The standard error envelope.
+          schema:
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /users:
     get:
       description: Returns array of Users.
       summary: Retrieve Users.
       operationId: getUsersList
-      # security:
-      #   - githubAuth:
-      #       - user:read
-      #       - user:write
-      #   - internalApiKey: []
       responses:
         200:
           description: List all users.
           schema:
-            type: array
-            items:
-              $ref: User
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                type: array
+                items:
+                  $ref: User
         default:
           description: The standard error envelope.
           schema:
-            $ref: Error
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /users/{userId}:
     get:
@@ -172,90 +264,150 @@ paths:
       description: Returns a User based on supplied Id.
       summary: Retrieve a User Object.
       operationId: getUserById
-      # security:
-      #   - githubAuth:
-      #       - user:read
-      #       - user:write
-      #   - internalApiKey: []
       responses:
         200:
           description:  Return a User.
           schema:
-            $ref: User
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                $ref: User
         default:
           description: The standard error envelope.
           schema:
-            $ref: Error
-
-  /players:
-    get:
-      description: Returns array of Players.
-      summary: Retrieve Players.
-      operationId: getPlayersList
-      # security:
-      #   - githubAuth:
-      #       - user:read
-      #       - user:write
-      #   - internalApiKey: []
-      responses:
-        200:
-          description: List all Players.
-          schema:
-            type: array
-            items:
-              $ref: Player
-        default:
-          description: The standard error envelope.
-          schema:
-            $ref: Error
-
-  /players/{playerId}:
-    get:
-      parameters:
-      - name: playerId
-        in: path
-        description: the Id of the Player
-        required: true
-        type: string
-      description: Returns a Player based on supplied Id.
-      summary: Retrieve a Player Object.
-      operationId: getPlayerById
-      # security:
-      #   - githubAuth:
-      #       - user:read
-      #       - user:write
-      #   - internalApiKey: []
-      responses:
-        200:
-          description:  Return a Player.
-          schema:
-            $ref: Player
-        default:
-          description: The standard error envelope.
-          schema:
-            $ref: Error
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /teams:
     get:
       description: Returns array of Teams.
       summary: Retrieve Teams.
       operationId: getTeamsList
-      # security:
-      #   - githubAuth:
-      #       - user:read
-      #       - user:write
-      #   - internalApiKey: []
       responses:
         200:
           description: List all Teams.
           schema:
-            type: array
-            items:
-              $ref: Team
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                type: array
+                items:
+                  $ref: Team
         default:
           description: The standard error envelope.
           schema:
-            $ref: Error
+            properties:
+              meta:
+                $ref: ErrorMeta
+
+  /teams/search:
+    get:
+      parameters:
+      - name: q
+        in: query
+        description: case insensitve text search (Optional)
+        required: false
+        type: string
+      - name: schoolId
+        in: query
+        description: case sensitve schoolId search (Optional)
+        required: false
+        type: string
+      - name: sport
+        in: query
+        description: case sensitve sport search (Optional)
+        required: false
+        type: string
+      - name: season
+        in: query
+        description: case sensitve season search (Optional)
+        required: false
+        type: string
+      - name: level
+        in: query
+        description: case sensitve level search (Optional)
+        required: false
+        type: string
+      - name: gender
+        in: query
+        description: case sensitve gender search (Optional)
+        required: false
+        type: string
+      - name: mascot
+        in: query
+        description: case sensitve mascot search (Optional)
+        required: false
+        type: string
+      description: |
+        Returns an array of Teams matching supplied query. Query can be a case insensitve text search and/or a case sensitive key/value pair.
+      summary: Retrieve Teams based on search terms or key values
+      operationId: getTeamsByQuery
+      responses:
+        200:
+          description: List results
+          schema:
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                type: array
+                items:
+                  $ref: Team
+
+  /teams/follow/{teamId}:
+    get:
+      parameters:
+      - name: teamId
+        in: path
+        description: the Id of the Team
+        required: true
+        type: string
+      description: Applies teamId to User's followed teams.
+      operationId: followTeamById
+      responses:
+        200:
+          description: Return a User.
+          schema:
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                $ref: User
+        default:
+          description: The standard error envelope.
+          schema:
+            properties:
+              meta:
+                $ref: ErrorMeta
+
+  /teams/unfollow/{teamId}:
+    get:
+      parameters:
+      - name: teamId
+        in: path
+        description: the Id of the Team
+        required: true
+        type: string
+      description: Removes teamId from User's followed teams.
+      operationId: unfollowTeamById
+      responses:
+        200:
+          description: Return a User.
+          schema:
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                $ref: User
+        default:
+          description: The standard error envelope.
+          schema:
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /teams/{teamId}:
     get:
@@ -268,42 +420,114 @@ paths:
       description: Returns a Team based on supplied Id.
       summary: Retrieve a Team Object.
       operationId: getTeamById
-      # security:
-      #   - githubAuth:
-      #       - user:read
-      #       - user:write
-      #   - internalApiKey: []
       responses:
         200:
-          description:  Return a Team.
+          description: Return a Team.
           schema:
-            $ref: Team
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                $ref: Team
         default:
           description: The standard error envelope.
           schema:
-            $ref: Error
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /schools:
     get:
       description: Returns array of Schools.
       summary: Retrieve Schools.
       operationId: getSchoolsList
-      # security:
-      #   - githubAuth:
-      #       - user:read
-      #       - user:write
-      #   - internalApiKey: []
       responses:
         200:
           description: List all Schools.
           schema:
-            type: array
-            items:
-              $ref: School
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                type: array
+                items:
+                  $ref: School
         default:
           description: The standard error envelope.
           schema:
-            $ref: Error
+            properties:
+              meta:
+                $ref: ErrorMeta
+
+  /schools/search:
+    get:
+      parameters:
+      - name: q
+        in: query
+        description: case insensitve text search (Optional)
+        required: false
+        type: string
+      - name: fullName
+        in: query
+        description: case sensitve fullName search (Optional)
+        type: string
+      - name: shortName
+        in: query
+        description: case sensitve shortName search (Optional)
+        type: string
+      - name: initials
+        in: query
+        description: case sensitve initials search (Optional)
+        type: string
+      - name: city
+        in: query
+        description: case sensitve city search (Optional)
+        type: string
+      - name: state
+        in: query
+        description: case sensitve state search (Optional)
+        type: string
+      - name: zip
+        in: query
+        description: case sensitve zip search (Optional)
+        type: string
+      - name: division
+        in: query
+        description: case sensitve division search (Optional)
+        type: string
+      - name: mascot
+        in: query
+        description: case sensitve mascot search (Optional)
+        type: string
+      - name: logoColorDark
+        in: query
+        description: case sensitve logoColorDark search (Optional)
+        type: string
+      - name: logoColorLight
+        in: query
+        description: case sensitve logoColorLight search (Optional)
+        type: string
+      - name: storeLink
+        in: query
+        description: case sensitve storeLink search (Optional)
+        type: string
+      description: |
+        Returns an array of Schools matching supplied query. Query can
+        be a case insensitve text search and/or a case sensitive
+        key/value pair.
+      summary: Retrieve Schools based on search terms or key values
+      operationId: getSchoolsByQuery
+      responses:
+        200:
+          description: List results
+          schema:
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                type: array
+                items:
+                  $ref: School
 
   /schools/{schoolId}:
     get:
@@ -316,42 +540,130 @@ paths:
       description: Returns a School based on supplied Id.
       summary: Retrieve a School Object.
       operationId: getSchoolById
-      # security:
-      #   - githubAuth:
-      #       - user:read
-      #       - user:write
-      #   - internalApiKey: []
       responses:
         200:
-          description:  Return a School.
+          description: Return a School.
           schema:
-            $ref: School
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                $ref: School
         default:
           description: The standard error envelope.
           schema:
-            $ref: Error
+            properties:
+              meta:
+                $ref: ErrorMeta
 
   /events:
     get:
       description: Returns array of Events.
       summary: Retrieve Events.
       operationId: getEventsList
-      # security:
-      #   - githubAuth:
-      #       - user:read
-      #       - user:write
-      #   - internalApiKey: []
       responses:
         200:
           description: List all Events.
           schema:
-            type: array
-            items:
-              $ref: Event
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                type: array
+                items:
+                  $ref: Event
         default:
           description: The standard error envelope.
           schema:
-            $ref: Error
+            properties:
+              meta:
+                $ref: ErrorMeta
+
+  /events/search:
+    get:
+      parameters:
+      - name: q
+        in: query
+        description: case insensitve text search (Optional)
+        required: false
+        type: string
+      - name: name
+        in: query
+        description: case sensitive name search (Optional)
+        type: string
+      - name: schoolIds
+        in: query
+        description: case sensitive schoolIds search (Optional)
+        type: string
+      - name: teamIds
+        in: query
+        description: case sensitive teamIds search (Optional)
+        type: string
+      - name: homeSchoolId
+        in: query
+        description: case sensitive homeSchoolId search (Optional)
+        type: string
+      - name: homeTeamId
+        in: query
+        description: case sensitive homeTeamId search (Optional)
+        type: string
+      - name: type
+        in: query
+        description: case sensitive type search (Optional)
+        type: string
+      - name: description
+        in: query
+        description: case sensitive description search (Optional)
+        type: string
+      - name: date
+        in: query
+        description: case sensitive date search (Optional)
+        type: string
+      - name: startTime
+        in: query
+        description: case sensitive startTime search (Optional)
+        type: string
+      - name: endTime
+        in: query
+        description: case sensitive endTime search (Optional)
+        type: string
+      - name: rescheduled
+        in: query
+        description: case sensitive rescheduled search (Optional)
+        type: string
+      - name: dateAdded
+        in: query
+        description: case sensitive dateAdded search (Optional)
+        type: string
+      - name: locationId
+        in: query
+        description: case sensitive locationId search (Optional)
+        type: string
+      - name: score
+        in: query
+        description: case sensitive score search (Optional)
+        type: string
+      - name: stats
+        in: query
+        description: case sensitive stats search (Optional)
+        type: string
+      description: |
+        Returns an array of Events matching supplied query. Query can
+        be a case insensitve text search and/or a case sensitive
+        key/value pair.
+      summary: Retrieve Events based on search terms or key values
+      operationId: getEventsByQuery
+      responses:
+        200:
+          description: List results
+          schema:
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                type: array
+                items:
+                  $ref: Event
 
   /events/{eventId}:
     get:
@@ -364,258 +676,192 @@ paths:
       description: Returns a Event based on supplied Id.
       summary: Retrieve a Event Object.
       operationId: getEventById
-      # security:
-      #   - githubAuth:
-      #       - user:read
-      #       - user:write
-      #   - internalApiKey: []
       responses:
         200:
-          description:  Return an Event.
+          description: Return a Event.
           schema:
-            $ref: Event
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                $ref: Event
         default:
           description: The standard error envelope.
           schema:
-            $ref: Error
+            properties:
+              meta:
+                $ref: ErrorMeta
+
+  /messages:
+    get:
+      description: Returns array of Messages.
+      summary: Retrieve Messages.
+      operationId: getMessagesList
+      responses:
+        200:
+          description: List all Messages.
+          schema:
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                type: array
+                items:
+                  $ref: Message
+        default:
+          description: The standard error envelope.
+          schema:
+            properties:
+              meta:
+                $ref: ErrorMeta
+
+  /messages/search:
+    get:
+      parameters:
+      - name: q
+        in: query
+        description: case insensitve text search (Optional)
+        required: false
+        type: string
+      - name: type
+        in: query
+        description: case sensitve type search (Optional)
+        type: string
+      - name: eventId
+        in: query
+        description: case sensitve eventId search (Optional)
+        type: string
+      - name: schoolId
+        in: query
+        description: case sensitve schoolId search (Optional)
+        type: string
+      - name: teamIds
+        in: query
+        description: case sensitve teamIds search (Optional)
+        type: string
+      - name: creator
+        in: query
+        description: case sensitve creator search (Optional)
+        type: string
+      - name: source
+        in: query
+        description: case sensitve source search (Optional)
+        type: string
+      - name: content
+        in: query
+        description: case sensitve content search (Optional)
+        type: string
+      - name: channels
+        in: query
+        description: case sensitve channels search (Optional)
+        type: string
+      - name: channelContent
+        in: query
+        description: case sensitve channelContent search (Optional)
+        type: string
+      - name: publishTime
+        in: query
+        description: case sensitve publishTime search (Optional)
+        type: string
+      - name: expireTime
+        in: query
+        description: case sensitve expireTime search (Optional)
+        type: string
+      - name: status
+        in: query
+        description: case sensitve status search (Optional)
+        type: string
+      - name: inappropriate
+        in: query
+        description: case sensitve inappropriate search (Optional)
+        type: string
+      description: |
+        Returns an array of Events matching supplied query. Query can
+        be a case insensitve text search and/or a case sensitive
+        key/value pair.
+      summary: Retrieve Events based on search terms or key values
+      operationId: getEventsByQuery
+      responses:
+        200:
+          description: List results
+          schema:
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                type: array
+                items:
+                  $ref: Event
+        default:
+          description: The standard error envelope.
+          schema:
+            properties:
+              meta:
+                $ref: ErrorMeta
+
+  /messages/{messageId}:
+    get:
+      parameters:
+      - name: messageId
+        in: path
+        description: the Id of the Message
+        required: true
+        type: string
+      description: Returns a Message based on supplied Id.
+      summary: Retrieve a Message Object.
+      operationId: getMessageById
+      responses:
+        200:
+          description: Return a Message.
+          schema:
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                $ref: Message
+        default:
+          description: The standard error envelope.
+          schema:
+            properties:
+              meta:
+                $ref: ErrorMeta
 
 definitions:
-  Envelope:
-    description: API envelope object
+  ErrorMeta:
+    description: error meta object for API envelope response
     required:
-      - meta
+      - code
+      - errorType
+      - errorDetail
     properties:
-      meta:
-        $ref: Meta
-      response:
-        anyOf:
-          -
-            type: object
-          -
-            type: array
-  Meta:
-    description: meta portion of the API envelope
-    type: object
+      code:
+        type: integer
+        format: int32
+      errorType:
+        description: "Additional information about what went wrong, intended for the developer."
+        type: string
+      errorDetail:
+        description: A localized string intended for the client to display back to the user directly.
+        type: string
+
+  SuccessMeta:
+    description: success meta object for API envelope response
     required:
       - code
     properties:
       code:
         type: integer
         format: int32
-      errorType:
-        description: Machine-readable error type
-        type: string
-      errorDetail:
-        description: "Additional information about what went wrong, intended for the developer."
-        type: string
-      errorMessage:
-        description: A localized string intended for the client to display back to the user directly.
-        type: string
-  Error:
-    description: "Error response will only have meta with the code, errorType and optionally errorDetail and errorMessage."
-    required:
-      - meta
-    properties:
-      meta:
-        $ref: Meta
-  SuccessEnvelope:
-    description: Responses that only need to show the request succeeded
-    required:
-      - meta
-      - response
-    properties:
-      meta:
-        $ref: Meta
-      response:
-        required:
-          - success
-        properties:
-          success:
-            description: This will be set to `true`.
-            type: boolean
-  Event:
-    description: Event Object
-    required:
-      - id
-      - name
-      - eventDescription
-      - dates
-    properties:
-      id:
-        description: Event Id
-        type: integer
-        format: int32
-      team:
-        description: Team associated with Event
-        $ref: Team
-      name:
-        description: Event Name/Title
-        type: string
-      eventDescription:
-        description: Event body
-        type: string
-      eventType:
-        description: Event type ()
-        type: string
-      dates:
-        description: EventTime (start/end) of Event
-        $ref: EventTime
-      rescheduled:
-        description: Rescheduled flag
-        type: boolean
-        defaultValue: false
-      opponent:
-        description: Team playing against in Event
-        $ref: Team
-      score:
-        description: Scoring object of Event
-        $ref: ScoringObj
-  Notification:
-    description: Notification Object
-    required:
-      - name
-      - message
-    properties:
-      id:
-        description: Id of Notification
-        type: integer
-        format: int32
-      name:
-        description: Name/Title of Notification
-        type: string
-      message:
-        description: Body of Notification
-        type: string
-      msgType:
-        description: Type of Notification (games/schedule/score/etc.)
-        type: string
-      msgCategory:
-        #not sure if needed
-        description: Category of Notification (fan/parent)
-        type: string
-  Player:
-    description: Player Object
-    required:
-      - id
-      - team
-      - name
-    properties:
-      id:
-        description: Player Id
-        type: integer
-        format: int32
-      team:
-        description: Team of Player
-        $ref: Team
-      school:
-        description: School of Player
-        $ref: School
-      name:
-        description: Player Name
-        type: string
-      number:
-        description: Player Number
-        type: integer
-        format: int32
-      position:
-        description: Position of Player
-        type: string
-      email:
-        description: Email of Player
-        type: string
-      images:
-        description: List of Images associated with Player
-        type: array
-        items:
-          $ref: Image
-      stats:
-        description: Stats associated with Player
-        type: object
-  School:
-    description: School Object
-    required:
-      - id
-      - name
-      - mascot
-    properties:
-      id:
-        description: Id of School
-        type: integer
-        format: int32
-      name:
-        description: Name of School
-        type: string
-      address:
-        description: Address of School
-        $ref: Address
-      division:
-        description: School division
-        type: string
-      mascot:
-        description: School Mascot
-        type: string
-      logo:
-        description: School Logo
-        type: string
-      colors:
-        description: School Colors
-        $ref: TeamColors
-      eCommerce:
-        description: Link to School's eCommerce
-        type: string
-  Team:
-    description: Team Object
-    required:
-      - id
-      - school
-      - sport
-      - gender
-      - mascot
-    properties:
-      id:
-        description: Id of Team
-        type: integer
-        format: int32
-      school:
-        description: School of Team
-        type: string
-      sport:
-        description: Sport of Team
-        type: string
-      gender:
-        description: Guys/Girls Team
-        type: string
-        enum:
-         - Guys
-         - Girls
-      division:
-        description: Division of Team (Varsity/JV/Frosh/etc.)
-        type: string
-      mascot:
-        description: Mascot of Team
-        type: string
-      venue:
-        description: Venue of Team
-        $ref: Venue
-      logo:
-        description: Team Logo
-        type: string
-      colors:
-        description: Team Colors
-        $ref: TeamColors
-      location:
-        description: Team Location - url for map
-        type: string
-      notifications:
-        description: Team Notification Settings
-        $ref: NotificationSettings
+
   User:
     description: User Object
     required:
-      - firstName
-      - lastName
       - email
+      - password
     properties:
+      username:
+        description: Username of User
+        type: string
       firstName:
         description: First name of User
         type: string
@@ -625,158 +871,274 @@ definitions:
       email:
         description: Email address of User
         type: string
-      settings:
-        description: Global Notification Settings
-        $ref: Settings
-      notifications:
-        description: "Notification history (@todo this probably won't be in the user, remove this)"
+      password:
+        description: Salted passward hash of User
+        type: string
+      accounts:
+        description: List of accounts associated with User
         type: array
         items:
-          description: Notification object
-          $ref: Notification
-  Venue:
-    description: Venue Object
-    properties:
-      id:
-        description: Id of Venue
-        type: integer
-        format: int32
-      name:
-        description: Name of Venue
+          type: object
+      devices:
+        description: List of devices associated with User
+        type: array
+        items:
+          type: object
+      roles:
+        description: List of roles associated with User
+        type: array
+        items:
+          type: object
+      createdTime:
+        description: Date of User model creation
         type: string
-      address:
-        description: Address of Venue
+        format: date-time
+      lastVisitTime:
+        description: Date of User's last visit
         type: string
-      location:
-        description: location of Venue - url for map
+        format: date-time
+      birthday:
+        description: Date of User's birthday
         type: string
-  Address:
-    description: Address of location
+        format: date-time
+      followedTeams:
+        description: List of Mongodb ObjectIds of teams followed
+        type: array
+        items:
+          $ref:  ObjectId
+      preferences:
+        description: List of User preference objects
+        type: array
+        items:
+          $ref: NotificationPreference
+
+  Team:
+    description: Team Object
     required:
-      - addr1
+      - schoolId
+      - sport
+      - season
+      - level
+      - gender
+    properties:
+      schoolId:
+        description: Mongodb ObjectId of School this Team belongs too
+        $ref: ObjectId
+      sport:
+        description: The sport this Team is associated with
+        type: string
+      season:
+        description: The season of this Team's sport
+        type: string
+      level:
+        description: The Team's level of play (Frosh, JV, Varsity)
+        type: string
+      gender:
+        description: The gender of this Team (Male, Female)
+        type: string
+      mascot:
+        description: The Team's mascot
+        type: string
+
+  School:
+    description: School Object
+    required:
+      - fullName
       - city
       - state
       - zip
     properties:
-      addr1:
-        description: Location address line 1
+      fullName:
+        description: Full name of School
         type: string
-      addr2:
-        description: Location address line 2
+      shortName:
+        description: Short name of School
+        type: string
+      initials:
+        description: Initials of School
         type: string
       city:
-        description: Location City
+        description: City School is located in
         type: string
       state:
-        description: Location state
+        description: State School is located in
         type: string
       zip:
-        description: Location zip/postal code
+        description: Zip/Postal code of School's location
         type: string
-      location:
-        description: Location url for map
+      division:
+        description: Division of School
         type: string
-  Settings:
-    description: Settings Object
+      mascot:
+        description: Mascot of School
+        type: string
+      logoColorDark:
+        description: Dark color of School's colors
+        type: string
+      logoColorLight:
+        description: Light color of School's colors
+        type: string
+      storeLink:
+        description: Link to School's store
+        type: string
+
+  Event:
+    description: Event Object
+    required:
+      - name
+      - schoolIds
+      - teamIds
+      - homeSchoolId
+      - homeTeamId
+      - type
+      - description
+      - date
+      - startTime
     properties:
-      notifications:
-        description: Notification Settings
-        $ref: NotificationSettings
-      teams:
-        description: List of favorited teams
+      name:
+        description: Name of Event
+        type: string
+      schoolIds:
+        description: List of Schools associated with Event
         type: array
         items:
-          $ref: Team
-  NotificationSettings:
-    description: NotificationSettings Object
-    properties:
-      notifications:
-        description: Accept/Deny notifications flag
-        type: boolean
-        defaultValue: false
-      upcomingGames:
-        description: Accept/Deny upcoming games notifications
-        type: boolean
-        defaultValue: false
-      scheduleChanges:
-        description: Accept/Deny schedule change notifications
-        type: boolean
-        defaultValue: false
-      scoreUpdates:
-        description: Accpet/Deny score update notifications
-        type: boolean
-        defaultValue: false
-      finalScores:
-        description: Accept/Deny final score notifications
-        type: boolean
-        defaultValue: false
-      accountType:
-        description: Type of account associated with this notification (fan/parent/etc.)
+          $ref: ObjectId
+      teamIds:
+        description: List of Teams associated with Event
+        type: array
+        items:
+          $ref: ObjectId
+      homeSchoolId:
+        description: Mongodb ObjectId of home School associated with this Event
+        $ref: ObjectId
+      homeTeamId:
+        description: Mongodb ObjectId of the home Team associated with this Event
+        $ref: ObjectId
+      type:
+        description: The type of Event, i.e. Game/Practice/etc.
         type: string
-  TeamColors:
-    description: TeamColors Object
-    description: Colors associated with team/school
-    properties:
-      light:
-        description: Light Color
+      description:
+        description: The desctiption of the Event.
         type: string
-      dark:
-        description: Dark Color
-        type: string
-      alt_0:
-        description: Alternate Color - 0
-        type: string
-      alt_1:
-        description: Alternate Color - 1
-        type: string
-      alt_2:
-        description: Alternate Color - 2
-        type: string
-  EventTime:
-    description: Start and End dates/times for Events
-    properties:
-      start:
-        description: Event start datetime
+      date:
+        description: The date of the Event
         type: string
         format: date-time
-      end:
-        description: Event end datetime
+      startTime:
+        description: The start time of the Event
         type: string
         format: date-time
-  ScoringObj:
-    description: Team and Opponent Team score
-    properties:
-      teamScore:
-        type: integer
-        format: int32
-      opponentScore:
-        type: integer
-        format: int32
-  Image:
-    description: Image Object
+      endTime:
+        description: The end time of the Event
+        type: string
+        format: date-time
+      rescheduled:
+        description: A boolean indicating if this Event has been rescheduled
+        type: boolean
+      dateAdded:
+        description: The date this Event was created
+        type: string
+        format: date-time
+      locationId:
+        description: Mongodb ObjectId of the Location of this Event
+        $ref: ObjectId
+      score:
+        description: The score (if applicable) of this Event
+        type: string
+      stats:
+        description: The stats object(s) of this Event
+        type: object
+
+  Message:
+    description: Message Object
     required:
-      - path
+      - type
+      - creator
+      - source
+      - content
+    properties:
+      type:
+        description: The type of Message
+        type: string
+      eventId:
+        description: Mongodb ObjectId of Event associated with this Message
+        $ref:  ObjectId
+      schoolId:
+        description: Mongodb ObjectId of School associated with this Message
+        $ref: ObjectId
+      teamIds:
+        description: List of Team ObjectIds associated with this Message
+        type: array
+        items:
+          $ref: ObjectId
+      creator:
+        description: Mongodb ObjectId of User who created this Message
+        $ref: ObjectId
+      source:
+        description: The source of this Message
+        type: string
+      content:
+        description: The content of this Message
+        type: string
+      channels:
+        description: The channels associated with this Message
+        type: string
+      channelContent:
+        description: The channel content of this Message
+        type: string
+      publishTime:
+        description: The date this Message was published
+        type: string
+        format: date-time
+      expireTime:
+        description: The date this Message expiress
+        type: string
+        format: date-time
+      status:
+        description: the status of this Message
+        type: string
+      inappropriate:
+        description: Boolean flag indicating if Message is or is not appropriate
+        type: boolean
+
+  NotificationPreference:
+    description: User's Notification Preferences Object
+    required:
+      - enabled
+      - scope
+      - group
+      - email
+      - push
+      - sms
+    properties:
+      enabled:
+        description: Overall on/off boolean of this NotificationPreference
+        type: boolean
+      scope:
+        description: Scope of NotificationPreference (global, team, school, etc.)
+        type: string
+      group:
+        description: User's group setting of this NotificationPreference (player, fan, coach, etc.)
+        type: string
+      school:
+        description: Mongodb ObjectId of School associated with this NotificationPreference
+        $ref: ObjectId
+      team:
+        description: Mongodb ObjectId of Team associated with this NotificationPreference
+        $ref: ObjectId
+      email:
+        description: Boolean flag indicating email notification preference
+        type: boolean
+      push:
+        description: Boolean flag indicating push notification preference
+        type: boolean
+      sms:
+        description: Boolean flag indicating sms notification preference
+        type: boolean
+
+  ObjectId:
+    description: Mongodb ObjectId definition
     properties:
       id:
-        description: Id attribute of image tag
-        type: integer
-        format: int32
-      name:
-        description: Name attribute of image tag
+        description: Id attribute of ObjectId
         type: string
-      alt:
-        description: Alt attribute of image tag
-        type: string
-      path:
-        description: Source path of image
-        type: string
-      width:
-        description: Width of Image
-        type: integer
-        format: int32
-      height:
-        description: Height of Image
-        type: integer
-        format: int32
-
-
