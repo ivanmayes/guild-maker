@@ -182,7 +182,7 @@ Envelope.prototype.error = function error ( code , options ) {
 
             code    = tmpCode;
             type    = this.status_codes[ tmpCode ].errorType || '';
-            detail  = '';
+            detail  = [];
             // detail  = this.status_codes[ tmpCode ].details || '';
 
         }
@@ -193,7 +193,7 @@ Envelope.prototype.error = function error ( code , options ) {
 
             code   = opts.code || 400;
             type   = opts.type || this.status_codes[ code ].errorType;
-            detail = opts.details || '';
+            detail = opts.details || [];
             // detail = opts.details || this.status_codes[ code ].details;
         }
     }
@@ -202,7 +202,7 @@ Envelope.prototype.error = function error ( code , options ) {
         append = opts.append;
         // code   = opts.code || 400;
         type   = opts.type || this.status_codes[ code ].errorType;
-        detail = opts.details || '';
+        detail = opts.details || [];
         // detail = opts.details || this.status_codes[ code ].details;
     }
 
@@ -214,7 +214,7 @@ Envelope.prototype.error = function error ( code , options ) {
 
         if( code && code !== this.meta.code ){
             append = false;
-            this.meta.errorDetail = '';
+            this.meta.errorDetail = [];
         }
 
         if(
@@ -253,7 +253,13 @@ Envelope.prototype.error = function error ( code , options ) {
     // }
 
     if( !append ) {
-        this.meta.errorDetail = detail;
+        if ( Array.isArray( detail ) ) {
+            this.meta.errorDetail = detail;
+        }
+        else
+        {
+            this.meta.errorDetail.push( detail );
+        }
     }
     else{
 
