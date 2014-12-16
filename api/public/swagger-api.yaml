@@ -46,6 +46,53 @@ paths:
               meta:
                 $ref: ErrorMeta
 
+  /signup:
+    post:
+      summary: Creates a new user account.
+      description: >
+        Creating a new user will return an object containing the user
+        and the access_token in the response when successful.
+      parameters:
+        - name: firstName
+          in: formData
+          description: First name of the user.
+          required: false
+          type: string
+        - name: lastName
+          in: formData
+          description: Last name of the user.
+          required: false
+          type: string
+        - name: password
+          in: formData
+          description: The user's password.
+          required: true
+          type: string
+        - name: email
+          in: formData
+          description: The user's email address.
+          required: true
+          type: string
+      responses:
+        200:
+          description: Returns the access_token for the new user.
+          schema:
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                properties:
+                  user:
+                    $ref: User
+                  access_token:
+                    type: string
+        default:
+          description: The standard error envelope.
+          schema:
+            properties:
+              meta:
+                $ref: ErrorMeta
+
   /login:
     post:
       summary: Exchange a username (i.e. email) and password for an access token.
@@ -84,36 +131,21 @@ paths:
               meta:
                 $ref: ErrorMeta
 
-  /signup:
+  /updatePassword:
     post:
-      summary: Creates a new user account.
-      description: >
-        Creating a new user will return an object containing the user
-        and the access_token in the response when successful.
+      summary: Updates the User's password
+      description: |
+        Salts the supplied password and updates the User model with the
+        salted password hash.
       parameters:
-        - name: firstName
-          in: formData
-          description: First name of the user.
-          required: false
-          type: string
-        - name: lastName
-          in: formData
-          description: Last name of the user.
-          required: false
-          type: string
         - name: password
           in: formData
-          description: The user's password.
-          required: true
-          type: string
-        - name: email
-          in: formData
-          description: The user's email address.
+          description: Updated password to salt and add to User's account
           required: true
           type: string
       responses:
         200:
-          description: Returns the access_token for the new user.
+          description: Returns the updated User model.
           schema:
             properties:
               meta:
@@ -181,7 +213,7 @@ paths:
               meta:
                 $ref: ErrorMeta
 
-  /update:
+  /users/update:
     post:
       summary: Updates a new user account with supplied information.
       description: >
@@ -228,38 +260,6 @@ paths:
           required: false
           schema:
             $ref: NotificationPreference
-      responses:
-        200:
-          description: Returns the updated User model.
-          schema:
-            properties:
-              meta:
-                $ref: SuccessMeta
-              response:
-                properties:
-                  user:
-                    $ref: User
-                  access_token:
-                    type: string
-        default:
-          description: The standard error envelope.
-          schema:
-            properties:
-              meta:
-                $ref: ErrorMeta
-
-  /updatePassword:
-    post:
-      summary: Updates the User's password
-      description: |
-        Salts the supplied password and updates the User model with the
-        salted password hash.
-      parameters:
-        - name: password
-          in: formData
-          description: Updated password to salt and add to User's account
-          required: true
-          type: string
       responses:
         200:
           description: Returns the updated User model.
