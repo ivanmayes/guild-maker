@@ -131,6 +131,56 @@ paths:
               meta:
                 $ref: ErrorMeta
 
+  /users:
+    get:
+      description: Returns array of Users.
+      summary: Retrieve Users.
+      operationId: getUsersList
+      responses:
+        200:
+          description: List all users.
+          schema:
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                type: array
+                items:
+                  $ref: User
+        default:
+          description: The standard error envelope.
+          schema:
+            properties:
+              meta:
+                $ref: ErrorMeta
+
+  /users/{userId}:
+    get:
+      parameters:
+      - name: userId
+        in: path
+        description: the Id of the User
+        required: true
+        type: string
+      description: Returns a User based on supplied Id.
+      summary: Retrieve a User Object.
+      operationId: getUserById
+      responses:
+        200:
+          description:  Return a User.
+          schema:
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                $ref: User
+        default:
+          description: The standard error envelope.
+          schema:
+            properties:
+              meta:
+                $ref: ErrorMeta
+
   /update:
     post:
       summary: Updates a new user account with supplied information.
@@ -223,56 +273,6 @@ paths:
                     $ref: User
                   access_token:
                     type: string
-        default:
-          description: The standard error envelope.
-          schema:
-            properties:
-              meta:
-                $ref: ErrorMeta
-
-  /users:
-    get:
-      description: Returns array of Users.
-      summary: Retrieve Users.
-      operationId: getUsersList
-      responses:
-        200:
-          description: List all users.
-          schema:
-            properties:
-              meta:
-                $ref: SuccessMeta
-              response:
-                type: array
-                items:
-                  $ref: User
-        default:
-          description: The standard error envelope.
-          schema:
-            properties:
-              meta:
-                $ref: ErrorMeta
-
-  /users/{userId}:
-    get:
-      parameters:
-      - name: userId
-        in: path
-        description: the Id of the User
-        required: true
-        type: string
-      description: Returns a User based on supplied Id.
-      summary: Retrieve a User Object.
-      operationId: getUserById
-      responses:
-        200:
-          description:  Return a User.
-          schema:
-            properties:
-              meta:
-                $ref: SuccessMeta
-              response:
-                $ref: User
         default:
           description: The standard error envelope.
           schema:
@@ -889,6 +889,9 @@ definitions:
         type: array
         items:
           type: object
+      group:
+        description: The Player/Fan/Parent setting of the User
+        type: string
       createdTime:
         description: Date of User model creation
         type: string

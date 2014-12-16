@@ -2,6 +2,7 @@
 'use strict';
 
 var validator   = require( 'validator' ),
+    moment      = require( 'moment' ),
     Envelope    = require( '../envelope' ),
     User        = require( '../models/user' ),
     AccessToken = require( '../models/token' ),
@@ -201,7 +202,7 @@ exports = module.exports = function UserRoutes( auth , router ) {
             // user's last visit time to be now... bc they just logged in.
             obj.user.lastVisitTime = Date.now();
             obj.user.saveAsync()
-                .spread( function( savedUser , numAffected ) {
+                .spread( function ( savedUser , numAffected ) {
                     if( numAffected < 1 ){
                         throw new Error( 'Error updating User\'s lastVisitTime.' );
                     }
@@ -229,27 +230,6 @@ exports = module.exports = function UserRoutes( auth , router ) {
         });
 
         // curl -d "email=test%40example.com&password=password" http://127.0.0.1:3000/v1/login
-    });
-
-    router.post( '/update' , function( req , res ) {
-//         var username  = validator.trim( req.body.userName ),
-//             firstName = validator.trim( req.body.firstName ),
-//             lastName  = validator.trim( req.body.lastName ),
-//             email     = validator.normalizeEmail( validator.trim( req.body.email ) ),
-//             group     = validator.trim( req.body.group ),
-//             accounts,
-//             birthday,
-//             preferences;
-
-// username
-// firstName
-// lastName
-// email
-// group
-// accounts
-// birthday
-// preferences
-
     });
 
     router.post( '/updatePassword' , auth.requireUser , function( req , res ) {
@@ -365,6 +345,112 @@ exports = module.exports = function UserRoutes( auth , router ) {
             res.json( envelope );
             return;
         });
+    });
+
+    router.post( '/users/update' , auth.requireUser , function( req , res ) {
+        var username    = validator.trim( req.body.userName ),
+            firstName   = validator.trim( req.body.firstName ),
+            lastName    = validator.trim( req.body.lastName ),
+            email       = validator.normalizeEmail( validator.trim( req.body.email ) ),
+            group       = validator.trim( req.body.group ),
+            birthday    = validator.trim( req.body.birthday ),
+            preferences = req.body.preferences,
+            user        = req.user,
+            queryObj    = {};
+
+        envelope = new Envelope();
+
+        // append username to query object
+        if( username ) {
+            queryObj[ 'username' ] = username;
+        }
+
+        // append firstName to query object
+        if( firstName ) {
+            queryObj[ 'firstName' ] = firstName;
+        }
+
+        // append lastName to query object
+        if( lastName ) {
+            queryObj[ 'lastName' ] = lastName;
+        }
+
+        // append email to query object
+        if( validator.isEmail( email ) ) {
+            queryObj[ 'email' ] = email;
+        }
+
+        // append group to query object
+        if( group ) {
+            queryObj[ 'group' ] = group;
+        }
+
+        // append birthday to query object
+        if( birthday ) {
+            queryObj[ 'birthday' ] = moment( birthday ).toDate();
+        }
+
+        // TODO: validate preferences.... think about how.
+        // append preferences to query object
+        if( preferences ) {
+            queryObj[ 'preferences' ] = preferences;
+        }
+
+        // console.log( 'foo:' , queryObj );
+
+        if( Object.getOwnPropertyNames( queryObj ).length === 0 ){
+        // if( !queryObj ){
+            // after parsing, no valid query present...
+            // send error envelope and bail
+            envelope.error( 400 , {
+                'details': 'Missing update parameters.',
+                'append':  true
+            });
+            res.json( envelope );
+            return;
+        }
+
+        User.updateAsync(
+            {
+                '_id': user._id
+            },
+            queryObj
+        )
+        .spread( function ( numAffected , response ) {
+            var updatedExisting = response.updatedExisting || '';
+
+            if( updatedExisting === '' ){
+                updatedExisting = false;
+            }
+
+            if(
+                ( updatedExisting ) &&
+                ( numAffected > 0 )
+            ){
+                return User.findOneAsync({
+                    'email': email || user.email
+                });
+            }
+
+            envelope.error( 500 , {
+                'details': 'No Users updated.'
+            });
+            res.json( envelope );
+            return;
+        })
+        .then( function ( user ) {
+            envelope.success( 200 , user );
+            return res.json( envelope );
+        })
+        .catch( function ( err ) {
+            envelope.error( 500 , {
+                'details': 'The server returned an error updating user with supplied arguments.'
+            });
+            res.json( envelope );
+            return;
+        });
+
+        return;
     });
 
 };
