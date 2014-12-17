@@ -8,48 +8,18 @@ define( function() {
         $scope.schoolsSeen = {};
         $scope.searchResults = [];
         $scope.userQueried = false;
+        $scope.selectedSchool = false;
 
         var access_token = UserService.getAccessToken();
         var betaSchools;
 
+        // Get our beta schools for the initial list
+        // TODO: Change this to nearby schools once we have more
         var betaSchoolRequest = SchoolService.getBetaSchools( access_token );
         betaSchoolRequest.then( function(schools) {
-            console.log( 'schools', schools );
             betaSchools = schools;
             $scope.searchResults = schools;
         } );
-
-        /*
-        // TODO:
-        // --get user location
-        // --query for schools within 50 miles
-        // --seed data into searchResults
-        $http.get('someurl').success(function(data) {
-            $scope.searchResults = JSON.parse(data);
-        });
-        */
-
-        // SIMULATE nearby schools
-        /* var localSchools = [
-             {
-                 fullName: 'Fayetteville',
-                 id: 1
-             },
-             {
-                 fullName: 'Springdale',
-                 id: 2
-             },
-             {
-                 fullName: 'Rogers',
-                 id: 3
-             },
-             {
-                 fullName: 'Bentonville',
-                 id: 4
-             }
-         ];*/
-
-        // Add to display list
 
 
         // This may need to be modified or optimized once we're pinging the server
@@ -80,7 +50,10 @@ define( function() {
         };
 
         $scope.selectSchool = function(school) {
-            alert( school.fullName );
+            $state.go( 'schools/teams', {
+                schoolId: school._id,
+                schoolName: school.fullName
+            } );
         };
     }
 

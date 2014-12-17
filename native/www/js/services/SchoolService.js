@@ -53,7 +53,6 @@ define( ['angular'], function(angular) {
                 }
             } ).then( function(result) {
                 if (result.data && result.data.response) {
-                    console.log( 'response', result.data.response );
                     deferred.resolve( result.data.response );
                 } else {
                     deferred.reject( result.data.meta.errorDetail );
@@ -64,11 +63,33 @@ define( ['angular'], function(angular) {
         }
 
 
+        function getTeamsOfSchool(school_id, access_token) {
+            // TODO: Make beta flag for schools that are in our program so other schools can be added but not favorited
+            var deferred = $q.defer();
+
+            $http( {
+                url: 'http://localhost:8280/v' + API_VERSION + '/teams/search',
+                method: 'GET',
+                params: {
+                    schoolId: school_id,
+                    access_token: access_token
+                }
+            } ).then( function(result) {
+                if (result.data && result.data.response) {
+                    deferred.resolve( result.data.response );
+                } else {
+                    deferred.reject( result.data.meta.errorDetail );
+                }
+            } );
+
+            return deferred.promise;
+        }
 
         // Return all our public functions
         return {
             getSchoolsByQuery: getSchoolsByQuery,
-            getBetaSchools: getBetaSchools
+            getBetaSchools: getBetaSchools,
+            getTeamsOfSchool: getTeamsOfSchool
         };
 
     };
