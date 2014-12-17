@@ -13,7 +13,7 @@ var schema = new mongoose.Schema(
         source:         { type: String },
         content:        { type: String },
         channels:       { type: String },
-        channelContent: { type: String }, // ???
+        channelContent: [{ type: mongoose.Schema.Types.Mixed }],
         publishTime:    { type: Date },
         expireTime:     { type: Date },
         status:         { type: String },
@@ -27,8 +27,6 @@ schema.index({
 });
 
 schema.index({
-    // eventId:        'text',
-    // schoolId:       'text',
     type:           'text',
     creator:        'text',
     source:         'text',

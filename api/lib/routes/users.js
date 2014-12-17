@@ -1,8 +1,10 @@
 
 'use strict';
 
-var validator   = require( 'validator' ),
+var _           = require( 'lodash' ),
+    validator   = require( 'validator' ),
     moment      = require( 'moment' ),
+    routeUtils  = require( '../route-utils' ),
     Envelope    = require( '../envelope' ),
     User        = require( '../models/user' ),
     AccessToken = require( '../models/token' ),
@@ -347,6 +349,7 @@ exports = module.exports = function UserRoutes( auth , router ) {
         });
     });
 
+    // TODO: notification preferences. I need to apply the subdoc.
     router.post( '/users/update' , auth.requireUser , function( req , res ) {
         var username    = validator.trim( req.body.userName ),
             firstName   = validator.trim( req.body.firstName ),
@@ -356,7 +359,8 @@ exports = module.exports = function UserRoutes( auth , router ) {
             birthday    = validator.trim( req.body.birthday ),
             preferences = req.body.preferences,
             user        = req.user,
-            queryObj    = {};
+            queryObj    = {},
+            valid;
 
         envelope = new Envelope();
 
@@ -390,16 +394,28 @@ exports = module.exports = function UserRoutes( auth , router ) {
             queryObj[ 'birthday' ] = moment( birthday ).toDate();
         }
 
-        // TODO: validate preferences.... think about how.
         // append preferences to query object
         if( preferences ) {
+            _( preferences ).each( function ( pref , idx ) {
+                valid = routeUtils.validatePrefs( pref );
+                if( !valid ){
+                    envelope.error( 500 , {
+                        'details': 'Invalid notifications setting.',
+                        'append':  true
+                    });
+                    res.json( envelope );
+                    return false;
+                }
+            } , this );
+
+            if( !valid ) {
+                return;
+            }
+
             queryObj[ 'preferences' ] = preferences;
         }
 
-        // console.log( 'foo:' , queryObj );
-
         if( Object.getOwnPropertyNames( queryObj ).length === 0 ){
-        // if( !queryObj ){
             // after parsing, no valid query present...
             // send error envelope and bail
             envelope.error( 400 , {
@@ -452,5 +468,4 @@ exports = module.exports = function UserRoutes( auth , router ) {
 
         return;
     });
-
 };

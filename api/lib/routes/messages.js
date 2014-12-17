@@ -27,6 +27,27 @@ exports = module.exports = function MessageRoutes( auth , router ) {
                 return;
             });
     });
+    /*
+    // get list of all messages
+    router.get( '/messages', auth.requireUser , function( req , res , next ) {
+        envelope = new Envelope();
+
+        Message.findAsync({})
+            .then( function ( messages ) {
+                envelope.success( 200 , messages );
+                res.json( envelope );
+                return;
+            })
+            .catch( function ( err ) {
+                envelope.error( 500 , {
+                    'details': 'The server returned an error finding all messages.',
+                    'append':  true
+                });
+                res.json( envelope );
+                return;
+            });
+    });
+    */
 
     router.get( '/messages/search', auth.requireUser , function( req , res , next ) {
         var keys, query;
