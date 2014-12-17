@@ -1,13 +1,23 @@
 /*global define, console */
 
-define(function() {
+define( function() {
     'use strict';
 
-    function ctrl($scope, $state) {
+    function ctrl($scope, $state, UserService, SchoolService) {
         $scope.query = '';
         $scope.schoolsSeen = {};
         $scope.searchResults = [];
         $scope.userQueried = false;
+
+        var access_token = UserService.getAccessToken();
+        var betaSchools;
+
+        var betaSchoolRequest = SchoolService.getBetaSchools( access_token );
+        betaSchoolRequest.then( function(schools) {
+            console.log( 'schools', schools );
+            betaSchools = schools;
+            $scope.searchResults = schools;
+        } );
 
         /*
         // TODO:
@@ -20,103 +30,60 @@ define(function() {
         */
 
         // SIMULATE nearby schools
-        var localSchools = [
-            {
-                name: 'Fayetteville',
-                id: 1
-            },
-            {
-                name: 'Springdale',
-                id: 2
-            },
-            {
-                name: 'Rogers',
-                id: 3
-            },
-            {
-                name: 'Bentonville',
-                id: 4
-            }
-        ];
+        /* var localSchools = [
+             {
+                 fullName: 'Fayetteville',
+                 id: 1
+             },
+             {
+                 fullName: 'Springdale',
+                 id: 2
+             },
+             {
+                 fullName: 'Rogers',
+                 id: 3
+             },
+             {
+                 fullName: 'Bentonville',
+                 id: 4
+             }
+         ];*/
 
-        // Cache these
-        recordSchoolsSeen(localSchools);
         // Add to display list
-        $scope.searchResults = localSchools;
+
 
         // This may need to be modified or optimized once we're pinging the server
         $scope.search = function(query) {
-            // SIMULATE getting results from server
+
             if (query.length) {
+                var getSchools = SchoolService.getSchoolsByQuery( query, access_token );
+                getSchools.then( function(searchResults) {
+                    $scope.userQueried = true;
+                    $scope.searchResults = searchResults;
+                    console.log( searchResults );
 
-                /*
-                $http.get('someurl').success(function(data) {
-                    $scope.searchResults = JSON.parse(data);
-                });
-                */
-
-                $scope.userQueried = true;
-                $scope.searchResults = [
-                    {
-                        name: 'Fayetteville',
-                        id: 1
-                    },
-                    {
-                        name: 'Springdale',
-                        id: 2
-                    },
-                    {
-                        name: 'Rogers',
-                        id: 3
-                    },
-                    {
-                        name: 'Bentonville',
-                        id: 4
-                    },
-                    {
-                        name: 'Little Rock',
-                        id: 5
-                    },
-                    {
-                        name: 'Ft. Smith',
-                        id: 6
-                    },
-                    {
-                        name: 'Harrison',
-                        id: 7
-                    },
-                    {
-                        name: 'Mountain Home',
-                        id: 8
-                    },
-                    {
-                        name: 'Pine Bluff',
-                        id: 9
-                    }
-                ];
-
-                // When the API is implemented we might want to run this
-                // before assigning to the scope var
-                // Cache these
-                recordSchoolsSeen($scope.searchResults);
+                }, function(reason) {
+                        console.log( 'Failed:', reason );
+                        $scope.errorMsg = reason;
+                    } );
             } else {
                 $scope.userQueried = false;
-                $scope.searchResults = localSchools;
+                $scope.searchResults = betaSchools;
             }
-        }
 
-        // Cache all the schools we encounter locally
-        function recordSchoolsSeen(schools) {
-            for (var s in $scope.searchResults) {
-                $scope.schoolsSeen[$scope.searchResults[s].id] = $scope.searchResults[s];
-            }
-        }
 
-        $scope.selectSchool = function(id) {
-            alert($scope.schoolsSeen[id].name);
-        }
+            // When the API is implemented we might want to run this
+            // before assigning to the scope var
+            // Cache these
+            //recordSchoolsSeen($scope.searchResults);
+
+        };
+
+        $scope.selectSchool = function(school) {
+            alert( school.fullName );
+        };
     }
 
-    ctrl.$inject = ['$scope', '$state'];
+    ctrl.$inject = ['$scope', '$state', 'UserService', 'SchoolService'];
     return ctrl;
-});
+} );

@@ -40,7 +40,7 @@ define(['app'], function(app) {
                     url: "/search",
                     templateUrl: "templates/search.html",
                     controller: 'SearchCtrl',
-                    authenticate: true
+                    authenticate: false
                 })
                 .state('fav', {
                     url: '/fav',

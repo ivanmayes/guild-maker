@@ -10,9 +10,9 @@
 			</h2>
 		</div>
 		<div>
-			<div ng-repeat="school in searchResults | filter:query">
-				<div ng-click="selectSchool(school.id)">
-					{{ school.name }} >
+			<div ng-repeat="school in searchResults">
+				<div ng-click="selectSchool(school)">
+					{{ school.fullName }} >
 				</div>
 			</div>
 		</div>

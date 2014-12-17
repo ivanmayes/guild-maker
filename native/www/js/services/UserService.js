@@ -1,5 +1,5 @@
-define(['angular'], function(angular) {
-    "use strict";
+define( ['angular'], function(angular) {
+    'use strict';
 
     var factory = function(API_VERSION, $http, $q, $window) {
 
@@ -10,8 +10,28 @@ define(['angular'], function(angular) {
          * @return {Boolean} User login state
          */
         function isLoggedIn() {
-            if ($window.sessionStorage["userInfo"]) {
+            if ($window.sessionStorage['userInfo']) {
                 return true;
+            } else {
+                return false;
+            }
+        }
+
+        /**
+         * Gets the User Access token if it exists
+         * @return string Access Token
+         */
+        function getAccessToken() {
+
+            if ($window.sessionStorage['userInfo']) {
+                var info = JSON.parse( $window.sessionStorage['userInfo'] );
+
+                if (info.accessToken && info.accessToken.token) {
+                    return info.accessToken.token;
+                } else {
+                    return false;
+                }
+
             } else {
                 return false;
             }
@@ -27,7 +47,7 @@ define(['angular'], function(angular) {
             var deferred = $q.defer();
 
             $http.post(
-                "http://localhost:8280/v" + API_VERSION + "/login",
+                'http://localhost:8280/v' + API_VERSION + '/login',
                 {
                     email: email,
                     password: password
@@ -37,22 +57,22 @@ define(['angular'], function(angular) {
                         'Content-Type': 'application/x-www-form-urlencoded'
                     }
                 }*/
-            ).then(function(result) {
+            ).then( function(result) {
                 if (result.data && result.data.response && result.data.response.token) {
                     userInfo = {
                         accessToken: result.data.response.token.token,
                         user: result.data.response.token.user
                     };
-                    $window.sessionStorage["userInfo"] = JSON.stringify(userInfo);
-                    deferred.resolve(userInfo);
+                    $window.sessionStorage['userInfo'] = JSON.stringify( userInfo );
+                    deferred.resolve( userInfo );
                 } else {
-                    deferred.reject(result.data.meta.errorDetail[0]);
+                    deferred.reject( result.data.meta.errorDetail[0] );
                 }
 
 
             }, function(error) {
-                    deferred.reject(error);
-                });
+                    deferred.reject( error );
+                } );
 
             return deferred.promise;
         }
@@ -62,7 +82,7 @@ define(['angular'], function(angular) {
          */
         function logout() {
 
-            $window.sessionStorage["userInfo"] = null;
+            $window.sessionStorage['userInfo'] = null;
 
             return true;
         }
@@ -77,31 +97,35 @@ define(['angular'], function(angular) {
             var deferred = $q.defer();
 
             // TODO: Remove hard coded url
-            $http.post("http://localhost:8280/v" + API_VERSION + "/signup", {
+            $http.post( 'http://localhost:8280/v' + API_VERSION + '/signup', {
                 email: email,
                 password: password
-            }).then(function(result) {
+            } ).then( function(result) {
 
                 if (result.data && result.data.response && result.data.response) {
                     userInfo = {
                         accessToken: result.data.response.token,
-                        email: result.data.email
+                        user: result.data.response.token.user
                     };
-                    $window.sessionStorage["userInfo"] = JSON.stringify(userInfo);
-                    deferred.resolve(userInfo);
+                    $window.sessionStorage['userInfo'] = JSON.stringify( userInfo );
+                    deferred.resolve( userInfo );
                 } else {
-                    deferred.reject(result.data.meta.errorDetail[0]);
+                    deferred.reject( result.data.meta.errorDetail[0] );
                 }
 
             }, function(error) {
-                    deferred.reject(error);
-                });
+                    deferred.reject( error );
+                } );
 
             return deferred.promise;
         }
 
+
+
+
         // Return all our public functions
         return {
+            getAccessToken: getAccessToken,
             login: login,
             isLoggedIn: isLoggedIn,
             logout: logout,
@@ -112,4 +136,4 @@ define(['angular'], function(angular) {
 
     factory.$inject = ['API_VERSION', '$http', '$q', '$window'];
     return factory;
-});
+} );

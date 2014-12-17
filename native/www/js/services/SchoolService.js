@@ -1,115 +1,78 @@
-define(['angular'], function(angular) {
-    "use strict";
+define( ['angular'], function(angular) {
+    'use strict';
 
     var factory = function(API_VERSION, $http, $q, $window) {
-
-        var userInfo;
-
-        /**
-         * Checks if user is logged in
-         * @return {Boolean} User login state
-         */
-        function isLoggedIn() {
-            if ($window.sessionStorage["userInfo"]) {
-                return true;
-            } else {
-                return false;
-            }
-        }
+        var accessToken = '';
 
         /**
-         * Logs a user into the application
-         * @param  {String} email User Email Address
-         * @param  {String} password User Password
-         * @return {String} access_token  A user access token to access other page data
+         * Gets schools based on search queries
+         * @param  {string} query       The search term
+         * @param  {string} accessToken Access token for auth
+         * @return {array}              Array of Schools
          */
-        function login(email, password) {
+        function getSchoolsByQuery(query, access_token) {
             var deferred = $q.defer();
 
-            $http.post(
-                "http://localhost:8280/v" + API_VERSION + "/login",
-                {
-                    email: email,
-                    password: password
-                } /*,
-                {
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    }
-                }*/
-            ).then(function(result) {
-                if (result.data && result.data.response && result.data.response.token) {
-                    userInfo = {
-                        accessToken: result.data.response.token.token,
-                        user: result.data.response.token.user
-                    };
-                    $window.sessionStorage["userInfo"] = JSON.stringify(userInfo);
-                    deferred.resolve(userInfo);
+
+            $http( {
+                url: 'http://localhost:8280/v' + API_VERSION + '/schools/search',
+                method: 'GET',
+                params: {
+                    q: query,
+                    access_token: access_token
+                }
+            } ).then( function(result) {
+                if (result.data && result.data.response) {
+                    deferred.resolve( result.data.response );
                 } else {
-                    deferred.reject(result.data.meta.errorDetail[0]);
+                    deferred.reject( result.data.meta.errorDetail );
                 }
 
 
             }, function(error) {
-                    deferred.reject(error);
-                });
+                    deferred.reject( error );
+                } );
 
             return deferred.promise;
         }
 
         /**
-         * Logs user out of application
+         * Gets our beta Schools
+         * @return {Array} An Array of beta schools
          */
-        function logout() {
-
-            $window.sessionStorage["userInfo"] = null;
-
-            return true;
-        }
-
-        /**
-         * Signs up a new user with our API
-         * @param  {String} email User Email Address
-         * @param  {String} password User Password (Confirmed with Controller)
-         * @return {String} access_token  A user access token to access other page data
-         */
-        function signup(email, password) {
+        function getBetaSchools(access_token) {
+            // TODO: Make beta flag for schools that are in our program so other schools can be added but not favorited
             var deferred = $q.defer();
 
-            // TODO: Remove hard coded url
-            $http.post("http://localhost:8280/v" + API_VERSION + "/signup", {
-                email: email,
-                password: password
-            }).then(function(result) {
 
-                if (result.data && result.data.response && result.data.response) {
-                    userInfo = {
-                        accessToken: result.data.response.token,
-                        email: result.data.email
-                    };
-                    $window.sessionStorage["userInfo"] = JSON.stringify(userInfo);
-                    deferred.resolve(userInfo);
-                } else {
-                    deferred.reject(result.data.meta.errorDetail[0]);
+            $http( {
+                url: 'http://localhost:8280/v' + API_VERSION + '/schools',
+                method: 'GET',
+                params: {
+                    access_token: access_token
                 }
-
-            }, function(error) {
-                    deferred.reject(error);
-                });
+            } ).then( function(result) {
+                if (result.data && result.data.response) {
+                    console.log( 'response', result.data.response );
+                    deferred.resolve( result.data.response );
+                } else {
+                    deferred.reject( result.data.meta.errorDetail );
+                }
+            } );
 
             return deferred.promise;
         }
+
+
 
         // Return all our public functions
         return {
-            login: login,
-            isLoggedIn: isLoggedIn,
-            logout: logout,
-            signup: signup
+            getSchoolsByQuery: getSchoolsByQuery,
+            getBetaSchools: getBetaSchools
         };
 
     };
 
     factory.$inject = ['API_VERSION', '$http', '$q', '$window'];
     return factory;
-});
+} );
