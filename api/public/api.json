@@ -205,9 +205,6 @@
                                     "properties": {
                                         "user": {
                                             "$ref": "User"
-                                        },
-                                        "access_token": {
-                                            "type": "string"
                                         }
                                     }
                                 }
@@ -379,9 +376,6 @@
                                     "properties": {
                                         "user": {
                                             "$ref": "User"
-                                        },
-                                        "access_token": {
-                                            "type": "string"
                                         }
                                     }
                                 }

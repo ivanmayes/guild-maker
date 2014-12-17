@@ -58,7 +58,6 @@ exports.validatePrefs = function validatePrefs ( prefs ) {
         if( prefs.school ) {
             return false;
         }
-
     }
 
     if( prefs.scope !== 'global' ){

@@ -271,8 +271,6 @@ paths:
                 properties:
                   user:
                     $ref: User
-                  access_token:
-                    type: string
         default:
           description: The standard error envelope.
           schema:
