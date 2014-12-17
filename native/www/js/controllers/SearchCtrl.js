@@ -3,7 +3,7 @@
 define( function() {
     'use strict';
 
-    function ctrl($scope, $state, UserService, SchoolService) {
+    function ctrl($scope, $state, $stateParams, UserService, SchoolService) {
         $scope.query = '';
         $scope.schoolsSeen = {};
         $scope.searchResults = [];
@@ -50,13 +50,12 @@ define( function() {
         };
 
         $scope.selectSchool = function(school) {
-            $state.go( 'schools/teams', {
-                schoolId: school._id,
-                schoolName: school.fullName
+            $state.go( 'search/teams', {
+                school: school
             } );
         };
     }
 
-    ctrl.$inject = ['$scope', '$state', 'UserService', 'SchoolService'];
+    ctrl.$inject = ['$scope', '$state', '$stateParams', 'UserService', 'SchoolService'];
     return ctrl;
 } );

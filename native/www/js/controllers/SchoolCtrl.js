@@ -5,12 +5,12 @@ define( function() {
 
     function ctrl($scope, $state, $stateParams, UserService, SchoolService) {
         $scope.teams = [];
-        console.log( 'school', $stateParams.schoolName );
+        $scope.school = $stateParams.school;
 
         var access_token = UserService.getAccessToken();
 
         // Get teams of schools
-        var schoolTeams = SchoolService.getTeamsOfSchool( $stateParams.schoolId, access_token );
+        var schoolTeams = SchoolService.getTeamsOfSchool( $stateParams.school._id, access_token );
         schoolTeams.then( function(teams) {
             console.log( 'teams', teams );
             $scope.teams = teams;

@@ -42,8 +42,11 @@ define( ['app'], function(app) {
                     controller: 'SearchCtrl',
                     authenticate: false
                 } )
-                .state( 'schools/teams', {
-                    url: '/schools/:schoolId',
+                .state( 'search/teams', {
+                    url: '/search/teams;',
+                    params: {
+                        school: null
+                    },
                     templateUrl: 'templates/school-teams.html',
                     controller: 'SchoolCtrl',
                     authenticate: false
