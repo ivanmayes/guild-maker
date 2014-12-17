@@ -1,20 +1,31 @@
-<ion-view title="Search for your team">
+<ion-view title="Search for a School">
+	<div class="bar bar-header item-input-inset">
+	  <label class="item-input-wrapper">
+	    <i class="icon ion-ios7-search placeholder-icon"></i>
+	    <input type="search" placeholder="Search">
+	  </label>
+	  <button class="button button-clear">
+	    Cancel
+	  </button>
+	</div>
+
 	<ion-content>
-		<input type="text" placeholder="Search" ng-model="query" ng-change="search(query)">
+		<input type="text" placeholder="Search for your school" ng-model="query" ng-change="search(query)">
 		<div ng-hide="userQueried" class="ng-hide">
-			<p>
-				Search for your school
-			</p>
-			<h2>
 				Schools nearby
-			</h2>
+				<hr>
 		</div>
-		<div>
-			<div ng-repeat="school in searchResults">
-				<div ng-click="selectSchool(school)">
-					{{ school.fullName }} >
-				</div>
-			</div>
+
+		<div class="list">
+			<a class="item item-thumbnail-left item-icon-right" href="#" ng-repeat="school in searchResults" ng-click="selectSchool(school)">
+				<img src="https://placekitten.com/g/40/40">
+				<h2>{{ school.fullName }} ></h2>
+			    <p>{{ school.city }}, {{ school.state }}</p>
+			    <p>Division {{ school.division }}</p>
+			    <i class="icon ion-ios7-arrow-right"></i>
+			</a>
+		</div>
+
 		</div>
 	</ion-content>
 </ion-view>

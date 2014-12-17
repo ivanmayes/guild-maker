@@ -12,7 +12,6 @@ define( function() {
         // Get teams of schools
         var schoolTeams = SchoolService.getTeamsOfSchool( $stateParams.school._id, access_token );
         schoolTeams.then( function(teams) {
-            console.log( 'teams', teams );
             $scope.teams = teams;
         } );
 

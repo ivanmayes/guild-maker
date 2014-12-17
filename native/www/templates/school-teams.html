@@ -1,8 +1,13 @@
 <ion-view title="{{ school.fullName }}">
 	<ion-content>
-		<div ng-repeat="team in teams">
-			<div ng-click="selectSchool(school)">
-				{{ team.sport }} >
+		<div >
+			<div class="list">
+				<a class="item item-avatar item-icon-left item-icon-right" href="#" ng-repeat="team in teams" ng-click="selectSchool(school)">
+				<i class="icon ion-ios7-star-outline"></i>
+				<h2>{{ team.sport }}</h2>
+			    <p>{{ team.gender }}</p>
+			    <i class="icon ion-ios7-gear-outline"></i>
+				</a>
 			</div>
 		</div>
 	</ion-content>
