@@ -27,6 +27,7 @@ schema = new mongoose.Schema(
         accounts:      { type: Array },
         devices:       { type: Array },
         roles:         { type: Array },
+        group:         { type: String },
         createdTime:   { type: Date , default: Date.now },
         lastVisitTime: { type: Date , default: Date.now },
         birthday:      { type: Date },

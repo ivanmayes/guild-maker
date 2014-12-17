@@ -46,44 +46,6 @@ paths:
               meta:
                 $ref: ErrorMeta
 
-  /login:
-    post:
-      summary: Exchange a username (i.e. email) and password for an access token.
-      description: >
-        Logging in will return just the access_token in the
-        response when successful. Follow up with a call to `/me` if you
-        want to get the user details.
-      parameters:
-        - name: email
-          in: formData
-          description: >
-            The user's email. SeasonLink does not have usernames,
-            but the OAuth2 spec requires this to be the param name.
-          required: true
-          type: string
-        - name: password
-          in: formData
-          description: The user's password.
-          required: true
-          type: string
-      responses:
-        200:
-          description: Returns the access_token
-          schema:
-            properties:
-              meta:
-                $ref: SuccessMeta
-              response:
-                properties:
-                  access_token:
-                    type: string
-        default:
-          description: The standard error envelope.
-          schema:
-            properties:
-              meta:
-                $ref: ErrorMeta
-
   /signup:
     post:
       summary: Creates a new user account.
@@ -131,64 +93,35 @@ paths:
               meta:
                 $ref: ErrorMeta
 
-  /update:
+  /login:
     post:
-      summary: Updates a new user account with supplied information.
+      summary: Exchange a username (i.e. email) and password for an access token.
       description: >
-        Updates the User account with group, notifications, or any other settings.
+        Logging in will return just the access_token in the
+        response when successful. Follow up with a call to `/me` if you
+        want to get the user details.
       parameters:
-        - name: username
-          in: formData
-          description: Username of the user.
-          required: false
-          type: string
-        - name: firstName
-          in: formData
-          description: First name of the user.
-          required: false
-          type: string
-        - name: lastName
-          in: formData
-          description: Last name of the user.
-          required: false
-          type: string
         - name: email
           in: formData
-          description: Email address of the user.
-          required: false
+          description: >
+            The user's email. SeasonLink does not have usernames,
+            but the OAuth2 spec requires this to be the param name.
+          required: true
           type: string
-        - name: group
+        - name: password
           in: formData
-          description: Group of the user (fan, player, parent, etc.).
-          required: false
+          description: The user's password.
+          required: true
           type: string
-        - name: accounts
-          in: formData
-          description: Accounts of the user.
-          required: false
-          type: string
-        - name: birthday
-          in: formData
-          description: Date of Birth of the user( string format - YYYY-MM-DD ).
-          required: false
-          type: string
-        - name: preferences
-          in: body
-          description: User's notification preferences.
-          required: false
-          schema:
-            $ref: NotificationPreference
       responses:
         200:
-          description: Returns the updated User model.
+          description: Returns the access_token
           schema:
             properties:
               meta:
                 $ref: SuccessMeta
               response:
                 properties:
-                  user:
-                    $ref: User
                   access_token:
                     type: string
         default:
@@ -273,6 +206,73 @@ paths:
                 $ref: SuccessMeta
               response:
                 $ref: User
+        default:
+          description: The standard error envelope.
+          schema:
+            properties:
+              meta:
+                $ref: ErrorMeta
+
+  /users/update:
+    post:
+      summary: Updates a new user account with supplied information.
+      description: >
+        Updates the User account with group, notifications, or any other settings.
+      parameters:
+        - name: username
+          in: formData
+          description: Username of the user.
+          required: false
+          type: string
+        - name: firstName
+          in: formData
+          description: First name of the user.
+          required: false
+          type: string
+        - name: lastName
+          in: formData
+          description: Last name of the user.
+          required: false
+          type: string
+        - name: email
+          in: formData
+          description: Email address of the user.
+          required: false
+          type: string
+        - name: group
+          in: formData
+          description: Group of the user (fan, player, parent, etc.).
+          required: false
+          type: string
+        - name: accounts
+          in: formData
+          description: Accounts of the user.
+          required: false
+          type: string
+        - name: birthday
+          in: formData
+          description: Date of Birth of the user( string format - YYYY-MM-DD ).
+          required: false
+          type: string
+        - name: preferences
+          in: body
+          description: User's notification preferences.
+          required: false
+          schema:
+            $ref: NotificationPreference
+      responses:
+        200:
+          description: Returns the updated User model.
+          schema:
+            properties:
+              meta:
+                $ref: SuccessMeta
+              response:
+                properties:
+                  user:
+                    $ref: User
+                  access_token:
+                    type: string
         default:
           description: The standard error envelope.
           schema:
@@ -889,6 +889,9 @@ definitions:
         type: array
         items:
           type: object
+      group:
+        description: The Player/Fan/Parent setting of the User
+        type: string
       createdTime:
         description: Date of User model creation
         type: string
