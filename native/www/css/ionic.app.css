@@ -4021,7 +4021,7 @@ ion-tabs.tabs-color-active-dark .tab-item {
   height: 100%;
   background-color: rgba(0, 0, 0, 0); }
   .popover-backdrop.active {
-    background-color: rgba(0, 0, 0, 0.1); }
+    background-color: rgba(51, 204, 255, 0.2); }
 
 .popover {
   position: absolute;
@@ -4033,7 +4033,7 @@ ion-tabs.tabs-color-active-dark .tab-item {
   margin-left: -110px;
   height: 280px;
   width: 220px;
-  background-color: #fff;
+  background-color: #0D3340;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
   opacity: 0; }
   .popover .item:first-child {
@@ -4083,7 +4083,7 @@ ion-tabs.tabs-color-active-dark .tab-item {
     left: 5px;
     width: 20px;
     height: 20px;
-    background-color: #fff;
+    background-color: #0D3340;
     border-radius: 3px;
     content: '';
     -webkit-transform: rotate(-45deg);
@@ -4386,7 +4386,7 @@ ion-tabs.tabs-color-active-dark .tab-item {
 
 .item.active, .item.activated, .item-complex.active .item-content, .item-complex.activated .item-content, .item .item-content.active, .item .item-content.activated {
   border-color: #196680;
-  background-color: #D9D9D9; }
+  background-color: #16556a; }
   .item.active.item-light, .item.activated.item-light, .item-complex.active .item-content.item-light, .item-complex.activated .item-content.item-light, .item .item-content.active.item-light, .item .item-content.activated.item-light {
     border-color: #ccc;
     background-color: #fafafa; }
@@ -5289,7 +5289,7 @@ input, button, select, textarea {
   border-radius: 2px;
   padding: 4px 8px 3px 0;
   border: none;
-  background-color: #0D3340; }
+  background-color: #FFF; }
 
 .item-stacked-label input {
   overflow: hidden;
@@ -5317,7 +5317,7 @@ textarea, input[type="text"], input[type="password"], input[type="datetime"], in
   padding-top: 2px;
   padding-left: 0;
   height: 34px;
-  color: #33CCFF;
+  color: #333;
   vertical-align: middle;
   font-size: 14px;
   line-height: 16px; }
@@ -5331,11 +5331,11 @@ input, textarea {
 textarea {
   padding-left: 0; }
   textarea::-moz-placeholder {
-    color: white; }
+    color: #999999; }
   textarea:-ms-input-placeholder {
-    color: white; }
+    color: #999999; }
   textarea::-webkit-input-placeholder {
-    color: white;
+    color: #999999;
     text-indent: -3px; }
 
 textarea {
@@ -5360,11 +5360,11 @@ input[type="file"] {
   width: 200px; }
 
 input::-moz-placeholder, textarea::-moz-placeholder {
-  color: white; }
+  color: #999999; }
 input:-ms-input-placeholder, textarea:-ms-input-placeholder {
-  color: white; }
+  color: #999999; }
 input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
-  color: white;
+  color: #999999;
   text-indent: 0; }
 
 input[disabled], select[disabled], textarea[disabled], input[readonly]:not(.cloned-text-input), textarea[readonly]:not(.cloned-text-input), select[readonly] {
@@ -7022,3 +7022,108 @@ a.button {
     border-right: 1px solid #196680;
     border-bottom: 1px solid #196680;
     color: #196680; }
+
+.col.center {
+  margin: 0 auto; }
+
+.padding {
+  padding: 10px 10%; }
+
+.middle-container {
+  display: table !important;
+  width: 100% !important;
+  height: 100% !important; }
+  .middle-container .scroll {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center; }
+
+.pink-grad {
+  background: #ed3180;
+  /* Old browsers */
+  background: -moz-linear-gradient(left, #ed3180 0%, #8544a3 100%);
+  /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, right top, color-stop(0%, #ed3180), color-stop(100%, #8544a3));
+  /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(left, #ed3180 0%, #8544a3 100%);
+  /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(left, #ed3180 0%, #8544a3 100%);
+  /* Opera 11.10+ */
+  background: -ms-linear-gradient(left, #ed3180 0%, #8544a3 100%);
+  /* IE10+ */
+  background: linear-gradient(to right, #ed3180 0%, #8544a3 100%);
+  /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ed3180', endColorstr='#8544a3',GradientType=1 );
+  /* IE6-9 */
+  color: #33CCFF; }
+  .pink-grad .button, .pink-grad .button:hover {
+    color: #33CCFF; }
+
+.search .item-input {
+  height: 35px;
+  background: white;
+  margin: 0; }
+  .search .item-input input {
+    background: white; }
+.search .scroll-content {
+  top: 88px; }
+.search .list-title {
+  text-align: left;
+  padding: 10px 8px 0; }
+  .search .list-title hr {
+    background: #115971;
+    border: none;
+    height: 2px; }
+.search .search {
+  text-align: left; }
+.search .list .item {
+  border-top: 2px solid #092935;
+  text-align: left;
+  padding-left: 86px;
+  padding-bottom: 8px; }
+  .search .list .item:first-child {
+    border-top: none; }
+  .search .list .item:last-child {
+    border-bottom: none; }
+  .search .list .item img {
+    border-radius: 10px;
+    max-width: 65px; }
+  .search .list .item .name {
+    margin-top: 4px; }
+  .search .list .item .location {
+    font-size: 16px;
+    color: #2387A8; }
+  .search .list .item .division {
+    font-size: 12px;
+    color: #176A86; }
+.search .item-thumbnail-left {
+  min-height: 85px; }
+
+.school-teams .item {
+  padding: 10px 30px 10px 54px;
+  min-height: 0;
+  border: 1px solid #092935; }
+.school-teams .icon {
+  margin-top: -2px;
+  font-size: 26px; }
+.school-teams .sport {
+  margin: 0; }
+.school-teams .gender {
+  font-size: 12px;
+  line-height: 12px;
+  color: #2387A8; }
+
+.prelogin {
+  text-align: center; }
+  .prelogin h1 {
+    font-size: 28px; }
+  .prelogin .button-clear {
+    color: #DAE140; }
+
+.login, .signup {
+  text-align: center; }
+  .login .item-input, .signup .item-input {
+    background: white;
+    margin: 5px 0; }
+    .login .item-input input, .signup .item-input input {
+      background: white; }

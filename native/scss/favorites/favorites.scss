@@ -1,0 +1,90 @@
+.search {
+
+    .item-input {
+        height: 35px;
+        background: white;
+        margin:0;
+        input {
+            background: white;
+        }
+    }
+
+    .scroll-content {
+        top: 88px;
+    }
+
+    .list-title {
+        text-align:left;
+        padding:10px 8px 0;
+
+        hr {
+            background: #115971;
+            border: none;
+            height: 2px;
+        }
+    }
+    .search {
+        text-align:left;
+    }
+
+    .list .item {
+        border-top: 2px solid #092935;
+        text-align:left;
+        padding-left: 86px;
+        padding-bottom: 8px;
+
+        &:first-child {
+            border-top:none;
+        }
+        &:last-child {
+            border-bottom:none;
+        }
+
+        img {
+            border-radius:10px;
+            max-width: 65px;
+        }
+
+        .name {
+            margin-top: 4px;
+        }
+
+        .location {
+            font-size:16px;
+            color: #2387A8;
+
+        }
+
+        .division {
+            font-size:12px;
+            color:  #176A86;
+        }
+    }
+
+    .item-thumbnail-left {
+        min-height:85px;
+    }
+}
+
+
+.school-teams {
+    .item {
+        padding: 10px 30px 10px 54px;
+        min-height: 0;
+        border: 1px solid #092935;
+    }
+    .icon {
+        margin-top: -2px;
+        font-size: 26px;
+    }
+    .sport {
+        margin:0;
+    }
+
+    .gender {
+        font-size:12px;
+        line-height: 12px;
+        color: #2387A8;
+    }
+}
+

@@ -14,22 +14,17 @@ $assertive:                       #ef473a !default;
 $royal:                           #886aea !default;
 $dark:                            #444 !default;
 */
+$dark:                            #0D3340 !default;
+$blue:                            #33CCFF !default;
+$lime:                            #DAE140 !default;
 
 // The path for our ionicons font files, relative to the built CSS in www/css
 $ionicons-font-path: "../lib/fonts" !default;
 
 // Include all of Ionic
 @import "www/lib/scss/ionic";
-
-.button {
-    border-left: none;
-    border-top:none;
-
-    &:active {
-        border-right: 1px solid #196680;
-        border-bottom: 1px solid #196680;
-        color: #196680;
-    }
-}
+@import "global/global";
+@import "favorites/favorites";
+@import "signup/signup";
 
 

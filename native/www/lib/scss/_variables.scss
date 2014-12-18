@@ -371,7 +371,7 @@ $item-dark-active-border:         $button-dark-active-border !default;
 $item-default-bg:                 $item-dark-bg !default;
 $item-default-border:             $item-dark-border !default;
 $item-default-text:               #33CCFF !default;
-$item-default-active-bg:          #D9D9D9 !default;
+$item-default-active-bg:          lighten($item-dark-bg, 10%) !default;
 $item-default-active-border:      $item-dark-active-border !default;
 
 
@@ -428,14 +428,14 @@ $input-height-base:               ($line-height-computed + ($padding-base-vertic
 $input-height-large:              (floor($font-size-large * $line-height-large) + ($padding-large-vertical * 2) + 2) !default;
 $input-height-small:              (floor($font-size-small * $line-height-small) + ($padding-small-vertical * 2) + 2) !default;
 
-$input-bg:                        $dark !default;
+$input-bg:                        #FFF !default;
 $input-bg-disabled:               $stable !default;
 
-$input-color:                     #33CCFF !default;
+$input-color:                     #333 !default;
 $input-border:                    $item-default-border !default;
 $input-border-width:              $item-border-width !default;
 $input-label-color:               #33CCFF !default;
-$input-color-placeholder:         lighten(#33CCFF, 40%) !default;
+$input-color-placeholder:         lighten(#333, 40%) !default;
 
 
 // Progress
@@ -575,8 +575,8 @@ $modal-inset-mode-min-height:     240px !default;
 // Popovers
 // -------------------------------
 
-$popover-bg-color:                $light !default;
-$popover-backdrop-bg-active:      rgba(0,0,0,0.1) !default;
+$popover-bg-color:                $dark !default;
+$popover-backdrop-bg-active:      rgba(51,204,255,0.2) !default;
 $popover-backdrop-bg-inactive:    rgba(0,0,0,0) !default;
 $popover-width:                   220px !default;
 $popover-height:                  280px !default;

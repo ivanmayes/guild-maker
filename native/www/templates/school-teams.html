@@ -1,12 +1,11 @@
-<ion-view title="{{ school.fullName }}">
+<ion-view title="{{ school.fullName }}" class="school-teams">
 	<ion-content>
 		<div >
 			<div class="list">
-				<a class="item item-avatar item-icon-left item-icon-right" href="#" ng-repeat="team in teams" ng-click="selectSchool(school)">
-				<i class="icon ion-ios7-star-outline"></i>
-				<h2>{{ team.sport }}</h2>
-			    <p>{{ team.gender }}</p>
-			    <i class="icon ion-ios7-gear-outline"></i>
+				<a class="item item-avatar item-icon-left item-icon-right" href="#" ng-repeat="team in teams" ng-click="openPopover($event)">
+					<i class="icon ion-ios7-star-outline"></i>
+					<h2 class="sport">{{ team.sport }} - {{ team.level }}</h2>
+				    <p class="gender">{{ team.gender }}</p>
 				</a>
 			</div>
 		</div>
