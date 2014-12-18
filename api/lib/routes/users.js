@@ -139,7 +139,7 @@ exports = module.exports = function UserRoutes( auth , router ) {
             });
             return res.json( envelope );
         });
-    } );
+    });
 
     router.post( '/login' , function( req , res ) {
         var valid     = false,
@@ -349,7 +349,6 @@ exports = module.exports = function UserRoutes( auth , router ) {
         });
     });
 
-    // TODO: notification preferences. I need to apply the subdoc.
     router.post( '/users/update' , auth.requireUser , function( req , res ) {
         var username    = validator.trim( req.body.userName ),
             firstName   = validator.trim( req.body.firstName ),

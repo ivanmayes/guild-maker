@@ -5,7 +5,7 @@
 
 - [Initial project outline](https://projectworldwide-my.sharepoint.com/personal/ivan_mayes_goshoptology_com/_layouts/15/guestaccess.aspx?guestaccesstoken=JTidCrlfsFcX139E30kMRWNWpYEKdBc9L7ErpDoUikw%3d&docid=13127f97af8d94e879b8d41ce0d8c44c7)
 - [MoSCoW-style business requirements](https://projectworldwide-my.sharepoint.com/personal/michael_may_goshoptology_com/_layouts/15/guestaccess.aspx?guestaccesstoken=qPmnraHTp790DsHl%2fLCGLMudh4V6sazbbypobyejsdI%3d&docid=1e715576595814db8aae56801fd74896a)
-- [Dev planning worksheet](https://projectworldwide-my.sharepoint.com/personal/rob_marscher_goshoptology_com/_layouts/15/guestaccess.aspx?guestaccesstoken=I8fKGw4tRpVEuENy3hSZ8TH4I9jzGC%2fgkDzj%2fMeb6oY%3d&docid=10b1b81aa42e544369036a2a0697b64a3) - 
+- [Dev planning worksheet](https://projectworldwide-my.sharepoint.com/personal/rob_marscher_goshoptology_com/_layouts/15/guestaccess.aspx?guestaccesstoken=I8fKGw4tRpVEuENy3hSZ8TH4I9jzGC%2fgkDzj%2fMeb6oY%3d&docid=10b1b81aa42e544369036a2a0697b64a3) -
   the idea here is to map out everything that the dev team will need to do to get the app launched. Tasks should be moved
   from here to AtTask for the actual assignments.
 - [Project in AtTask](https://shoptology.attask-ondemand.com/project/view?ID=54247e43004f26d12128bc0af7250379)
@@ -55,10 +55,10 @@ Note: we could move this to another file and link to it here to make the readme 
     is it better for this to be an array or an object with the scope as the keys?)
     ```
         [
-            { scope: 'global', group: player, email: true, push: true, sms: false },
-            { scope: 'school_12345', school: 12345, group: player, email: true, push: false, sms: false },
-            { scope: 'team_123', school: 12345, group: player, email: true, push: true, sms: false },
-            { scope: 'team_124', school: 12345, group: fan, email: true, push: false, sms: false }
+            { enabled: true, scope: 'global', group: player, email: true, push: true, sms: false },
+            { enabled: true, scope: 'school_12345', school: 12345, group: player, email: true, push: false, sms: false },
+            { enabled: true, scope: 'team_123', school: 12345, group: player, email: true, push: true, sms: false },
+            { enabled: true, scope: 'team_124', school: 12345, group: fan, email: true, push: false, sms: false }
         ]
     ```
 
@@ -66,7 +66,7 @@ Note: we could move this to another file and link to it here to make the readme 
 
 Confirmed fine with this schema:
 - lookup by email
-- lookup by device id 
+- lookup by device id
 
 Need testing
 - lookup by facebook id:
@@ -236,4 +236,3 @@ save api request ->
 We're going to need to have a measurement system in place for watching performance and seeing effects of updates.
 
 Recommend Google Analytics and Snowplow Analytics -- would be fun to try using snowplow for everything custom.
-
