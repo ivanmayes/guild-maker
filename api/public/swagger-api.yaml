@@ -154,8 +154,6 @@ paths:
                 properties:
                   user:
                     $ref: User
-                  access_token:
-                    type: string
         default:
           description: The standard error envelope.
           schema:
@@ -220,40 +218,47 @@ paths:
         Updates the User account with group, notifications, or any other settings.
       parameters:
         - name: username
-          in: formData
+          in: body
           description: Username of the user.
           required: false
-          type: string
+          schema:
+            type: string
         - name: firstName
-          in: formData
+          in: body
           description: First name of the user.
           required: false
-          type: string
+          schema:
+            type: string
         - name: lastName
-          in: formData
+          in: body
           description: Last name of the user.
           required: false
-          type: string
+          schema:
+            type: string
         - name: email
-          in: formData
+          in: body
           description: Email address of the user.
           required: false
-          type: string
+          schema:
+            type: string
         - name: group
-          in: formData
+          in: body
           description: Group of the user (fan, player, parent, etc.).
           required: false
-          type: string
+          schema:
+            type: string
         - name: accounts
-          in: formData
+          in: body
           description: Accounts of the user.
           required: false
-          type: string
+          schema:
+            type: string
         - name: birthday
-          in: formData
+          in: body
           description: Date of Birth of the user( string format - YYYY-MM-DD ).
           required: false
-          type: string
+          schema:
+            type: string
         - name: preferences
           in: body
           description: User's notification preferences.
@@ -271,8 +276,6 @@ paths:
                 properties:
                   user:
                     $ref: User
-                  access_token:
-                    type: string
         default:
           description: The standard error envelope.
           schema:
@@ -1055,40 +1058,51 @@ definitions:
   Message:
     description: Message Object
     required:
-      - type
-      - creator
-      - source
+      # - type
+      # - creator
+      # - source
+      - audience
       - content
     properties:
+      audience:
+        description: List of Team IDs concatenated with Group name to determine who recieves this message
+        type: array
+        items:
+          type: string
+          pattern: TeamId:GroupName
       type:
-        description: The type of Message
+        description: The type of Message ( TBD - not sure what this is )
         type: string
       eventId:
-        description: Mongodb ObjectId of Event associated with this Message
+        description: Mongodb ObjectId of Event associated with this Message, or empty if not associated with Event
         $ref:  ObjectId
       schoolId:
-        description: Mongodb ObjectId of School associated with this Message
+        description: Mongodb ObjectId of School associated with this Message, or empty if for all associated with Event
         $ref: ObjectId
       teamIds:
-        description: List of Team ObjectIds associated with this Message
+        description: List of Team ObjectIds associated with this Message, or empty if School wide
         type: array
         items:
           $ref: ObjectId
       creator:
-        description: Mongodb ObjectId of User who created this Message
+        description: Mongodb ObjectId of User who created this Message, or null if system generated
         $ref: ObjectId
       source:
-        description: The source of this Message
+        description: The source of this Message ( TBD - is this an external source? i.e. 'Channel 9 News Team' )
         type: string
       content:
         description: The content of this Message
         type: string
       channels:
-        description: The channels associated with this Message
-        type: string
+        description: A list of channels associated with this Message (email, push, sms, social, etc)
+        type: array
+        items:
+          type: string
       channelContent:
-        description: The channel content of this Message
-        type: string
+        description: The content to overwrite based on the key/channel
+        type: array
+        items:
+          $ref: ChannelContent
       publishTime:
         description: The date this Message was published
         type: string
@@ -1098,7 +1112,7 @@ definitions:
         type: string
         format: date-time
       status:
-        description: the status of this Message
+        description: the status of this Message (unpublished, published, expired, deleted, etc.)
         type: string
       inappropriate:
         description: Boolean flag indicating if Message is or is not appropriate
@@ -1117,6 +1131,7 @@ definitions:
       enabled:
         description: Overall on/off boolean of this NotificationPreference
         type: boolean
+        default: false
       scope:
         description: Scope of NotificationPreference (global, team, school, etc.)
         type: string
@@ -1132,16 +1147,33 @@ definitions:
       email:
         description: Boolean flag indicating email notification preference
         type: boolean
+        default: false
       push:
         description: Boolean flag indicating push notification preference
         type: boolean
+        default: false
       sms:
         description: Boolean flag indicating sms notification preference
         type: boolean
+        default: false
 
   ObjectId:
     description: Mongodb ObjectId definition
     properties:
       id:
         description: Id attribute of ObjectId
+        type: string
+
+  ChannelContent:
+    description: |
+      A name value pair of content to overwrite default content based on channel/key
+    required:
+      - key
+      - content
+    properties:
+      key:
+        description: Object Key that defines the channel this content overwrites
+        type: string
+      content:
+        description: Content that overwrties the default for this channel
         type: string

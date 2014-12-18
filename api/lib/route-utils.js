@@ -44,3 +44,35 @@ exports.getSearchQuery = function getSearchQuery ( options ) {
 
     return queryObject;
 };
+
+
+exports.validatePrefs = function validatePrefs ( prefs ) {
+
+    // group is mandatory
+    if( !prefs.group ) {
+        return false;
+    }
+
+    if( prefs.scope === 'global' ){
+        // should not have a school defined
+        if( prefs.school ) {
+            return false;
+        }
+    }
+
+    if( prefs.scope !== 'global' ){
+        // school_### / team_###
+
+        if(
+            ( prefs.scope.substring( 0 , 5 ) === 'team_' ) ||
+            ( prefs.scope.substring( 0 , 7 ) === 'school_' )
+        ) {
+            // the scope is a either a team or school, school id needs to be set
+            if( !prefs.school ) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+};
