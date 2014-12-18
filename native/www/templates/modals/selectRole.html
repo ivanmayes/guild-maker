@@ -1,17 +1,10 @@
-<ion-popover-view>
-    <ion-header-bar>
-      <h1 class="title">Follow Team</h1>
-    </ion-header-bar>
-    <ion-content class="padding" style="text-align:center;">
-      Please select your association with this team:
-    	<button class="button button-block">
-			I'm a fan
-		</button>
-		<button class="button button-block">
-			I'm a parent
-		</button>
-		<button class="button button-block">
-			I'm a player
-		</button>
-    </ion-content>
-</ion-popover-view>
+Please select your association with this team:
+<button class="button button-block" ng-click="followTeam(selectedTeam, 'fan')">
+	I'm a fan
+</button>
+<button class="button button-block"  ng-click="followTeam(selectedTeam, 'parent')">
+	I'm a parent
+</button>
+<button class="button button-block"  ng-click="followTeam(selectedTeam, 'player')">
+	I'm a player
+</button>

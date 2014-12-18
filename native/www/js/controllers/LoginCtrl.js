@@ -1,6 +1,6 @@
 /*global define, console */
 
-define( function() {
+define(function() {
     'use strict';
 
     function ctrl($scope, $state, UserService) {
@@ -11,30 +11,30 @@ define( function() {
         }*/
 
         $scope.signIn = function() {
-            $state.go( 'login' );
+            $state.go('login');
         };
 
         $scope.signUp = function() {
-            $state.go( 'signup' );
+            $state.go('signup');
         };
 
         $scope.skip = function() {
             // Create and handle local account
-            $state.go( 'roleSelect' );
+            $state.go('search');
         };
 
         $scope.login = function(user) {
-            console.log( 'logging in' );
+            console.log('logging in');
 
             if (user && user.email && user.pass) {
-                var checkLogin = UserService.login( user.email, user.pass );
-                checkLogin.then( function(userInfo) {
-                    console.log( userInfo );
-                    $state.go( 'home' );
+                var checkLogin = UserService.login(user.email, user.pass);
+                checkLogin.then(function(userInfo) {
+                    console.log(userInfo);
+                    $state.go('home');
                 }, function(reason) {
-                        console.log( 'Failed:', reason );
+                        console.log('Failed:', reason);
                         $scope.errorMsg = reason;
-                    } );
+                    });
             } else {
                 $scope.errorMsg = 'Please add your email and password.';
             }
@@ -48,7 +48,7 @@ define( function() {
 
         $scope.register = function(user) {
             // Create account and sync to local
-            console.log( 'signing up' );
+            console.log('signing up');
 
             if (user && user.email && user.pass && user.confirm) {
 
@@ -58,14 +58,14 @@ define( function() {
                 }
 
                 //TODO: Check passwords to match
-                var checkLogin = UserService.signup( user.email, user.pass );
-                checkLogin.then( function(userInfo) {
-                    console.log( userInfo );
-                    $state.go( 'search' );
+                var checkLogin = UserService.signup(user.email, user.pass);
+                checkLogin.then(function(userInfo) {
+                    console.log(userInfo);
+                    $state.go('search');
                 }, function(reason) {
-                        console.log( 'Failed:', reason );
+                        console.log('Failed:', reason);
                         $scope.errorMsg = reason;
-                    } );
+                    });
 
             } else {
                 $scope.errorMsg = 'Please fill in all fields';
@@ -80,14 +80,14 @@ define( function() {
 
         $scope.selectRole = function(role) {
             // Log role locally, push to server if needed
-            console.log( role );
+            console.log(role);
 
             // Go to school selection
-            $state.go( 'search' );
+            $state.go('search');
         };
     }
 
     ctrl.$inject = ['$scope', '$state', 'UserService'];
     return ctrl;
 
-} );
+});

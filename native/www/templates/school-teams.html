@@ -2,7 +2,7 @@
 	<ion-content>
 		<div >
 			<div class="list">
-				<a class="item item-avatar item-icon-left item-icon-right" href="#" ng-repeat="team in teams" ng-click="openPopover($event)">
+				<a class="item item-avatar item-icon-left item-icon-right" href="#" ng-repeat="team in teams" ng-click="selectRole(team)">
 					<i class="icon ion-ios7-star-outline"></i>
 					<h2 class="sport">{{ team.sport }} - {{ team.level }}</h2>
 				    <p class="gender">{{ team.gender }}</p>

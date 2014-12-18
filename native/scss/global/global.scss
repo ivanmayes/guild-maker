@@ -1,13 +1,27 @@
+
 .button {
     border-left: none;
     border-top:none;
+    border-right: none;
+}
 
-    &:active {
-        border-right: 1px solid #196680;
-        border-bottom: 1px solid #196680;
-        color: #196680;
+.button-block {
+    background: #0F4C5F;
+}
+
+.scroll {
+    .button {
+
+        background: #0F4C5F;
+
+        &:active {
+            border-right: 1px solid #196680;
+            border-bottom: 1px solid #196680;
+            color: #196680;
+        }
     }
 }
+
 
 .col.center {
     margin: 0 auto;
@@ -43,4 +57,8 @@
     .button, .button:hover {
         color: #33CCFF;
     }
+}
+
+.popup-head {
+    border-bottom: 1px solid #092935;
 }

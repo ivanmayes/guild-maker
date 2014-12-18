@@ -3,9 +3,10 @@
 define(function() {
     'use strict';
 
-    function ctrl($scope, $state, $stateParams, $ionicPopover, UserService, SchoolService) {
+    function ctrl($scope, $state, $stateParams, $ionicPopup, UserService, SchoolService) {
         $scope.teams = [];
         $scope.school = $stateParams.school;
+        $scope.selectedTeam;
 
         var access_token = UserService.getAccessToken();
 
@@ -15,37 +16,29 @@ define(function() {
             $scope.teams = teams;
         });
 
-        var template = '<ion-popover-view><ion-header-bar> <h1 class="title">My Popover Title</h1> </ion-header-bar> <ion-content> Hello! </ion-content></ion-popover-view>';
+        $scope.selectRole = function(team) {
+            $scope.selectedTeam = team;
 
-        $ionicPopover.fromTemplateUrl('templates/modals/selectRole.html', {
-            scope: $scope,
-        }).then(function(popover) {
-            $scope.popover = popover;
-        });
+            var myPopup = $ionicPopup.show({
+                cssClass: 'roleSelect',
+                templateUrl: 'templates/modals/selectRole.html',
+                title: 'Follow ' + team.sport + ' - ' + team.level,
+                scope: $scope
+            });
+            myPopup.then(function(res) {
+                console.log('Tapped!', res);
+            });
+        }
+
+        $scope.followTeam = function(team, role) {
+            console.log('Following ', team, role);
+        }
 
 
-        $scope.openPopover = function($event) {
-            $scope.popover.show($event);
-        };
-        $scope.closePopover = function() {
-            $scope.popover.hide();
-        };
-        //Cleanup the popover when we're done with it!
-        $scope.$on('$destroy', function() {
-            $scope.popover.remove();
-        });
-        // Execute action on hide popover
-        $scope.$on('popover.hidden', function() {
-            // Execute action
-        });
-        // Execute action on remove popover
-        $scope.$on('popover.removed', function() {
-            // Execute action
-        });
 
 
     }
 
-    ctrl.$inject = ['$scope', '$state', '$stateParams', '$ionicPopover', 'UserService', 'SchoolService'];
+    ctrl.$inject = ['$scope', '$state', '$stateParams', '$ionicPopup', 'UserService', 'SchoolService'];
     return ctrl;
 });
