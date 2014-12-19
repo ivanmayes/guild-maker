@@ -5,6 +5,7 @@ var mongoose = require( 'mongoose' );
 
 var schema = new mongoose.Schema(
     {
+        audience:       [{ type: String }],
         type:           { type: String },
         eventId:        { type: mongoose.Schema.Types.ObjectId , ref: 'Event' },
         schoolId:       { type: mongoose.Schema.Types.ObjectId , ref: 'School' },
@@ -12,7 +13,7 @@ var schema = new mongoose.Schema(
         creator:        { type: mongoose.Schema.Types.ObjectId , ref: 'User' },
         source:         { type: String },
         content:        { type: String },
-        channels:       { type: String },
+        channels:       [{ type: String }],
         channelContent: [{ type: mongoose.Schema.Types.Mixed }],
         publishTime:    { type: Date },
         expireTime:     { type: Date },
@@ -22,8 +23,23 @@ var schema = new mongoose.Schema(
 );
 
 schema.index({
-    teamIds: 1,
-    date:    -1
+    audience:    1,
+    publishTime: -1
+});
+
+schema.index({
+    teamIds:     1,
+    publishTime: -1
+});
+
+schema.index({
+    eventId:     1,
+    publishTime: -1
+});
+
+schema.index({
+    schoolId:    1,
+    publishTime: -1
 });
 
 schema.index({

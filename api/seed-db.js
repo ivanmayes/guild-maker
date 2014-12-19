@@ -1,45 +1,62 @@
 
 var messages = [
 {
-    '_id': ObjectId("54874fe14142a8571c40f21b"),
-    'type': 'genericType',
-    'eventId': ObjectId("547f50ba2121db80ce2d8da9"),
+    'audience': [
+        '547cc96f19a4863d136ccb46:fans',
+        '547cc96f19a4863d136ccb46:players',
+        '547cc96f19a4863d136ccb46:parents'
+    ],
+    'type': 'generic',
+    'eventId': ObjectId("547f51032121db80ce2d8dab"),
     'schoolId': ObjectId("54739d066dd9a7ae6d02bce3"),
     'teamIds': [ObjectId("547cc96f19a4863d136ccb46")],
-    'creator': 'admin',
-    'source': 'foo',
-    'content': 'message foo!',
-    'channels': 'channelFoo',
-    'channelContent': 'Foo for channel foo.',
-    'publishTime': new Date( 2014 , 11 , 0 , 14 , 15 ),'expireTime': new Date( 2015 , 2 , 15 ),'status': 'statusFoo',
-    'inappropriate': false},
+    'creator': ObjectId("54904b32322d763e30e605ad"),
+    'source': 'Local News',
+    'content': 'Hi everybody! Hodor hodor HODOR!',
+    'channels': ['email','push','sms'],
+    'channelContent': {
+        'sms': 'Hi everybody!'
+    },
+    'publishTime': new Date( 2014 , 11 , 8 , 8 , 0 ),
+    'status': 'published',
+    'inappropriate': false
+},
 {
-    '_id': ObjectId("54874fe14142a8571c40f21c"),
-    'type': 'inappropriateType',
-    'eventId': ObjectId("547f50fb2121db80ce2d8daa"),
-    'schoolId': ObjectId("54739d066dd9a7ae6d02bce3"),
-    'teamIds': [ObjectId("547cc96f19a4863d136ccb47"),ObjectId("547cc96f19a4863d136ccb52")],
-    'creator': 'admin',
-    'source': 'foobar',
-    'content': 'message foobar!',
-    'channels': 'channelFoo',
-    'channelContent': 'Foobar for channel foobar.',
-    'publishTime': new Date( 2014 , 11 , 0 , 14 , 15 ),'expireTime': new Date( 2015 , 2 , 15 ),'status': 'statusFoobar',
-    'inappropriate': true},
-{
-    '_id': ObjectId("54874fe14142a8571c40f21d"),
-    'type': 'expiredType',
-    'eventId': ObjectId("547f51032121db80ce2d8dab"),
+    'audience': [
+        '547cc96f19a4863d136ccb45:players',
+        '547cc96f19a4863d136ccb45:parents'
+    ],
+    'type': 'generic',
+    'eventId': '',
     'schoolId': ObjectId("54739d066dd9a7ae6d02bce1"),
-    'teamIds': [ObjectId("547cc96f19a4863d136ccb45"),ObjectId("547cc96f19a4863d136ccb46"),ObjectId("547cc96f19a4863d136ccb47"),ObjectId("547cc96f19a4863d136ccb48"),ObjectId("547cc96f19a4863d136ccb49"),ObjectId("547cc96f19a4863d136ccb50"),ObjectId("547cc96f19a4863d136ccb51"),ObjectId("547cc96f19a4863d136ccb52"),ObjectId("547cc96f19a4863d136ccb53"),ObjectId("547cc96f19a4863d136ccb54")],
-    'creator': 'admin',
-    'source': 'expired source here',
-    'content': 'expired content here',
-    'channels': 'expiredChannel',
-    'channelContent': 'expired content for expiredChannel',
-    'publishTime': new Date( 2014 , 11 , 0 , 14 , 15 ),'expireTime': new Date( 2014 , 11 , 15 ),'status': 'statusExpired',
-    'inappropriate': false}
-];
+    'teamIds': [ObjectId("547cc96f19a4863d136ccb45")],
+    'creator': null,
+    'source': 'Internal',
+    'content': 'Hi players and parents! HODOR hodor, hodor hodor?',
+    'channels': ['email','push'],
+    'publishTime': new Date( 2015 , 0 , 1 ),
+    'expireTime': new Date( 2015 , 1 ),
+    'status': 'unpublished',
+    'inappropriate': false
+},
+{
+    'audience': [
+        '547cc96f19a4863d136ccb49:players',
+        '547cc96f19a4863d136ccb49:parents'
+    ],
+    'type': 'generic',
+    'eventId': ObjectId("547f50ba2121db80ce2d8da9"),
+    'schoolId': ObjectId("54739d066dd9a7ae6d02bce2"),
+    'teamIds': [ObjectId("547cc96f19a4863d136ccb49")],
+    'creator': ObjectId("54904b32322d763e30e605ad"),
+    'source': 'Channel 12 News',
+    'content': 'Hi players! hodor hodor hodor?!',
+    'channels': ['push'],
+    'publishTime': new Date( 2014 , 11 , 1 , 14 , 15 ),
+    'expireTime': new Date( 2014 , 11 , 5 , 16 ),
+    'status': 'published',
+    'inappropriate': false
+}];
 db.messages.insert( messages );
 
 var events = [

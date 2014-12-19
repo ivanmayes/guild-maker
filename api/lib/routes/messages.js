@@ -1,53 +1,85 @@
 
 'use strict';
 
-var Envelope   = require( '../envelope' ),
+var validator  = require( 'validator' ),
+    Envelope   = require( '../envelope' ),
     routeUtils = require( '../route-utils' ),
     Message    = require( '../models/message' ),
     envelope;
 
 exports = module.exports = function MessageRoutes( auth , router ) {
+    // TO DO: add default limit of 50
+    //       add sort publishTime desc
+    //       return Item.find(
+    //           {
+    //               item_id: "03010200400000a0bf00210"
+    //           })
+    //           .sort({
+    //               ts:-1
+    //           })
+    //           .limit( 1 )
+    //           .execAsync();
+
+    // db.messages
+    //     .find({
+    //         audience:{
+    //             $in:[
+    //                 '123123:players',
+    //                 '123124:fans',
+    //                 '123125:fans'
+    //             ]
+    //         }
+    //     });
 
     // get list of all messages
     router.get( '/messages', auth.requireUser , function( req , res , next ) {
+        var audience = req.query.audience || '',
+            since    = req.query.since || 0,
+            sortObj  = {
+                'publishTime': -1
+            },
+            queryObj = {},
+            queryReq;
+
         envelope = new Envelope();
 
-        Message.findAsync({})
-            .then( function ( messages ) {
-                envelope.success( 200 , messages );
-                res.json( envelope );
-                return;
-            })
-            .catch( function ( err ) {
-                envelope.error( 500 , {
-                    'details': 'The server returned an error finding all messages.',
-                    'append':  true
-                });
-                res.json( envelope );
-                return;
-            });
-    });
-    /*
-    // get list of all messages
-    router.get( '/messages', auth.requireUser , function( req , res , next ) {
-        envelope = new Envelope();
+        if( audience.length > 0 ) {
+            audience = audience.split( ',' );
+            // audience supplied, find messages by audience
+            queryObj = { 'audience': { '$in': audience } };
+        }
 
-        Message.findAsync({})
-            .then( function ( messages ) {
-                envelope.success( 200 , messages );
-                res.json( envelope );
-                return;
-            })
-            .catch( function ( err ) {
-                envelope.error( 500 , {
-                    'details': 'The server returned an error finding all messages.',
-                    'append':  true
+        console.log( audience, queryObj );
+
+        queryReq = Message.find( queryObj );
+
+        if( since !== 0 ) {
+            // time contraint
+            if( validator.isInt( since ) ){
+                queryReq = queryReq.where( 'publishTime' ).gt( new Date( since ) );
+            }
+        }
+
+        queryReq
+            .sort( sortObj )
+            .limit( 50 )
+            .execAsync()
+                .then( function ( messages ) {
+                    envelope.success( 200 , messages );
+                    res.json( envelope );
+                    return;
+                })
+                .catch( function ( err ) {
+                    envelope.error( 500 , {
+                        'details': 'The server returned an error finding messages.',
+                        'append':  true
+                    });
+                    res.json( envelope );
+                    return;
                 });
-                res.json( envelope );
-                return;
-            });
+
+        return;
     });
-    */
 
     router.get( '/messages/search', auth.requireUser , function( req , res , next ) {
         var keys, query;
