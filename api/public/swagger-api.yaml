@@ -700,6 +700,16 @@ paths:
       description: Returns array of Messages.
       summary: Retrieve Messages.
       operationId: getMessagesList
+      parameters:
+      - name: audience
+        in: query
+        description: "String of TeamId and GroupName concatenated by a colon (i.e. 000:fan)"
+        type: string
+      - name: since
+        in: query
+        description: case sensitive stats search (Optional)
+        type: integer
+        format: int32
       responses:
         200:
           description: List all Messages.
@@ -1123,10 +1133,6 @@ definitions:
     required:
       - enabled
       - scope
-      - group
-      - email
-      - push
-      - sms
     properties:
       enabled:
         description: Overall on/off boolean of this NotificationPreference
@@ -1154,6 +1160,22 @@ definitions:
         default: false
       sms:
         description: Boolean flag indicating sms notification preference
+        type: boolean
+        default: false
+      upcomingGames:
+        description: Boolean flag indicating Upcoming Games notification preference
+        type: boolean
+        default: false
+      finalScores:
+        description: Boolean flag indicating Final Scores notification preference
+        type: boolean
+        default: false
+      scheduleChanges:
+        description: Boolean flag indicating Schedule Changes notification preference
+        type: boolean
+        default: false
+      teamMessages:
+        description: Boolean flag indicating Team Messages notification preference
         type: boolean
         default: false
 

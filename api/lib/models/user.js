@@ -6,14 +6,18 @@ var mongoose = require( 'mongoose' ),
 
 notifcationsSchema = new mongoose.Schema(
     {
-        enabled: { type: Boolean , default: false },
-        scope:   { type: String },
-        group:   { type: String },
-        school:  { type: mongoose.Schema.Types.ObjectId, ref: 'School' },
-        team:    { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
-        email:   { type: Boolean , default: false },
-        push:    { type: Boolean , default: false },
-        sms:     { type: Boolean , default: false }
+        enabled:         { type: Boolean , default: false },
+        scope:           { type: String },
+        group:           { type: String },
+        school:          { type: mongoose.Schema.Types.ObjectId, ref: 'School' },
+        team:            { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
+        email:           { type: Boolean , default: false },
+        push:            { type: Boolean , default: false },
+        sms:             { type: Boolean , default: false },
+        upcomingGames:   { type: Boolean , default: false },
+        finalScores:     { type: Boolean , default: false },
+        scheduleChanges: { type: Boolean , default: false },
+        teamMessages:    { type: Boolean , default: false }
     }
 );
 
