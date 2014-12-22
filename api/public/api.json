@@ -2,10 +2,10 @@
     "swagger": "2.0",
     "info": {
         "version": "0.0.1",
-        "title": "NLMG API",
-        "description": "New Lion HighSchool Sports App API."
+        "title": "SeasonLink API",
+        "description": "SeasonLink High School Sports App API."
     },
-    "host": "localhost:8280",
+    "host": "api.seasonlink.co",
     "basePath": "/v1",
     "schemes": [
         "http",
