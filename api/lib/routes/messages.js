@@ -5,6 +5,9 @@ var validator  = require( 'validator' ),
     Envelope   = require( '../envelope' ),
     routeUtils = require( '../route-utils' ),
     Message    = require( '../models/message' ),
+    minLimit   = 50,
+    // TODO: implement max, currently not in use.
+    // maxLimit   = 500,
     envelope;
 
 exports = module.exports = function MessageRoutes( auth , router ) {
@@ -13,6 +16,7 @@ exports = module.exports = function MessageRoutes( auth , router ) {
     router.get( '/messages', auth.requireUser , function( req , res , next ) {
         var audience = req.query.audience || '',
             since    = req.query.since || 0,
+            limit    = req.query.limit || minLimit,
             sortObj  = {
                 'publishTime': -1
             },
@@ -38,9 +42,11 @@ exports = module.exports = function MessageRoutes( auth , router ) {
             }
         }
 
+        console.log( limit , '??!?!' );
+
         queryReq
             .sort( sortObj )
-            .limit( 50 )
+            .limit( limit )
             .execAsync()
                 .then( function ( messages ) {
                     envelope.success( 200 , messages );
@@ -60,7 +66,8 @@ exports = module.exports = function MessageRoutes( auth , router ) {
     });
 
     router.get( '/messages/search', auth.requireUser , function( req , res , next ) {
-        var since = req.query.since || 0,
+        var since   = req.query.since || 0,
+            limit   = req.query.limit || minLimit,
             sortObj = {
                 'publishTime': -1
             },
@@ -99,7 +106,7 @@ exports = module.exports = function MessageRoutes( auth , router ) {
 
         query
             .sort( sortObj )
-            .limit( 50 )
+            .limit( limit )
             .execAsync()
             .then( function ( messages ) {
                 envelope.success( 200 , messages );

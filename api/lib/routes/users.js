@@ -467,4 +467,35 @@ exports = module.exports = function UserRoutes( auth , router ) {
 
         return;
     });
+
+    router.get( '/stream' , auth.requireUser , function( req , res ) {
+        // TODO: implement the following schema
+        /*
+        {
+          meta: { code: 200 },
+          response: {
+            stream: [
+              {
+                published: "2014-12-16 11:48:20",
+                type: "article",
+                object: {
+                  // media article here
+                }
+              },
+              {
+                published: "2014-12-16 18:57:10",
+                type: "message",
+                object: {
+                  // message model data in here
+                }
+              },
+            ],
+            options: {
+              next: '/stream?ids=123:fan,345:player,146:fan&limit=50&since=1418763887',
+              prev: '/stream?ids=123:fan,345:player,146:fan&limit=50&before=1418634823',
+            }
+          }
+        }
+        */
+    });
 };
