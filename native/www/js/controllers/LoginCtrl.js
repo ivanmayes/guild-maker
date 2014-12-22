@@ -20,7 +20,7 @@ define(function() {
 
         $scope.skip = function() {
             // Create and handle local account
-            $state.go('roleSelect');
+            $state.go('search');
         };
 
         $scope.login = function(user) {
@@ -36,7 +36,7 @@ define(function() {
                         $scope.errorMsg = reason;
                     });
             } else {
-                $scope.errorMsg = "Please add your email and password.";
+                $scope.errorMsg = 'Please add your email and password.';
             }
 
 
@@ -53,7 +53,7 @@ define(function() {
             if (user && user.email && user.pass && user.confirm) {
 
                 if (user.pass !== user.confirm) {
-                    $scope.errorMsg = "Passwords do not match";
+                    $scope.errorMsg = 'Passwords do not match';
                     return false;
                 }
 
@@ -68,7 +68,7 @@ define(function() {
                     });
 
             } else {
-                $scope.errorMsg = "Please fill in all fields";
+                $scope.errorMsg = 'Please fill in all fields';
             }
 
 

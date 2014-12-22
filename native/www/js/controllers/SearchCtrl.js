@@ -1,6 +1,6 @@
 /*global define, console */
 
-define( function() {
+define(function() {
     'use strict';
 
     function ctrl($scope, $state, $stateParams, UserService, SchoolService) {
@@ -15,27 +15,27 @@ define( function() {
 
         // Get our beta schools for the initial list
         // TODO: Change this to nearby schools once we have more
-        var betaSchoolRequest = SchoolService.getBetaSchools( access_token );
-        betaSchoolRequest.then( function(schools) {
+        var betaSchoolRequest = SchoolService.getBetaSchools(access_token);
+        betaSchoolRequest.then(function(schools) {
             betaSchools = schools;
             $scope.searchResults = schools;
-        } );
+        });
 
 
         // This may need to be modified or optimized once we're pinging the server
         $scope.search = function(query) {
 
             if (query.length) {
-                var getSchools = SchoolService.getSchoolsByQuery( query, access_token );
-                getSchools.then( function(searchResults) {
+                var getSchools = SchoolService.getSchoolsByQuery(query, access_token);
+                getSchools.then(function(searchResults) {
                     $scope.userQueried = true;
                     $scope.searchResults = searchResults;
-                    console.log( searchResults );
+                    console.log(searchResults);
 
                 }, function(reason) {
-                        console.log( 'Failed:', reason );
+                        console.log('Failed:', reason);
                         $scope.errorMsg = reason;
-                    } );
+                    });
             } else {
                 $scope.userQueried = false;
                 $scope.searchResults = betaSchools;
@@ -50,12 +50,12 @@ define( function() {
         };
 
         $scope.selectSchool = function(school) {
-            $state.go( 'search/teams', {
+            $state.go('search/teams', {
                 school: school
-            } );
+            });
         };
     }
 
     ctrl.$inject = ['$scope', '$state', '$stateParams', 'UserService', 'SchoolService'];
     return ctrl;
-} );
+});
