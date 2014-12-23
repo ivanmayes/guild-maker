@@ -100,9 +100,9 @@ exports = module.exports = function TeamRoutes( auth , router ) {
                 return req.user.saveAsync();
             }
             else{
-                // TODO: should i return a success here?
                 // team id was supplied, however user already follows team
-                envelope.success( 200 );
+                // return user object to fail silently
+                envelope.success( 200 , req.user );
                 res.json( envelope );
                 return;
             }
