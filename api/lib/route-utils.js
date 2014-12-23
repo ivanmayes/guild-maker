@@ -4,6 +4,10 @@
  * A module with common methods to assist in keeping route logic DRY
 **/
 
+'use strict';
+
+var Message = require( './models/message' );
+
 exports.findModelMembers = function findModelMembers ( model ) {
     var keys = [],
         key;
@@ -45,7 +49,6 @@ exports.getSearchQuery = function getSearchQuery ( options ) {
     return queryObject;
 };
 
-
 exports.validatePrefs = function validatePrefs ( prefs ) {
 
     // group is mandatory
@@ -75,4 +78,46 @@ exports.validatePrefs = function validatePrefs ( prefs ) {
     }
 
     return true;
+};
+
+exports.getMessages = function getMessages ( options ) {
+    var opts  = options || {},
+        query = opts.query || {},
+        limit = opts.limit || 50,
+        since = opts.since || 0,
+        find  = Message.find( query );
+
+    if( since !== 0 ) {
+        // time contraint
+        find = find.where( 'publishTime' ).gt( new Date( since ) );
+    }
+
+    return find.sort({
+        'publishTime': -1
+    })
+    .limit( limit )
+    .execAsync()
+        .then( function ( messages ) {
+            // envelope.success( 200 , messages );
+            // res.json( envelope );
+            return messages;
+        })
+        .catch( function ( err ) {
+            // envelope.error( 500 , {
+            //     'details': 'The server returned an error finding messages.',
+            //     'append':  true
+            // });
+            // res.json( envelope );
+            return new Error( 'The server returned an error finding messages.' );
+        });
+};
+
+exports.determinePaginationTimestamps = function determinePaginationTimestamps ( options ) {
+    var opts      = options || {},
+        stream    = opts.stream || [],
+        field     = opts.field || 'publishTime',
+        timestamp = {
+            prev: 0,
+            next: 0
+        };
 };

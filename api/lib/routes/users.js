@@ -365,32 +365,32 @@ exports = module.exports = function UserRoutes( auth , router ) {
 
         // append username to query object
         if( username ) {
-            queryObj[ 'username' ] = username;
+            queryObj.username = username;
         }
 
         // append firstName to query object
         if( firstName ) {
-            queryObj[ 'firstName' ] = firstName;
+            queryObj.firstName = firstName;
         }
 
         // append lastName to query object
         if( lastName ) {
-            queryObj[ 'lastName' ] = lastName;
+            queryObj.lastName = lastName;
         }
 
         // append email to query object
         if( validator.isEmail( email ) ) {
-            queryObj[ 'email' ] = email;
+            queryObj.email = email;
         }
 
         // append group to query object
         if( group ) {
-            queryObj[ 'group' ] = group;
+            queryObj.group = group;
         }
 
         // append birthday to query object
         if( birthday ) {
-            queryObj[ 'birthday' ] = moment( birthday ).toDate();
+            queryObj.birthday = moment( birthday ).toDate();
         }
 
         // append preferences to query object
@@ -411,7 +411,7 @@ exports = module.exports = function UserRoutes( auth , router ) {
                 return;
             }
 
-            queryObj[ 'preferences' ] = preferences;
+            queryObj.preferences = preferences;
         }
 
         if( Object.getOwnPropertyNames( queryObj ).length === 0 ){
@@ -468,34 +468,4 @@ exports = module.exports = function UserRoutes( auth , router ) {
         return;
     });
 
-    router.get( '/stream' , auth.requireUser , function( req , res ) {
-        // TODO: implement the following schema
-        /*
-        {
-          meta: { code: 200 },
-          response: {
-            stream: [
-              {
-                published: "2014-12-16 11:48:20",
-                type: "article",
-                object: {
-                  // media article here
-                }
-              },
-              {
-                published: "2014-12-16 18:57:10",
-                type: "message",
-                object: {
-                  // message model data in here
-                }
-              },
-            ],
-            options: {
-              next: '/stream?ids=123:fan,345:player,146:fan&limit=50&since=1418763887',
-              prev: '/stream?ids=123:fan,345:player,146:fan&limit=50&before=1418634823',
-            }
-          }
-        }
-        */
-    });
 };
