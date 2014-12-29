@@ -7,7 +7,7 @@ module.exports = exports = {
              process.env.MONGORILLA_MONGO_URL ||
              process.env.MONGOLAB_URI ||
              process.env.MONGOHQ_URL ||
-             'mongodb://localhost/nlmg',
+             'mongodb://localhost/guildmaker',
         options: {
             db: {
                 safe: true

@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js | ./node_modules/.bin/bunyan -o short",
+    "start": "node index.js",
+    "start-win": "node index.js | cd node_modules/.bin/ | bunyan -o short",
     "start-proof": "node proofOfConcept.js | ./node_modules/.bin/bunyan -o short",
     "test": "./node_modules/.bin/mocha ./test/unit/",
     "integration-test": "./node_modules/.bin/mocha ./test/integration/"
@@ -28,6 +29,9 @@
     "passport-http-bearer": "^1.0.1",
     "swaggerize-express": "^3.0.0",
     "validator": "^3.22.1"
+  },
+  "env": {
+        "PYTHON": "c:/Python27"
   },
   "devDependencies": {
     "chai": "^1.10.0",

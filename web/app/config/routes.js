@@ -8,6 +8,7 @@ module.exports = function(app, passport, passportConf){
     var contactController = require('../controllers/contact');
 
     app.get('/', homeController.index);
+    app.get('/app', homeController.app);
     app.get('/login', userController.getLogin);
     app.post('/login', userController.postLogin);
     app.get('/logout', userController.logout);

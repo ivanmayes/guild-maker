@@ -4,23 +4,6 @@
 var mongoose = require( 'mongoose' ),
     notifcationsSchema, schema;
 
-notifcationsSchema = new mongoose.Schema(
-    {
-        enabled:         { type: Boolean , default: false },
-        scope:           { type: String },
-        group:           { type: String },
-        school:          { type: mongoose.Schema.Types.ObjectId, ref: 'School' },
-        team:            { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
-        email:           { type: Boolean , default: false },
-        push:            { type: Boolean , default: false },
-        sms:             { type: Boolean , default: false },
-        upcomingGames:   { type: Boolean , default: false },
-        finalScores:     { type: Boolean , default: false },
-        scheduleChanges: { type: Boolean , default: false },
-        teamMessages:    { type: Boolean , default: false }
-    }
-);
-
 schema = new mongoose.Schema(
     {
         username:      { type: String },
@@ -30,13 +13,9 @@ schema = new mongoose.Schema(
         password:      { type: String },
         accounts:      { type: Array },
         devices:       { type: Array },
-        roles:         { type: Array },
-        group:         { type: String },
         createdTime:   { type: Date , default: Date.now },
         lastVisitTime: { type: Date , default: Date.now },
         birthday:      { type: Date },
-        followedTeams: [{ type: mongoose.Schema.Types.ObjectId , ref: 'Team' }],
-        preferences:   [notifcationsSchema]
     }
 );
 

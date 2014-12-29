@@ -3,25 +3,25 @@
 
 var Envelope    = require( '../envelope' ),
     routeUtils  = require( '../route-utils' ),
-    School      = require( '../models/school' ),
+    Plant      = require( '../models/plant' ),
     envelope;
 
 
-exports = module.exports = function SchoolRoutes( auth , router ) {
+exports = module.exports = function PlantRoutes( auth , router ) {
 
     // get list of all schools
-    router.get( '/schools', auth.requireUser , function( req , res , next ) {
+    router.get( '/plants', auth.requireUser, function( req , res , next ) {
         envelope = new Envelope();
 
-        School.findAsync({})
-            .then( function ( schools ) {
-                envelope.success( 200 , schools );
+        Plant.findAsync({})
+            .then( function ( plants ) {
+                envelope.success( 200 , plants );
                 res.json( envelope );
                 return;
             })
             .catch( function ( err ) {
                 envelope.error( 500 , {
-                    'details': 'The server returned an error finding all schools.',
+                    'details': 'The server returned an error finding all plants.',
                     'append':  true
                 });
                 res.json( envelope );
@@ -29,19 +29,23 @@ exports = module.exports = function SchoolRoutes( auth , router ) {
             });
     });
 
-    router.get( '/schools/search', auth.requireUser , function( req , res , next ) {
+    router.get( '/plants/search' , function( req , res , next ) {
         var keys, query;
 
         envelope = new Envelope();
 
         // cache members of model.
-        keys = routeUtils.findModelMembers( School );
+        keys = routeUtils.findModelMembers( Plant );
+
+        //console.log('Keys', keys);
 
         // obtain query schema
         query = routeUtils.getSearchQuery({
             'keys':  keys,
             'query': req.query
         });
+
+        console.log('query', query);
 
         if( !query ){
             // after parsing, no valid query present...
@@ -54,16 +58,16 @@ exports = module.exports = function SchoolRoutes( auth , router ) {
             return;
         }
 
-        School
+        Plant
             .findAsync( query )
-                .then( function ( schools ) {
-                    envelope.success( 200 , schools );
+                .then( function ( plants ) {
+                    envelope.success( 200 , plants );
                     res.json( envelope );
                     return;
                 })
                 .catch( function ( err ) {
                     envelope.error( 500 , {
-                        'details': 'The server returned an error finding schools matching supplied arguments.',
+                        'details': 'The server returned an error finding plants matching supplied arguments.',
                         'append':  true
                     });
                     res.json( envelope );
@@ -72,31 +76,31 @@ exports = module.exports = function SchoolRoutes( auth , router ) {
         return;
     });
 
-    router.get( '/schools/:schoolId', auth.requireUser , function( req , res , next ) {
-        var schoolId = req.params.schoolId;
+    router.get( '/plants/:plantId' , function( req , res , next ) {
+        var plantId = req.params.plantId;
         envelope = new Envelope();
 
-        if( !schoolId ){
-            // no schoolId present, return error envelope
+        if( !plantId ){
+            // no plantId present, return error envelope
             envelope.error( 400 , {
-                'details': 'Missing School Id.',
+                'details': 'Missing Plant Id.',
                 'append':  true
             });
             res.json( envelope );
             return;
         }
 
-        School.findOneAsync({
-            '_id': schoolId
+        Plant.findOneAsync({
+            '_id': plantId
         })
-        .then( function ( school ) {
-            envelope.success( 200 , school );
+        .then( function ( plant ) {
+            envelope.success( 200 , plant );
             res.json( envelope );
             return;
         })
         .catch( function ( err ) {
             envelope.error( 500 , {
-                'details': 'The server returned an error finding a school matching supplied id.',
+                'details': 'The server returned an error finding a plant matching supplied id.',
                 'append':  true
             });
             res.json( envelope );

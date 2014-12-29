@@ -7,6 +7,8 @@
   },
   "scripts": {
     "start": "nf start --port 8080",
+    "api": "cd api & npm start",
+    "web": "cd web & npm start",
     "test": "./node_modules/karma/bin/karma start test/unit/karma.conf.js",
     "unit": "./node_modules/karma/bin/karma start test/unit/karma.conf.js",
     "integration": "node test/integration"

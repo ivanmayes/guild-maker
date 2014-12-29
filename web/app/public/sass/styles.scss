@@ -3,6 +3,3 @@
 @import "../bower_components/font-awesome/scss/font-awesome";
 @import "../bower_components/bootstrap-social/bootstrap-social";
 @import "global/global.scss";
-
-// Pulls all pattern styles through (Uses Gulp's cssGlobber task)
-@import "../../patterns/**/*.scss";
