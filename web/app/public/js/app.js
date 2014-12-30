@@ -2,6 +2,8 @@
 
 define(['angular',
     'uiRouter',
+    'uiBootstrap',
+    'uiBootstrapTemplates',
     'config',
     'filters/filters',
     'services/services',
@@ -16,10 +18,14 @@ define(['angular',
             'app.services',
             'app.directives',
             'app.config',
+            'ui.bootstrap',
             'ui.router'
         ]);
 
         app.run(function($rootScope, $state, UserService) {
+
+            $rootScope.token = UserService.getAccessToken();
+            $rootScope.user = UserService.getUserSettings();
 
             // Check if Page requires authentication
             $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams) {

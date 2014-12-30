@@ -1,0 +1,16 @@
+<div class="modal-header">
+    <h3 class="modal-title">Add a List</h3>
+</div>
+<div class="modal-body">
+    <form>
+        <div class="form-group">
+        <label for="add-list-name">List Name</label>
+        <input type="text" class="form-control" ng-model="list.name" id="add-list-name" placeholder="Name">
+      </div>
+    </form>
+    <p class="alert alert-warning" ng-show="addErrorMsg">{{addErrorMsg}}</p>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" ng-click="addList(list.name)">Add</button>
+    <button class="btn btn-warning" ng-click="closeModal()">Cancel</button>
+</div>

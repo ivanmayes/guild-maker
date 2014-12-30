@@ -1,0 +1,29 @@
+<a class="btn btn-link" ng-click="back()" ng-show="backTitle">Back to {{ backTitle }}</a>
+<div class="row">
+	<div class="col-sm-12"><h3>Add a Plant</h3></div>
+</div>
+<div class="row">
+	<div class="col-sm-12">
+		<form class="form-inline" ng-submit="search()">
+		  <div class="form-group">
+		    <label class="sr-only" for="exampleInputAmount">Search for Plants</label>
+		    <div class="input-group">
+		      <input type="text" class="form-control" ng-model="query.q" placeholder="Search for plants">
+		    </div>
+		  </div>
+		  <button type="submit" class="btn btn-primary">Search</button>
+		</form>
+	</div>
+</div>
+
+<div class="row plant-list">
+	<div class="col-sm-12">
+		<ul class="list-group">
+		
+		  <li ui-sref="plant({plantId: plant._id, plant:plant, back: list.Name })" ng-repeat="plant in results" class="list-group-item">
+		  	<strong ng-show="plant.CommonName">{{ plant.CommonName }} - </strong>{{ plant.LatinName }}
+		  </li>
+
+		</ul>
+	</div>
+</div>

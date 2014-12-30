@@ -1,2 +1,21 @@
 <h1>Dashboard</h1>
 
+<div class="row">
+	<div class="col-sm-6"><h3>My Lists:</h3></div>
+	<div class="col-sm-6">
+		<ul class="nav nav-pills">
+		  <li role="presentation"><a ng-click="addListModal()">Add List</a></li>
+		</ul>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-sm-12 lists">
+		<div class="list-group" ng-repeat="list in lists">
+		  <a ui-sref="list({listId: list._id, list:list })" class="list-group-item">
+		    <h4 class="list-group-item-heading">{{ list.Name }}</h4>
+		    <p class="list-group-item-text">{{ list.Plants.length }} Species</p>
+		  </a>
+		</div>
+	</div>
+</div>

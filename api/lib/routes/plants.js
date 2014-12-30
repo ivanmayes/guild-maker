@@ -39,11 +39,25 @@ exports = module.exports = function PlantRoutes( auth , router ) {
 
         //console.log('Keys', keys);
 
+        // If we pass plant ids, make an $or query
+        if(req.plantIds) {
+           var plantIdObj = [];
+           for (var key in validation_messages) {
+             plantIdObj.push({'_id':req.plantIds[key]});
+           }
+           console.log(plantIdObj);
+           req.plantIds = null;
+        }
+
         // obtain query schema
         query = routeUtils.getSearchQuery({
             'keys':  keys,
             'query': req.query
         });
+
+        if(plantIdObj) {
+            query["$or"] = plantIdObj;
+        }
 
         console.log('query', query);
 

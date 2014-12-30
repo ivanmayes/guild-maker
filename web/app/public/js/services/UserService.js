@@ -1,7 +1,7 @@
 define(['angular'], function(angular) {
     'use strict';
 
-    var factory = function($http, $q, $window, API_URL) {
+    var factory = function($http, $q, $window, $rootScope, API_URL) {
 
         var userInfo;
 
@@ -130,6 +130,7 @@ define(['angular'], function(angular) {
         function setToken(token) {
             if (token) {
                 $window.sessionStorage['token'] = JSON.stringify(token);
+                $rootScope.token = token.token;
                 return true;
             } else {
                 return false;
@@ -150,6 +151,7 @@ define(['angular'], function(angular) {
                     delete user.password;
                 }
                 $window.sessionStorage['user'] = JSON.stringify(user);
+                $rootScope.user = user;
                 return true;
             } else {
                 return false;
@@ -171,6 +173,6 @@ define(['angular'], function(angular) {
 
     };
 
-    factory.$inject = ['$http', '$q', '$window', 'API_URL'];
+    factory.$inject = ['$http', '$q', '$window', '$rootScope', 'API_URL'];
     return factory;
 });

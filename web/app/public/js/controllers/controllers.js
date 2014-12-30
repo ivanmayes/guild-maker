@@ -12,6 +12,9 @@ define(function(require) {
     controllers.controller('AppCtrl', require('controllers/AppCtrl'));
     controllers.controller('DashboardCtrl', require('controllers/DashboardCtrl'));
     controllers.controller('LoginCtrl', require('controllers/LoginCtrl'));
+    controllers.controller('ListCtrl', require('controllers/ListCtrl'));
+    controllers.controller('PlantCtrl', require('controllers/PlantCtrl'));
+    controllers.controller('AddPlantCtrl', require('controllers/AddPlantCtrl'));
 
     /*controllers.run(['$rootScope', function($rootScope) {
             $rootScope.sampleParam = "value";

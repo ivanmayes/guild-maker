@@ -440,6 +440,13 @@
                         "required": false,
                         "type": "string"
                     },
+                    {
+                        "name": "plantIds",
+                        "in": "query",
+                        "description": "Ids of the plants you want",
+                        "required": false,
+                        "type": "Array"
+                    },
                     { "name":"LatinName",
                         "in": "query",
                         "description": "",

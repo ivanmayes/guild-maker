@@ -88,6 +88,7 @@ exports = module.exports = function ListRoutes( auth , router ) {
 
         if( !userId ){
             // no listId present, return error envelope
+            console.log(userId);
             envelope.error( 400 , {
                 'details': 'Missing User Id.',
                 'append':  true
@@ -255,22 +256,25 @@ exports = module.exports = function ListRoutes( auth , router ) {
             return;
         }
 
-        List.findOneAsync({
+        // TODO: Figure out how to run populate with bluebird
+        List.findOne({
             '_id': listId
         })
-        .then( function ( list ) {
-            envelope.success( 200 , list );
-            res.json( envelope );
-            return;
-        })
-        .catch( function ( err ) {
+        .populate('Plants')
+        .exec(function (err, list) {
+          if (err) {
             envelope.error( 500 , {
                 'details': 'The server returned an error finding a list matching supplied id.',
                 'append':  true
             });
             res.json( envelope );
             return;
-        });
+          }
+          
+          envelope.success( 200 , list );
+            res.json( envelope );
+            return;
+        })
     });
 
 };
