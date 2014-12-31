@@ -1,4 +1,4 @@
 <a class="btn btn-link" ng-click="back()" ng-show="backTitle">Back to {{ backTitle }}</a>
 <div class="row">
-	<div class="col-sm-12"><h3>{{plant.LatinName}}</h3></div>
+	<div class="col-sm-12"><h3><strong ng-show="plant.CommonName">{{ plant.CommonName | decodeURI }} - </strong>{{ plant.LatinName }}</span></h3></div>
 </div>

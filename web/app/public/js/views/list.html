@@ -5,13 +5,13 @@
 <div class="row plant-list">
 	<div class="col-sm-12">
 		<ul class="list-group">
-		
+
 		  <li ui-sref="plant({plantId: plant._id, plant:plant, back: list.Name })" ng-repeat="plant in list.Plants" class="list-group-item">
-		  	<strong ng-show="plant.CommonName">{{ plant.CommonName }} - </strong>{{ plant.LatinName }}
+		  	<strong ng-show="plant.CommonName">{{ plant.CommonName  | decodeURI  }} - </strong>{{ plant.LatinName }}
 		  </li>
 
 		  <li class="list-group-item">
-		  	<a ui-sref="add-plant({back: list.Name})">Add a Plant to your list</a>
+		  	<a ui-sref="add-plant({back: list.Name, list:list})">Add a Plant to your list</a>
 		  </li>
 		</ul>
 	</div>

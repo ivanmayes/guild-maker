@@ -46,7 +46,8 @@ define(['app'], function(app) {
                 .state('add-plant', {
                     url: '/add-plant',
                     params: {
-                        back: ""
+                        back: "",
+                        list: null
                     },
                     templateUrl: 'js/views/add-plant.html',
                     controller: 'AddPlantCtrl',

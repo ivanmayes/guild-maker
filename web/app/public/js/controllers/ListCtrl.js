@@ -8,6 +8,7 @@ define(function() {
         console.log('Getting list');
         var listData = ListService.getList($stateParams.listId, $rootScope.token);
         listData.then(function(result) {
+            ListService.selectedList = result;
             $scope.list = result;
         });
 

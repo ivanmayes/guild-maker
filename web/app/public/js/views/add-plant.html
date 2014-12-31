@@ -1,6 +1,6 @@
 <a class="btn btn-link" ng-click="back()" ng-show="backTitle">Back to {{ backTitle }}</a>
 <div class="row">
-	<div class="col-sm-12"><h3>Add a Plant</h3></div>
+	<div class="col-sm-12"><h3>Add a Plant to {{list.Name}}</h3></div>
 </div>
 <div class="row">
 	<div class="col-sm-12">
@@ -12,6 +12,11 @@
 		    </div>
 		  </div>
 		  <button type="submit" class="btn btn-primary">Search</button>
+
+		  <div class="advanced">
+
+		  </div>
+
 		</form>
 	</div>
 </div>
@@ -19,9 +24,10 @@
 <div class="row plant-list">
 	<div class="col-sm-12">
 		<ul class="list-group">
-		
-		  <li ui-sref="plant({plantId: plant._id, plant:plant, back: list.Name })" ng-repeat="plant in results" class="list-group-item">
-		  	<strong ng-show="plant.CommonName">{{ plant.CommonName }} - </strong>{{ plant.LatinName }}
+
+		  <li ng-repeat="plant in results" class="list-group-item">
+		  	<i class="fa fa-plus" ng-hide="isAddedToList(plant._id)" ng-click="add(plant._id)"></i>
+		  	<span ui-sref="plant({plantId: plant._id, plant:plant, back: 'Add a Plant' })"><strong ng-show="plant.CommonName">{{ plant.CommonName | decodeURI }} - </strong>{{ plant.LatinName }}</span>
 		  </li>
 
 		</ul>

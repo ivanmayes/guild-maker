@@ -3,17 +3,18 @@ define(['angular'], function(angular) {
 
     var factory = function($http, $q, $window, API_URL) {
 
-        var userInfo;
+        var query = "";
+        var search_results = [];
 
         function getPlant(plantId, access_token) {
             var deferred = $q.defer();
 
-            if(!plantId) {
+            if (!plantId) {
                 deferred.reject("Missing parameters for this call");
             }
 
             $http({
-                url: API_URL + 'plants/'+plantId,
+                url: API_URL + 'plants/' + plantId,
                 method: 'GET',
                 params: {
                     access_token: access_token
@@ -35,7 +36,7 @@ define(['angular'], function(angular) {
         function searchPlants(query, access_token) {
             var deferred = $q.defer();
 
-            if(!query) {
+            if (!query) {
                 deferred.reject("Missing parameters for this call");
             }
 
@@ -63,7 +64,9 @@ define(['angular'], function(angular) {
         // Return all our public functions
         return {
             getPlant: getPlant,
-            searchPlants: searchPlants
+            searchPlants: searchPlants,
+            query: query,
+            search_results: search_results
         };
 
     };
