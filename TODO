@@ -1,20 +1,14 @@
 TODO:
 
-- Delete List
 - Publish List
-
-- Delete Plant from List
-
-- User auth for API on updating lists
 
 - Refactor Plants DB
 	- Remove URL Encoded
 	- Move things into seperate objects
 	- Use Species Matrix for habitats
 
+- Advanced Search
 - Commenting
 - Drag and Drop illustrations
 - Flickr Photos
 - List Notes
-- Add header
-- Tabs for Graphs

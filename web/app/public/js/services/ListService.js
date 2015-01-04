@@ -88,6 +88,33 @@ define(['angular'], function(angular) {
             return deferred.promise;
         }
 
+        function removeList(list, access_token) {
+            var deferred = $q.defer();
+
+            if (!list || !access_token) {
+                deferred.reject("Missing parameters for this call");
+            }
+
+            $http({
+                url: API_URL + 'lists/' + list._id,
+                method: 'DELETE',
+                params: {
+                    access_token: access_token
+                }
+            }).then(function(result) {
+                if (result.data && result.data.response) {
+                    deferred.resolve(result.data.response);
+                } else {
+                    deferred.reject(result.data.meta.errorDetail[0]);
+                }
+
+            }, function(error) {
+                    deferred.reject(error);
+                });
+
+            return deferred.promise;
+        }
+
         function updateList(list, access_token) {
             var deferred = $q.defer();
 
@@ -133,6 +160,7 @@ define(['angular'], function(angular) {
             getList: getList,
             addList: addList,
             updateList: updateList,
+            removeList: removeList,
             selectedList: selectedList
         };
 

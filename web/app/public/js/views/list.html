@@ -6,8 +6,9 @@
 	<div class="col-sm-6">
 		<ul class="list-group">
 
-		  <li ui-sref="plant({plantId: plant._id, plant:plant, back: list.Name })" ng-repeat="plant in list.Plants" class="list-group-item">
-		  	<strong ng-show="plant.CommonName">{{ plant.CommonName  | decodeURI  }} - </strong>{{ plant.LatinName }}
+		  <li  ng-repeat="plant in list.Plants" class="list-group-item">
+		  	<span ui-sref="plant({plantId: plant._id, plant:plant, back: list.Name })"><strong ng-show="plant.CommonName">{{ plant.CommonName  | decodeURI  }} - </strong>{{ plant.LatinName }}</span>
+		  	<a class="btn btn-clear pull-right" style="padding:0;" ng-click="removePlantModal(plant)"><i class="fa fa-times"></i></a>
 		  </li>
 
 		  <li class="list-group-item" ng-show="isUserOwner()">
@@ -17,17 +18,28 @@
 	</div>
 </div>
 
-<h3>Tolerances:</h3>
-<div google-chart chart="toleranceChart" style="height:600px; width:100%;"></div>
-
-<h3>Architecture:</h3>
-<div google-chart chart="architectureChart" style="height:600px; width:100%;"></div>
-
-<h3>Uses:</h3>
-<div google-chart chart="usesChart" style="height:600px; width:100%;"></div>
-
-<h3>Functions:</h3>
-<div google-chart chart="functionsChart" style="height:600px; width:100%;"></div>
-
-<h3>Timings</h3>
-<div google-chart chart="timingsChart" style="height:600px; width:100%;"></div>
+<div>
+  <tabset justified="true">
+    <tab heading="Tolerances" select="makeToleranceChart()">
+    	<h3>Tolerances:</h3>
+		<div google-chart chart="toleranceChart" style="height:600px; width:100%;"></div>
+    </tab>
+    <tab heading="Timings" select="makeTimingsChart()">
+    	<h3>Timings:</h3>
+		<div google-chart chart="timingsChart" style="height:600px; width:100%;"></div>
+    </tab>
+    <tab heading="Uses" select="makeUsesChart()">
+    	<h3>Uses:</h3>
+		<div google-chart chart="usesChart" style="height:600px; width:100%;"></div>
+    </tab>
+    <tab heading="Functions" select="makeFunctionsChart()">
+    	<h3>Functions:</h3>
+		<div google-chart chart="functionsChart" style="height:600px; width:100%;"></div>
+    </tab>
+    <tab heading="Architecture" select="makeArchitectureChart()">
+    	<h3>Architecture:</h3>
+		<div google-chart chart="architectureChart" style="height:600px; width:100%;"></div>
+    </tab>
+    
+  </tabset>
+</div>

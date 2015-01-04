@@ -37,6 +37,26 @@ define(function() {
     		$scope.modalInstance.close();
     	}
 
+        $scope.removeListModal = function(list) {
+            $scope.selectedList = list;
+            $scope.modalInstance = $modal.open({
+              templateUrl: 'js/views/modals/removeList.html',
+              scope: $scope
+            });
+        }
+        $scope.removeList = function(list) {
+            var removeList = ListService.removeList(list, $rootScope.token);
+            removeList.then(function(result) {
+                // remove list from array
+                for(var i = 0; i < $scope.lists.length; i++) {
+                if($scope.lists[i]._id == list._id) {
+                    var remove = $scope.lists.splice(i, 1);
+                }
+            }
+                $scope.closeModal();
+            });
+        }
+
 
     }
 

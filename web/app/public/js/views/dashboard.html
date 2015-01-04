@@ -11,11 +11,15 @@
 
 <div class="row">
 	<div class="col-sm-12 lists">
-		<div class="list-group" ng-repeat="list in lists">
-		  <a ui-sref="list({listId: list._id, list:list })" class="list-group-item">
-		    <h4 class="list-group-item-heading">{{ list.Name }}</h4>
-		    <p class="list-group-item-text">{{ list.Plants.length }} Species</p>
-		  </a>
+		<div class="list-group">
+		  <div  class="list-group-item" ng-repeat="list in lists" style="position:relative;">
+		  	<a ui-sref="list({listId: list._id, list:list })">
+		  		<h4 class="list-group-item-heading">{{ list.Name }}</h4>
+		    	<p class="list-group-item-text">{{ list.Plants.length }} Species</p>
+		  	</a>
+
+		    <a class="btn btn-clear" ng-click="removeListModal(list)" style="position: absolute; right: 0; top: 0;"><i class="fa fa-times"></i></a>
+		  </div>
 		</div>
 	</div>
 </div>

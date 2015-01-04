@@ -295,4 +295,75 @@ exports = module.exports = function ListRoutes(auth, router) {
             })
     });
 
+    
+    router.del('/lists/:listId', auth.requireUser, function(req, res, next) {
+        var listId = req.params.listId,
+            user = req.user;
+
+        envelope = new Envelope();
+
+        if (!listId) {
+            // no listId present, return error envelope
+            envelope.error(400, {
+                'details': 'Missing List Id.',
+                'append': true
+            });
+            res.json(envelope);
+            return;
+        }
+
+        List.findOneAsync({
+            '_id': listId
+        })
+        .then(function(list) {
+            if (!list) {
+                envelope.error(400, {
+                    'details': 'Cannot find list with that id.',
+                    'append': true
+                });
+
+                res.json(envelope);
+                return;
+            }
+
+            if(String(list.User) !== String(user._id)) {
+                envelope.error(400, {
+                    'details': 'The user doesnt have permission to update this list.',
+                    'append': true
+                });
+
+                res.json(envelope);
+                return;
+            }
+
+            List.remove({ _id: listId }, function(err) {
+                if (!err) {
+                        envelope.success(200, true);
+                        res.json(envelope);
+                        return;
+                }
+                else {
+                        envelope.error(400, {
+                            'details': 'There was an error removing the list',
+                            'append': true
+                        });
+                        res.json(envelope);
+                        return;
+                }
+            });
+
+
+        })
+        // Bad id
+        .catch(function(err) {
+            envelope.error(500, {
+                'details': 'The id supplied was malformed.'
+            });
+            res.json(envelope);
+            return;
+        });
+
+       
+    });
+
 };

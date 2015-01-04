@@ -6,9 +6,14 @@ define(function() {
     function ctrl($scope, $stateParams, $rootScope, $modal, ListService) {
         $scope.toleranceChart = {};
         $scope.architectureChart = {};
+        $scope.architectureChart.type = "Table";
         $scope.usesChart = {};
+        $scope.usesChart.type = "Table";
         $scope.functionsChart = {};
+        $scope.functionsChart.type = "Table";
         $scope.timingsChart = {};
+        $scope.timingsChart.type = "Timeline";
+        $scope.list = {};
 
         function init() {
             if(ListService.selectedList && !$stateParams.list) {
@@ -30,15 +35,43 @@ define(function() {
            return $scope.list.User == $rootScope.user._id;
         }
 
-        $scope.makePlantCharts = function(plants) {
-            $scope.makeToleranceChart(plants);
-            $scope.makeArchitectureChart(plants);
-            $scope.makeUsesChart(plants);
-            $scope.makeFunctionsChart(plants);
-            $scope.makeTimingsChart(plants);
+        $scope.removePlantModal = function(plant) {
+            $scope.selectedPlant = plant;
+            $scope.modalInstance = $modal.open({
+              templateUrl: 'js/views/modals/removePlant.html',
+              scope: $scope
+            });
+        }
+        $scope.closeModal = function() {
+            $scope.modalInstance.close();
         }
 
-        $scope.makeToleranceChart = function(plants) {
+        $scope.removePlantFromList = function(plant_id) {
+            var list = $scope.list;
+
+            // Remove plant from array
+            var plants = [];
+            for(var i = 0; i < list.Plants.length; i++) {
+                if(list.Plants[i]._id == plant_id) {
+                    plants = list.Plants.splice(i, 1);
+                }
+            }
+
+            var removePlant = ListService.updateList(list, $rootScope.token);
+            removePlant.then(function(list) {
+                ListService.selectedList = list;
+                $scope.list = list;
+                $scope.closeModal();
+                console.log('Plants', $scope.list);
+            })
+        }
+
+        $scope.makePlantCharts = function(plants) {
+            $scope.makeToleranceChart(plants);
+        }
+
+        $scope.makeToleranceChart = function() {
+            var plants = $scope.list.Plants;
             var rows = [];
             angular.forEach(plants, function(plant) {
                 var obj = {
@@ -102,7 +135,8 @@ define(function() {
             }
         }
 
-        $scope.makeArchitectureChart = function(plants) {
+        $scope.makeArchitectureChart = function() {
+            var plants = $scope.list.Plants;
             var rows = [];
             console.log('Making architectureChart');
             angular.forEach(plants, function(plant) {
@@ -141,15 +175,11 @@ define(function() {
                 {id: "SelfFertile", label: "SelfFertile", type: "string"}
 
             ], "rows": rows };
-
-            $scope.architectureChart.type = "Table";
-            $scope.architectureChart.options = {
-                'title': 'Architecture'
-            }
         }
 
-        $scope.makeUsesChart = function(plants) {
+        $scope.makeUsesChart = function() {
             var rows = [];
+            var plants = $scope.list.Plants;
             console.log('Making usesChart');
             angular.forEach(plants, function(plant) {
                 var obj = {
@@ -190,14 +220,12 @@ define(function() {
                 {id: "Scented", label: "Scented", type: "string"}
             ], "rows": rows };
 
-            $scope.usesChart.type = "Table";
-            $scope.usesChart.options = {
-                'title': 'Uses'
-            }
+            
         }
 
-        $scope.makeFunctionsChart = function(plants) {
+        $scope.makeFunctionsChart = function() {
             var rows = [];
+            var plants = $scope.list.Plants;
             console.log('Making functionsChart');
             angular.forEach(plants, function(plant) {
                 var obj = {
@@ -227,14 +255,11 @@ define(function() {
 
             ], "rows": rows };
 
-            $scope.functionsChart.type = "Table";
-            $scope.functionsChart.options = {
-                'title': 'Functions'
-            }
         }
 
-        $scope.makeTimingsChart = function(plants) {
+        $scope.makeTimingsChart = function() {
             var rows = [];
+            var plants = $scope.list.Plants;
             console.log('Making timingsChart');
             angular.forEach(plants, function(plant) {
                 // Name
@@ -296,10 +321,7 @@ define(function() {
 
             ], "rows": rows };
 
-            $scope.timingsChart.type = "Timeline";
-            $scope.timingsChart.options = {
-                'title': 'Timings'
-            }
+
         }
 
         init();
