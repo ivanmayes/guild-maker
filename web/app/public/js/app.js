@@ -4,6 +4,7 @@ define(['angular',
     'uiRouter',
     'uiBootstrap',
     'uiBootstrapTemplates',
+    'angularGoogleChart',
     'config',
     'filters/filters',
     'services/services',
@@ -19,7 +20,8 @@ define(['angular',
             'app.directives',
             'app.config',
             'ui.bootstrap',
-            'ui.router'
+            'ui.router',
+            "googlechart"
         ]);
 
         app.run(function($rootScope, $state, UserService) {

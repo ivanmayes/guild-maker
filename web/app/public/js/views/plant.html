@@ -2,3 +2,266 @@
 <div class="row">
 	<div class="col-sm-12"><h3><strong ng-show="plant.CommonName">{{ plant.CommonName | decodeURI }} - </strong>{{ plant.LatinName }}</span></h3></div>
 </div>
+
+<p class="Family">
+	Family: {{plant.Family}}
+</p>
+
+<h3>Tolerances</h3>
+
+<p class="Hardyness">
+	Hardyness: {{plant.Hardyness}}
+</p>
+
+<p class="FrostTender">
+	FrostTender: {{plant.FrostTender}}
+</p>
+
+<p class="Range">
+	Range: {{plant.Range | decodeURI }}
+</p>
+
+<p class="Habitat">
+	Habitat: {{plant.Habitat | decodeURI }}
+</p>
+
+<p class="Shade">
+	Shade: {{plant.Shade}}
+</p>
+
+<p class="Moisture">
+	Moisture: {{plant.Moisture}}
+</p>
+
+<p class="Drought">
+	Drought: {{plant.Drought}}
+</p>
+
+<h4>Soil Type</h4>
+<p class="Soil">
+	Soil: {{plant.Soil}}
+</p>
+
+<p class="WellDrained">
+	WellDrained: {{plant.WellDrained}}
+</p>
+
+<p class="PoorSoil">
+	PoorSoil: {{plant.PoorSoil}}
+</p>
+
+<p class="HeavyClay">
+	HeavyClay: {{plant.HeavyClay}}
+</p>
+
+<h4>Soil PH:</h4>
+<p class="PH">
+	PH: {{plant.PH}}
+</p>
+
+<p class="Acid">
+	Acid: {{plant.Acid}}
+</p>
+
+<p class="Alkaline">
+	Alkaline: {{plant.Alkaline}}
+</p>
+
+<p class="Saline">
+	Saline: {{plant.Saline}}
+</p>
+
+<p class="Pollution">
+	Pollution: {{plant.Pollution}}
+</p>
+
+<p class="Wind">
+	Wind: {{plant.Wind}}
+</p>
+
+
+<h3>Architecture</h3>
+
+<p class="Height">
+	Height: {{plant.Height}}
+</p>
+
+<p class="Width">
+	Width: {{plant.Width}}
+</p>
+
+<p class="Habit">
+	Habit: {{plant.Habit}}
+</p>
+
+<p class="DeciduousOrEvergreen">
+	DeciduousOrEvergreen: {{plant.DeciduousEvergreen}}
+</p>
+
+<p class="GrowthRate">
+	GrowthRate: {{plant.GrowthRate}}
+</p>
+
+<p class="FlowerType">
+	FlowerType: {{plant.FlowerType}}
+</p>
+
+<p class="SelfFertile">
+	SelfFertile: {{plant.SelfFertile}}
+</p>
+
+
+<h3>Uses</h3>
+
+<p class="OverallRating">
+	OverallRating: {{plant.OverallRating}}
+</p>
+
+<p class="MedicinalRating">
+	MedicinalRating: {{plant.MedicinalRating}}
+</p>
+
+<p class="Rating">
+	Rating: {{plant.Rating}}
+</p>
+
+<p class="PalatableRating">
+	PalatableRating: {{plant.PalatableRating}}
+</p>
+
+<p class="UseRating">
+	UseRating: {{plant.UseRating}}
+</p>
+
+<p class="GrowRating">
+	GrowRating: {{plant.GrowRating}}
+</p>
+
+<div class="MedicinalUses">
+	Medicinal Uses: <span ng-repeat="part in plant.MedicinalUses"> {{part}} </span>
+</div>
+<p class="Medicinal">
+	Medicinal: {{plant.Medicinal}}
+</p>
+
+<p class="InCultivation">
+	InCultivation: {{plant.InCultivation}}
+</p>
+
+<p class="Scented">
+	Scented: {{plant.Scented}}
+</p>
+
+<div class="EdibleParts">
+	Edible Parts: <span ng-repeat="part in plant.EdibleParts"> {{part}} </span>
+</div>
+
+<p class="EdibleUses">
+	Edible Uses: {{plant.EdibleUses}}
+</p>
+
+<div class="OtherUses">
+	Other Uses: <span ng-repeat="part in plant.OtherUses"> {{part}} </span>
+</div>
+<p class="Uses">
+	Other Uses: {{plant.UsesNotes}}
+</p>
+
+
+
+<h3>Functions</h3>
+
+<p class="NitrogenFixer">
+	NitrogenFixer: {{plant.NitrogenFixer}}
+</p>
+
+<p class="Pollinators">
+	Pollinators: {{plant.Pollinators | decodeURI}}
+</p>
+
+<p class="Wildlife">
+	Wildlife: {{plant.Wildlife}}
+</p>
+
+
+<h3>Timings:</h3>
+
+<p class="InLeaf">
+	InLeaf: {{plant.InLeaf}}
+</p>
+
+<p class="FloweringTime">
+	FloweringTime: {{plant.FloweringTime}}
+</p>
+
+<p class="SeedRipens">
+	SeedRipens: {{plant.SeedRipens}}
+</p>
+
+<p class="InLeafStart">
+	InLeafStart: {{plant.InLeafStart}}
+</p>
+
+<p class="InLeafEnd">
+	InLeafEnd: {{plant.InLeafEnd}}
+</p>
+
+<p class="FloweringTimeStart">
+	FloweringTimeStart: {{plant.FloweringTimeStart}}
+</p>
+
+<p class="FloweringTimeEnd">
+	FloweringTimeEnd: {{plant.FloweringTimeEnd}}
+</p>
+
+<p class="SeedRipensStart">
+	SeedRipensStart: {{plant.SeedRipensStart}}
+</p>
+
+<p class="SeedRipensEnd">
+	SeedRipensEnd: {{plant.SeedRipensEnd}}
+</p>
+
+
+
+
+
+
+<h3>Notes</h3>
+
+
+<p class="Synonyms">
+	Synonyms: {{plant.Synonyms | decodeURI}}
+</p>
+
+<p class="CultivationDetails">
+	CultivationDetails: {{plant.CultivationDetails | decodeURI}}
+</p>
+
+<p class="Propagation1">
+	Propagation1: {{plant.Propagation1 | decodeURI}}
+</p>
+
+<p class="Cultivars">
+	Cultivars: {{plant.Cultivars}}
+</p>
+
+<p class="CultivarsInCultivation">
+	CultivarsInCultivation: {{plant.CultivarsInCultivation}}
+</p>
+
+<p class="PullOut">
+	PullOut: {{plant.PullOut}}
+</p>
+
+<p class="SiteSpecificNotes">
+	SiteSpecificNotes: {{plant.SiteSpecificNotes}}
+</p>
+
+<p class="Meadow">
+	Meadow: {{plant.Meadow}}
+</p>
+
+<p class="Wall">
+	Wall: {{plant.Wall}}
+</p>

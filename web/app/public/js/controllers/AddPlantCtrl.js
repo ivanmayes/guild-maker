@@ -28,7 +28,7 @@ define(function() {
         }
 
         $scope.search = function() {
-            var searchPlants = PlantService.searchPlants($scope.query, $rootScope.access_token);
+            var searchPlants = PlantService.searchPlants($scope.query, $rootScope.token);
             searchPlants.then(function(plants) {
                 PlantService.query = $scope.query;
                 PlantService.search_results = plants;
@@ -38,8 +38,8 @@ define(function() {
 
         $scope.add = function(plant_id) {
             var list = $scope.list;
-            list.Plants.push(plant_id)
-            var addPlant = ListService.updateList(list, $rootScope.access_token);
+            list.Plants.push(plant_id);
+            var addPlant = ListService.updateList(list, $rootScope.token);
             addPlant.then(function(list) {
                 ListService.selectedList = list;
                 $scope.list = list;

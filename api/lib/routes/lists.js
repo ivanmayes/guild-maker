@@ -76,7 +76,7 @@ exports = module.exports = function ListRoutes(auth, router) {
         return;
     });
 
-    router.post('/lists/add', function(req, res, next) {
+    router.post('/lists/add', auth.requireUser, function(req, res, next) {
         var userId = req.body.userId,
             Name = req.body.Name,
             Plants = req.body.Plants,
@@ -87,7 +87,7 @@ exports = module.exports = function ListRoutes(auth, router) {
         }
 
         if (!userId) {
-            // no listId present, return error envelope
+            // no userId present, return error envelope
             console.log(userId);
             envelope.error(400, {
                 'details': 'Missing User Id.',
@@ -98,7 +98,7 @@ exports = module.exports = function ListRoutes(auth, router) {
         }
 
         if (!Name) {
-            // no listId present, return error envelope
+            // no Name present, return error envelope
             envelope.error(400, {
                 'details': 'Missing List Id.',
                 'append': true
@@ -130,7 +130,7 @@ exports = module.exports = function ListRoutes(auth, router) {
     });
 
 
-    router.post('/lists/update', function(req, res) {
+    router.post('/lists/update', auth.requireUser, function(req, res) {
         var listId = req.body.listId,
             userId = req.body.userId ,
             Name = req.body.Name,
@@ -160,6 +160,16 @@ exports = module.exports = function ListRoutes(auth, router) {
                 if (!list) {
                     envelope.error(400, {
                         'details': 'Cannot find list with that id.',
+                        'append': true
+                    });
+
+                    res.json(envelope);
+                    return;
+                }
+
+                if(String(list.User) !== String(user._id)) {
+                    envelope.error(400, {
+                        'details': 'The user doesnt have permission to update this list.',
                         'append': true
                     });
 
